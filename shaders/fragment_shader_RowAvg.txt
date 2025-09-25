@@ -1,0 +1,54 @@
+#version 300 es
+precision highp float;
+precision highp int;
+out vec4 outColor; // name of the output variable
+
+in vec2 interpolatedTexCoord;
+
+
+uniform sampler2D Gray; // min_filter="NEAREST" mag_filter="NEAREST"
+
+uniform int width;
+uniform int height;
+uniform int samples; // description="Number of samples" defaultval="256"
+uniform bool debug; // description="Enable debugging of sampling locations" defaultval="false"
+
+uniform int inputImageWidth;
+uniform int inputImageHeight;
+
+
+#define PI 3.1415926535897932384626433832795
+
+
+
+// pixel to textureCoord 
+float p2t(in float p, in int noOfPixels) {
+   return (p + 0.5) / float(noOfPixels);
+}
+
+// round to nearest integer
+int round2Integer(in float val) {
+  return int(val + 0.5);
+}
+
+
+// convert texture coordinates to pixels
+float t2p(in float t, in int noOfPixels) {
+  return t * float(noOfPixels) - 0.5;
+}
+void main() {
+
+  // row avg
+  float sum = 0.0;
+  int y = round2Integer(t2p(interpolatedTexCoord.y, inputImageHeight));
+  for(int x = 0; x < inputImageWidth; x++) {
+    float gray = texelFetch(Gray, ivec2(x, y), 0).r;
+    sum += gray;
+  }
+  sum /= float(inputImageWidth);
+  //vec3 texColor = texture(Gray, interpolatedTexCoord).rgb;
+  //outColor = vec4(texColor.r, texColor.g, texColor.b, 1.0);
+  outColor = vec4(sum, sum, sum, 1.0);
+  
+  
+}

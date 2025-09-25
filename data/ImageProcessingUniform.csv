@@ -1,0 +1,9 @@
+MyTex,Image,,,,
+Gray,Image,,,,
+RowAvg,Image,,,,
+ColAvg,Image,,,,
+PDFMarg,Image,,,,
+PDFCon,Image,,,,
+Background,Color,0,0,0,1
+width,Integer,1024,,,
+height,Integer,512,,,

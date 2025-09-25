@@ -1,0 +1,12 @@
+MyTex,Image,,,,
+CDFMarg,Image,,,,
+PDFJoint,Image,,,,
+CDFCon,Image,,,,
+NodeClassName,Text,ShaderPluginNode,,,
+NodeName,Text,EnvMap Sampling,,,
+Background,Color,0,0,0,1
+Wireframe,Boolean,FALSE,,,
+width,Integer,1024,,,
+height,Integer,512,,,
+samples,Integer,500,,,
+debug,Boolean,FALSE,,,

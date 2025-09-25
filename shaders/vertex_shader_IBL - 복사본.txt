@@ -1,0 +1,33 @@
+#version 300 es
+precision highp float;
+precision highp int;
+in vec3 position; // input vertex position from mesh
+in vec2 texcoord; // input vertex texture coordinate from mesh
+in vec3 normal;   // input vertex normal from mesh
+
+uniform mat4 cameraLookAt; //camera look at matrix
+uniform mat4 cameraProjection; //camera projection matrix
+uniform mat4 meshTransform; // mesh transformation
+uniform mat4 meshTransformTransposedInverse; // transposed inverse of meshTransform
+uniform int gsnMeshGroup;
+
+out vec2 tc; // output texture coordinate of vertex
+out vec3 wfn; // output fragment normal of vertex in world space
+out vec3 vertPos; // output 3D position in world space
+
+void main(){
+  if(gsnMeshGroup == 0) { // Stone Demon
+    tc = texcoord;
+    wfn = vec3(meshTransformTransposedInverse * vec4(normal, 0.0));
+    vec4 vertPos4 = meshTransform * vec4(position, 1.0);
+    vertPos = vec3(vertPos4) / vertPos4.w;
+    gl_Position = cameraProjection * cameraLookAt * vertPos4;
+  } else { // EnvMap Sphere
+    tc = texcoord;
+    wfn = normal;
+    const float sphereSize = 75.0;
+    vec4 vertPos4 = vec4(sphereSize * position, 1.0);
+    vertPos = vec3(vertPos4) / vertPos4.w;
+    gl_Position = cameraProjection * cameraLookAt * vertPos4;    
+  }
+}
