@@ -1,8 +1,0 @@
-MyTex,Image,,,,
-NodeClassName,Text,ShaderPluginNode,,,
-NodeName,Text,Shader,,,
-Background,Color,0,0,0,1
-Wireframe,Boolean,FALSE,,,
-width,Integer,1024,,,
-height,Integer,512,,,
-level,Float,0,,,

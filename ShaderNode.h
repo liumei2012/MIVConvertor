@@ -58,17 +58,43 @@ namespace gsn {
     //! render call 
     void render(const Mesh& mesh, const Matrix& background, int width, int height, /*bool wireframe = false,*/ bool renderToFBO = true);
     void renderBgHDRImage(const Mesh& mesh, const Matrix& background, int width, int height, /*bool wireframe = false,*/ bool renderToFBO = true);
-    void renderHetro(const Mesh& mesh, const Matrix &background, Matrix &backgroundMeshTransform, Matrix& backgroundProjTransform, int width, int height, /*bool wireframe = false,*/ bool renderToFBO = true);
+    void renderHetro(const Mesh& mesh, 
+        const Matrix &background, 
+        Matrix &backgroundMeshTransform,
+        Matrix& backgroundProjTransform, 
+        int width, int height, /*bool wireframe = false,*/ 
+        bool renderToFBO = true,
+        std::string strGeoOutput = "",
+        std::string strTexOutput = "",
+        std::string strEntityOutput = "");
     
     //! returns the texture of the FBO with the given index
     unsigned int getRenderTarget(int index) const;
 
     //! returns the texture of the FBO with the given name
     unsigned int getRenderTargetByName(const std::string& name) const;
-    uint8_t* image_hetro_ = NULL;
-    uint8_t* image_hetro_background = NULL;
 
+    uint8_t* image_hetro_ = NULL;
+    uint16_t nHetroImageDimWidth = 2048;
+    uint16_t nHetroImageDimHeight = 2048;
+
+    uint8_t* image_hetro_background = NULL;
+    uint16_t nHetroBGImageDimWidth = 2048;
+    uint16_t nHetroBGImageDimHeight = 2048;
+
+    bool bIsDepth = false;
+    bool bCaptureing = false;
+    bool bEntityExtention = false;
+
+    float fFieldOfViewH = 0.0;
+    float fFieldOfViewV = 0.0;
+
+    std::string strHetroObjOutputPath;
+    uint16_t nCamCount;
+
+    uint16_t nCurCamIndex = 0;
     unsigned int nTexIDSeq = 0;
+
   public:
     struct Texture {
       unsigned int texID = 0;

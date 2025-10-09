@@ -19,6 +19,8 @@
 #include "Util.h"
 #include "Camera.h"
 #include "MIVCamInfo.h"
+#include "ply.h"
+// #define IMAGPROCESSINGTEST 
 
 using namespace std;
 using namespace gsn;
@@ -87,46 +89,23 @@ void initBufers_in()
             v = (float(latNum) / float(latitudeBands));
 
             normal_in.push_back(x);
-            //printf("x:%f,",normal[normalindex]);
             normalindex++;
             normal_in.push_back(y);
-            //normal_in[normalindex] = y;
-            // printf("y:%f,",normal_in[normalindex]);
             normalindex++;
             normal_in.push_back(z);
-            //normal_in[normalindex] = z;
-            //printf("z:%f,",normal_in[normalindex]);
             normalindex++;
-           // normal_in.push_back(1);
-            //normal_in[normalindex] = 1;
-            //printf("a:%f,",normal[normalindex]);
-            //normalindex++;
 
-            //texcoords_in[texcoordsindex] = u;
             texcoords_in.push_back(u);
-            //printf("u:%f,",texcoords[texcoordsindex]);
             texcoordsindex++;
             texcoords_in.push_back(v);
-            //texcoords_in[texcoordsindex] = v;
-            //printf("v:%f\n,",texcoords[texcoordsindex]);
             texcoordsindex++;
 
-            //vertex_in[vertexindex] = radius_in * x + dOffsetx;
             vertex_in.push_back(radius_in * x + dOffsetx);
-            //printf("x:%f,",vertex[vertexindex]);
             vertexindex++;
             vertex_in.push_back(radius_in * y);
-            //vertex_in[vertexindex] = radius_in * y;
-            //printf("y:%f,",vertex[vertexindex]);
             vertexindex++;
             vertex_in.push_back(radius_in * z);
-            //vertex_in[vertexindex] = radius_in * z;
-            //printf("z:%f,",vertex[vertexindex]);
             vertexindex++;
-            //vertex_in.push_back(1.0);
-            ////vertex_in[vertexindex] = 1.0;
-            ////printf("a:%f\n",vertex[vertexindex]);
-            //vertexindex++;
         }
     }
 
@@ -137,31 +116,22 @@ void initBufers_in()
         {
             first = (latNum * (longitudeBands + 1)) + longNum;
             second = first + longitudeBands + 1;
-            //printf("first:%d,second:%d\n", first, second);
 
-            //indices_in[indexindex] = first;
             indices_in.push_back(first);
-            //printf("1:%d,",indices[indexindex]);
             indexindex++;
 
-            //indices_in[indexindex] = second;
             indices_in.push_back(second);
-            //printf("2:%d,",indices[indexindex]);
             indexindex++;
 
-            //indices_in[indexindex] = first + 1;
             indices_in.push_back(first+1);
             indexindex++;
 
-            //indices_in[indexindex] = second;
             indices_in.push_back(second);
             indexindex++;
 
-            //indices_in[indexindex] = second + 1;
             indices_in.push_back(second+1);
             indexindex++;
 
-            //indices_in[indexindex] = first + 1;
             indices_in.push_back(first+1);
             indexindex++;
         }
@@ -224,6 +194,7 @@ void Renderer::readSequence(vMeshParameters& params, Sequence& eVmeshSequence) {
     // Normalize objects position and size
     eVmeshSequence.normalize(2, params.getCenter());
 }
+
 Renderer::Renderer()
 {
   nCamIndex = 0;
@@ -238,7 +209,7 @@ Renderer::~Renderer() {
 
 void Renderer::initShader() {
     // Initialize shader A
-    shaderSettingsMipmap = loadShaderSettings(FileTools::findFile("data/parameters_lod.csv"));
+    
     //shaderSettingsHetroObj = loadShaderSettings(FileTools::findFile("data/parameters_hetro.csv"));
     {
         // for regular shaders, load the input mesh
@@ -283,31 +254,182 @@ void Renderer::initShader() {
         v = FileTools::findFile("shaders/vertex_shader_IBL.txt");
         f = FileTools::findFile("shaders/fragment_shader_IBL.txt");
         shaderNodeHetroObj.setShaderSourceFromFile(v, f);
-        
-
+       
         v = FileTools::findFile("shaders/vertex_shader_IBL.txt");
         f = FileTools::findFile("shaders/fragment_shader_IBL.txt");
         shaderNodeHetroSphere.setShaderSourceFromFile(v, f); 
     }
 }
 
-void Renderer::init() 
+void Renderer::Preinit()
 {
-  
-  //params.m_pFile = "D:\\dmlab\\MPEGDataSet\\redandblack\\redandblack_fr%04d.obj";
-  params.m_pFile = "data\\RWT144\\cabbage_model.obj";
+    if (nProgMode == 0)
+    {
+        bPointCloudConversion = false;
+    }
+    else if (nProgMode == 1)
+    {
+        bPointCloudConversion = true;
+    }
+
+
+    for (int nView = 0; nView < nMaxCamCount; nView++)
+    {
+        if (bPointCloudConversion) {
+            FileTools::YUVToGeoTex(strMIVSequencePath, strPostfixGeo, strGeoBitDepth, nView, SceneGeo[nView],
+                shaderNodeHetroObj.nHetroBGImageDimWidth, shaderNodeHetroObj.nHetroBGImageDimHeight);
+        }
+        FileTools::YUVToRGBTex(strMIVSequencePath,
+            strPostfixTex,
+            strTexBitDepth,
+            nView,
+            SceneTex[nView],
+            shaderNodeHetroObj.nHetroBGImageDimWidth, shaderNodeHetroObj.nHetroBGImageDimHeight, bPointCloudConversion);
+
+    }
+
+    for (int i = 0; i < nMaxCamCount; i++)
+    {
+        pCamProp[i] = new CammeraProperty(ViewID[i], ViewRotID[i]);
+    }
+
+    if (bPointCloudConversion) {
+        struct PointCloudAttribute
+        {
+            unsigned char r;
+            unsigned char g;
+            unsigned char b;
+        };
+
+        int nFactorResolution = 4;
+
+        for (int c = 0; c < nMaxCamCount; c++)
+        {
+            std::vector<pcc::point_t> pointCloud;
+            std::vector<PointCloudAttribute> attrpointCloud;
+            std::vector<unsigned char> attrVec;
+            int nRGBIndex = 0;
+            for (int i = 0; i < shaderNodeHetroObj.nHetroBGImageDimHeight; i++)
+            {
+                for (int j = 0; j < shaderNodeHetroObj.nHetroBGImageDimWidth; j++)
+                {
+                    if (i % nFactorResolution == 0 && j % nFactorResolution == 0)
+                    {
+                        float fOutputPoints[4] = {0.0, 0.0, 0.0, 0.0};
+                        pcc::point_t vOutputPoints;
+                        unsigned short pDepth;
+                        float fFOV[2] = { fFieldOfView0, fFieldOfView1 };
+                        float fCamPlane[2] = { fNearPlane, fFarPlane };
+
+                        pDepth = SceneGeo[c].at(i * shaderNodeHetroObj.nHetroBGImageDimWidth + j);
+
+                        if (pDepth > 0) {
+                            pCamProp[c]->ConvertERPToWorldPoints(&pDepth,
+                                j, i, fOutputPoints,
+                                shaderNodeHetroObj.nHetroBGImageDimWidth, shaderNodeHetroObj.nHetroBGImageDimHeight,
+                                16,
+                                fFOV,
+                                fCamPlane);
+
+                            vOutputPoints[0] = fOutputPoints[0];
+                            vOutputPoints[1] = fOutputPoints[1];
+                            vOutputPoints[2] = fOutputPoints[2];
+
+                            pointCloud.push_back(vOutputPoints);
+
+                            PointCloudAttribute pcRGB;
+                            pcRGB.r = SceneTex[c].at(i * shaderNodeHetroObj.nHetroBGImageDimWidth * 3 + j * 3);
+                            pcRGB.g = SceneTex[c].at(i * shaderNodeHetroObj.nHetroBGImageDimWidth * 3 + j * 3 + 1);
+                            pcRGB.b = SceneTex[c].at(i * shaderNodeHetroObj.nHetroBGImageDimWidth * 3 + j * 3 + 2);
+                            attrpointCloud.push_back(pcRGB);
+                        }
+                    }
+                }
+            }
+
+            pcc::PCCPointSet3 OutputPointCloud;
+            OutputPointCloud.resize(pointCloud.size());
+            OutputPointCloud.addColors();
+            for (int i = 0; i < OutputPointCloud.getPointCount(); i++)
+            {
+                OutputPointCloud[i] = pointCloud[i];
+                pcc::Vec3<unsigned char> tempCol;
+                tempCol[0] = attrpointCloud[i].g;
+                tempCol[1] = attrpointCloud[i].b;
+                tempCol[2] = attrpointCloud[i].r;
+                OutputPointCloud.setColor(i, tempCol);
+            }
+            std::string strPointCloudPostfix = "test";
+            std::string strPointCLoudPath = strPointCloudPostfix + std::to_string(c) + ".ply";
+            pcc::ply::PropertyNameMap propNames;
+            propNames.position = { "x", "y", "z" };
+            pcc::ply::write(OutputPointCloud, propNames, 1.0, 0.0, strPointCLoudPath, 1);
+
+            pointCloud.clear();
+            OutputPointCloud.clear();
+            attrVec.clear();
+            attrpointCloud.clear();
+            //std::string TestFileName = "FileDump_";
+            //TestFileName = TestFileName + std::to_string(c) + ".raw";
+            //std::ofstream outFile(TestFileName, std::ios::binary);
+            //outFile.write(reinterpret_cast<char*> (attrVec.data()), attrVec.size());
+            //outFile.close();
+        }
+     
+    }
+
+    for (int i = 0; i < nMaxCamCount; i++)
+    {
+        SceneTex[i].clear();
+        SceneGeo[i].clear();
+
+        delete pCamProp[i];
+        pCamProp[i] = NULL;
+    }
+    //exit(0);
+}
+
+void Renderer::init()
+{
+
+  params.m_pFile = strHeterObjPath;
   params.m_nFrameNumber = MAXFRAME;
   params.m_nFrameIndex = 0;
 
-  std::cout << "Read MIV sequence" << std::endl;
+  //std::cout << "Read MIV sequence" << std::endl;
+  if (nProgMode == 0)
+  {
+      bPointCloudConversion = false;
+  }
+  else if (nProgMode == 1)
+  {
+      bPointCloudConversion = true;
+  }
+
+  
   for (int nView = 0; nView < nMaxCamCount; nView++)
   {
-      FileTools::YUVToRGBTex(strMIVSequencePath, "_100_102_frames_texture_2048x2048_yuv420p", "10le", nView, SceneTex[nView]);
+      //if (bPointCloudConversion) {
+      //    FileTools::YUVToGeoTex(strMIVSequencePath, strPostfixGeo, strGeoBitDepth, nView, SceneGeo[nView],
+      //        shaderNodeHetroObj.nHetroBGImageDimWidth, shaderNodeHetroObj.nHetroBGImageDimHeight);
+      //}
+      FileTools::YUVToRGBTex(strMIVSequencePath, 
+          strPostfixTex, 
+          strTexBitDepth, 
+          nView, 
+          SceneTex[nView], 
+          shaderNodeHetroObj.nHetroBGImageDimWidth, shaderNodeHetroObj.nHetroBGImageDimHeight, bPointCloudConversion);
 
   }
 
+  for (int i = 0; i < nMaxCamCount; i++)
+  {
+      pCamProp[i] = new CammeraProperty(ViewID[i], ViewRotID[i]);
+  }
+
   readSequence(params, eVmeshSequence);
-  initMeshHetroObj(0.17);
+
+  initMeshHetroObj(fObjScale);
   initBufers_in();
 
   eVmeshSequence.setFrameIndex(0);
@@ -315,18 +437,9 @@ void Renderer::init()
 
   initShader();
 
-  //LoadOBJ::load(FileTools::findFile("data/Mesh.obj"), meshHetroObj);
   LoadOBJ::loadHetro(Hetro_vertices[0], Hetro_normals[0], Hetro_texcoords[0], Hetro_indexes[0], meshHetroObj);
-    //LoadOBJ::loadHetro(vertex_in, normal_in, texcoords_in, indices_in, meshSphere);
 
-
-
-  for (int i = 0; i < nMaxCamCount; i++)
-  {
-      pCamProp[i] = new CammeraProperty(ViewID[i], ViewRotID[i]);
-  }
- 
-
+#ifdef IMAGPROCESSINGTEST
   shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/parameters.csv"));
   shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/parameters_lod.csv"));
   shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/parameters_gray.csv"));
@@ -338,14 +451,53 @@ void Renderer::init()
   shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/parameters_CDFMarg.csv"));
   shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/parameters_CDFCond.csv"));
   shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/parameters_Env.csv"));
+#else
+  shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodeRowAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodeColAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodePDFJoint.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodePDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodePDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+#endif
+
+#ifdef IMAGPROCESSINGTEST
+  //shaderNodeHetroSphere.setUniformsFromFile(FileTools::findFile("data/parameters_hetro.csv"));
+  std::string fragSrc;
+  fragSrc += "#version 300 es\n";
+  fragSrc += "precision highp float;\n";
+  fragSrc += "out vec4 outColor;\n";
+  fragSrc += "in vec2 tc; // texture coordinate of the output image in range [0.0, 1.0]\n";
+  fragSrc += "\n";
+  fragSrc += "uniform sampler2D img; // mag_filter=\"LINEAR\" \n";
+  fragSrc += "uniform float aspectX;\n";
+  fragSrc += "uniform float aspectY;\n";
+  fragSrc += "\n";
+  fragSrc += "void main() {\n";
+  fragSrc += "  vec2 tcc = (vec2(aspectX, aspectY) * (tc - vec2(0.5))) + vec2(0.5);\n";
+  fragSrc += "  if(tcc.x >= 0.0 && tcc.x <= 1.0 && tcc.y >= 0.0 && tcc.y <= 1.0) {\n";
+  fragSrc += "    outColor = texture(img, tcc);\n";
+  fragSrc += "  } else {\n";
+  fragSrc += "    discard;\n";
+  fragSrc += "  }\n";
+  fragSrc += "}\n";
+  shaderNodeImageWindowPlane.setShaderSource("", fragSrc);
+
+#else
 
   shaderNodeHetroObj.image_hetro_ = pGeometry->m_Meshes[0].getTextures()[0].data_.data();
+  shaderNodeHetroObj.nHetroImageDimWidth = pGeometry->m_Meshes[0].getTextures()[0].width_;
+  shaderNodeHetroObj.nHetroImageDimHeight = pGeometry->m_Meshes[0].getTextures()[0].height_;
 
   shaderNodeHetroObj.setUniformsFromFile(FileTools::findFile("data/parameters_hetro.csv"));
   shaderNodeHetroObj.setUniformsFromSeq("baseColorTexture");
   shaderNodeHetroObj.setUniformsFromMIVTex();
   
-  //shaderNodeHetroSphere.setUniformsFromFile(FileTools::findFile("data/parameters_hetro.csv"));
+#endif
 
   meshDummyImagePlane.createQuad();
   
@@ -356,45 +508,50 @@ void Renderer::resize(int w, int h) {
   windowHeight = h;
 }
 
+void Renderer::ImageProcessingInBg() {
+
+    shaderNodeInputTex.render(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height/*, shaderSettingsMipmap.wireframe*/, true);
+    shaderNodeInputTexMipmap.render(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height/*, shaderSettingsMipmap.wireframe*/, true);
+
+    shaderNodeGray.setUniformImage("MyTex", shaderNodeInputTex.getRenderTarget(selectedOutput));
+    shaderNodeGray.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height/*, shaderSettingsMipmap.wireframe*/, true);
+
+    shaderNodeRowAvg.setUniformImage("Gray", shaderNodeGray.getRenderTarget(selectedOutput));
+    shaderNodeRowAvg.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height/*, shaderSettingsMipmap.wireframe*/, true);
+
+    shaderNodeColAvg.setUniformImage("RowAvg", shaderNodeRowAvg.getRenderTarget(selectedOutput));
+    shaderNodeColAvg.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height, true);
+
+    shaderNodePDFJoint.setUniformImage("Gray", shaderNodeGray.getRenderTarget(selectedOutput));
+    shaderNodePDFJoint.setUniformImage("ColAvg", shaderNodeColAvg.getRenderTarget(selectedOutput));
+    shaderNodePDFJoint.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height, true);
+
+    shaderNodePDFMarg.setUniformImage("RowAvg", shaderNodeRowAvg.getRenderTarget(selectedOutput));
+    shaderNodePDFMarg.setUniformImage("ColAvg", shaderNodeColAvg.getRenderTarget(selectedOutput));
+    shaderNodePDFMarg.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height, true);
+
+    shaderNodePDFCond.setUniformImage("Gray", shaderNodeGray.getRenderTarget(selectedOutput));
+    shaderNodePDFCond.setUniformImage("RowAvg", shaderNodeRowAvg.getRenderTarget(selectedOutput));
+    shaderNodePDFCond.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height, true);
+
+    shaderNodeCDFMarg.setUniformImage("PDFMarg", shaderNodePDFMarg.getRenderTarget(selectedOutput));
+    shaderNodeCDFMarg.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height, true);
+
+    shaderNodeCDFCond.setUniformImage("PDFCon", shaderNodePDFCond.getRenderTarget(selectedOutput));
+    shaderNodeCDFCond.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height, true);
+
+    shaderNodeEnv.setUniformImage("MyTex", shaderNodeInputTex.getRenderTarget(selectedOutput));
+    shaderNodeEnv.setUniformImage("CDFMarg", shaderNodeCDFMarg.getRenderTarget(selectedOutput));
+    shaderNodeEnv.setUniformImage("PDFJoint", shaderNodePDFJoint.getRenderTarget(selectedOutput));
+    shaderNodeEnv.setUniformImage("CDFCon", shaderNodeCDFCond.getRenderTarget(selectedOutput));
+    shaderNodeEnv.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height, true);
+
+}
 void Renderer::display() {
 
-  // You can manually overwrite the uniform variables, e.g.,
-  shaderNodeInputTex.render(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height/*, shaderSettingsMipmap.wireframe*/, true);
-  shaderNodeInputTexMipmap.render(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height/*, shaderSettingsMipmap.wireframe*/, true);
-  
-  shaderNodeGray.setUniformImage("MyTex", shaderNodeInputTex.getRenderTarget(selectedOutput));
-  shaderNodeGray.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height/*, shaderSettingsMipmap.wireframe*/, true);
+  ImageProcessingInBg(); 
 
-  shaderNodeRowAvg.setUniformImage("Gray", shaderNodeGray.getRenderTarget(selectedOutput));
-  shaderNodeRowAvg.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height/*, shaderSettingsMipmap.wireframe*/, true);
-  
-  shaderNodeColAvg.setUniformImage("RowAvg", shaderNodeRowAvg.getRenderTarget(selectedOutput));
-  shaderNodeColAvg.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height, true);
-
-  shaderNodePDFJoint.setUniformImage("Gray", shaderNodeGray.getRenderTarget(selectedOutput));
-  shaderNodePDFJoint.setUniformImage("ColAvg", shaderNodeColAvg.getRenderTarget(selectedOutput));
-  shaderNodePDFJoint.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height, true);
-
-  shaderNodePDFMarg.setUniformImage("RowAvg", shaderNodeRowAvg.getRenderTarget(selectedOutput));
-  shaderNodePDFMarg.setUniformImage("ColAvg", shaderNodeColAvg.getRenderTarget(selectedOutput));
-  shaderNodePDFMarg.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height, true);
-
-  shaderNodePDFCond.setUniformImage("Gray", shaderNodeGray.getRenderTarget(selectedOutput));
-  shaderNodePDFCond.setUniformImage("RowAvg", shaderNodeRowAvg.getRenderTarget(selectedOutput));
-  shaderNodePDFCond.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height, true);
-
-  shaderNodeCDFMarg.setUniformImage("PDFMarg", shaderNodePDFMarg.getRenderTarget(selectedOutput));
-  shaderNodeCDFMarg.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height, true);
-
-  shaderNodeCDFCond.setUniformImage("PDFCon", shaderNodePDFCond.getRenderTarget(selectedOutput));
-  shaderNodeCDFCond.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height, true);
-
-  shaderNodeEnv.setUniformImage("MyTex", shaderNodeInputTex.getRenderTarget(selectedOutput));
-  shaderNodeEnv.setUniformImage("CDFMarg", shaderNodeCDFMarg.getRenderTarget(selectedOutput));
-  shaderNodeEnv.setUniformImage("PDFJoint", shaderNodePDFJoint.getRenderTarget(selectedOutput));
-  shaderNodeEnv.setUniformImage("CDFCon", shaderNodeCDFCond.getRenderTarget(selectedOutput));
-  shaderNodeEnv.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height, true);
-  
+#ifdef IMAGPROCESSINGTEST
   // compute aspect ratio for shaderNodeImageWindowPlane
   float aspectX = 1.0;
   float aspectY = 1.0;
@@ -408,6 +565,10 @@ void Renderer::display() {
   shaderNodeImageWindowPlane.setUniformFloat("aspectX", aspectX);
   shaderNodeImageWindowPlane.setUniformFloat("aspectY", aspectY);
 
+  shaderNodeImageWindowPlane.setUniformImage("img", shaderNodeEnv.getRenderTarget(selectedOutput));
+  shaderNodeImageWindowPlane.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height, false);
+
+#else
   Matrix projection(4, 4);
   projection.setPerspectiveNew();
   shaderNodeHetroObj.setUniformMatrix("cameraProjection", projection);
@@ -430,22 +591,42 @@ void Renderer::display() {
 
   shaderNodeHetroObj.setUniformImage("envmapDiffuse", shaderNodeEnv.getRenderTarget(selectedOutput));
   shaderNodeHetroObj.setUniformImage("envmapSpecularLevel5", shaderNodeInputTexMipmap.getRenderTarget(selectedOutput));
+  shaderNodeHetroObj.setUniformFloat("fFieldOfViewH", fFieldOfView0);
+  shaderNodeHetroObj.setUniformFloat("fFieldOfViewV",fFieldOfView1);
 
   shaderNodeHetroObj.image_hetro_background =  &SceneTex[nCamIndex].at(0);
+
+  shaderNodeHetroObj.nCurCamIndex = nCamIndex;
+
+  strGeoOutputFile = "v" + std::to_string(nCamIndex) + strPostfixGeo + strGeoBitDepth + ".yuv";
+  strTexOutputFile = "v" + std::to_string(nCamIndex) + strPostfixTex + strTexBitDepth + ".yuv";
+  strEntityOutputFile = "v" + std::to_string(nCamIndex) + strPostfixEntity + ".yuv";
 
   shaderNodeHetroObj.renderHetro(meshHetroObj,
       shaderSettingsMipmap.backgroundColor,
       mPlaneMeshTransform,
-      mPlaneProjTransform, windowWidth, windowHeight, true);
+      mPlaneProjTransform, windowWidth, windowHeight, true, strGeoOutputFile, strTexOutputFile, strEntityOutputFile);
 
-  //shaderNodeHetroObj.renderHetro(meshHetroObj, 
-  //    shaderSettingsMipmap.backgroundColor, 
-  //    mPlaneMeshTransform, 
-  //    mPlaneProjTransform, windowWidth, windowHeight, false);
+  shaderNodeHetroObj.renderHetro(meshHetroObj, 
+      shaderSettingsMipmap.backgroundColor, 
+      mPlaneMeshTransform, 
+      mPlaneProjTransform, windowWidth, windowHeight, false, strGeoOutputFile, strTexOutputFile, strEntityOutputFile);
 
+  if (bAutoCapture) {
+      nCamIndex++;
+      if (nCamIndex == nMaxCamCount)
+      {
+          nCamIndex = 0;
+      }
+  }
+
+#endif
 }
 
 void Renderer::dispose() {
+
+
+
 }
 
 Renderer::ShaderSettings Renderer::loadShaderSettings(const std::string& filename) const

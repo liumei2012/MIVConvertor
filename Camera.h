@@ -233,6 +233,65 @@ struct CammeraProperty
 		_matProj[2] = 0.0; _matProj[6] = 0.0; _matProj[10] = 2 / (zmax - zmin); _matProj[14] = -(zmax + zmin) / 30.0;
 		_matProj[3] = 0.0; _matProj[7] = 0.0; _matProj[11] = 0.0; _matProj[15] = 1.0;
 	}
+
+	void ConvertERPToWorldPoints(
+		unsigned short* pDepth, 
+		int i, int j, 
+		float dOutPoints[4], 
+		/*float mat[16], */
+		float fWidth, float fHeight, 
+		float fbitDepth, 
+		float fFOV[2],
+		float fCamPlane[2])
+	{
+		double dValue = *(pDepth);
+		double dx = (i / fWidth - 0.5);
+		double dy = (j / fHeight - 0.5);
+		double dz = dValue / 65535.0;
+
+		float   _rotY[16];
+		float  _rotX[16];
+		float  _rotZ[16];
+
+		double dCamFactor1 = 1.0 / fCamPlane[0] - 1.0 / fCamPlane[1];
+
+		float fcamdist = 1.0 / (dz * dCamFactor1 + 1.0 / fCamPlane[1]);
+		float fxAngle = dx * fFOV[0];
+		float fyAngle = dy * fFOV[0];
+		float fVerRot[4] = { 0,0,0,0 };
+		float fpointvec[4] = { 0,0,0,0 };
+
+		_rotY[0] = cos(fxAngle);  _rotY[4] = 0.0; _rotY[8] = sin(fxAngle); _rotY[12] = 0.0;
+		_rotY[1] = 0.0;          _rotY[5] = 1.0; _rotY[9] = 0.0; _rotY[13] = 0.0;
+		_rotY[2] = -sin(fxAngle); _rotY[6] = 0.0; _rotY[10] = cos(fxAngle); _rotY[14] = 0.0;
+		_rotY[3] = 0.0; _rotY[7] = 0.0; _rotY[11] = 0.0; _rotY[15] = 1.0;
+
+		_rotX[0] = 1.0; _rotX[4] = 0.0; _rotX[8] = 0.0; _rotX[12] = 0.0;
+		_rotX[1] = 0.0; _rotX[5] = cos(fyAngle); _rotX[9] = -sin(fyAngle); _rotX[13] = 0.0;
+		_rotX[2] = 0.0; _rotX[6] = sin(fyAngle); _rotX[10] = cos(fyAngle); _rotX[14] = 0.0;
+		_rotX[3] = 0.0; _rotX[7] = 0.0; _rotX[11] = 0.0; _rotX[15] = 1.0;
+
+		float fZAxis[3] = { 0, 0, 1 };
+
+		vecMult(fZAxis, _rotX, fVerRot);
+		vecMult(fVerRot, _rotY, fpointvec);
+
+		fpointvec[0] *= fcamdist;
+		fpointvec[1] *= fcamdist;
+		fpointvec[2] *= fcamdist;
+
+		float fDistXZ = sqrt(fpointvec[0] * fpointvec[0] + fpointvec[2] * fpointvec[2]);
+
+		float  fxCam = fDistXZ * cosf(fFOV[1] - fxAngle);
+		float  fyCam = fcamdist * sinf(fyAngle);
+
+		float fPoint[4] = { fxCam  ,fyCam   ,fpointvec[2],1.0 };
+
+		float _mat[16];
+		transpose(_matView, _mat);
+
+		vecMult(fPoint, _mat, dOutPoints);
+	}
 };
 
 CammeraProperty* pCamProp[24];

@@ -209,11 +209,10 @@ bool FileTools::loadAlphaPFM(const std::string& filename, int& width, int& heigh
   return true;
 }
 
-
-
-int FileTools::ReadYUV(std::string pStrFile, char*& buffer, int nFilePosition)
+int FileTools::ReadYUV(std::string pStrFile, char*& buffer, int nFilePosition, int nWidht, int nHeight)
 {
-    int length = 12582912;
+    //int length = 12582912;
+    int length = nWidht * nHeight * 2 + nWidht * nHeight ;
     std::ifstream is(pStrFile, std::ifstream::binary);
     if (is) {
 
@@ -234,73 +233,174 @@ int FileTools::ReadYUV(std::string pStrFile, char*& buffer, int nFilePosition)
     return length;
 }
 
-
-unsigned short usYPlane[IMAGEWIDTH][IMAGEHEIGHT];
-unsigned short usUVPlane[2][IMAGEHEIGHT / 2][IMAGEHEIGHT / 2];
-unsigned short TempShortBuf[IMAGEWIDTH * IMAGEHEIGHT + IMAGEWIDTH / 2 * IMAGEHEIGHT / 2 + IMAGEWIDTH / 2 * IMAGEHEIGHT / 2];
-unsigned char RGB[2048 * 2048 * 3];
-void FileTools::YUVToRGBTex(std::string strYUVPath, std::string strPostfix, std::string strBitDepth, int nNoofView, std::vector<unsigned char>& data)
+void FileTools::YUVToGeoTex(std::string strYUVPath, 
+    std::string strPostfixTex, 
+    std::string strBitDepth, 
+    int nNoofView, 
+    std::vector<unsigned short>& data, 
+    int nTexWidth, int nTexHeight)
 {
     char* buffer = NULL;
-    int nImageWidth = 2048;
-    int nImageHeight = 2048;
+    unsigned short* pShortBuf = NULL;
 
-    data.resize(2048*2048*3);
+    std::string strFilename = strYUVPath + "v" + std::to_string(nNoofView) + strPostfixTex + strBitDepth + ".yuv";
+    int nFileSize = ReadYUV(strFilename, buffer, 0, nTexWidth, nTexHeight);
 
-    //for (int nView = 0; nView < nNoofView; nView++)
-    //{
-        std::string strFilename = strYUVPath + "v" + std::to_string(nNoofView) + strPostfix + strBitDepth + ".yuv";
-        int nFileSize = ReadYUV(strFilename, buffer, 0);
-        memcpy(&TempShortBuf[0], buffer, nFileSize);
+    pShortBuf = (unsigned short*)buffer;
+    data.resize(nTexWidth * nTexHeight);
 
-        for (int nYuv = 0; nYuv < 2; nYuv++) {
+    TextureUpDown(pShortBuf, data, nTexWidth, nTexHeight);
 
-             nImageWidth = nYuv ? 1024 : 2048;
-             nImageHeight = nYuv ? 1024 : 2048;
+    delete buffer;
+    buffer = NULL;
+    pShortBuf = NULL;
 
-            for (int i = 0; i < nImageHeight; i++)
-            {
-                for (int j = 0; j < nImageWidth; j++)
-                {
-                    if (!nYuv)
-                    {
-                        usYPlane[i][j] = TempShortBuf[IMAGEWIDTH * i + j];
-                    }
-                    else
-                    {
-                        usUVPlane[0][i][j] = TempShortBuf[nImageHeight * i + j + IMAGEWIDTH * IMAGEHEIGHT];
-                        usUVPlane[1][i][j] = TempShortBuf[nImageHeight * i + j + (IMAGEWIDTH /2 * IMAGEHEIGHT /2) + IMAGEWIDTH * IMAGEHEIGHT];
-                    }
-                }
-            }
+
+}
+
+void FileTools::TextureUpDown(unsigned short* pShortBuf, std::vector<unsigned short>& data, int nTexWidth, int nTexHeight)
+{
+    std::vector<unsigned short> TempData;
+    TempData.resize(nTexWidth * nTexHeight);
+
+    int nNewIndex = 0;
+
+    for (int j = nTexHeight - 1; j >= 0; j--)
+    {
+        for (int i = 0; i < nTexWidth; i++)
+        {
+            int nindex = (i + j * nTexWidth);
+
+            TempData[nNewIndex] = pShortBuf[nindex];
+            nNewIndex++;
         }
+    }
 
-        nImageWidth = 2048;
-        nImageHeight = 2048;
+    for (int i = 0; i < nNewIndex; i++)
+    {
+        data[i] = TempData[i];
+    }
 
-        int nRGBIndex = 0;
-        int nRGBIndex2 = 0;
+    TempData.clear();
+}
+
+void FileTools::YUVToRGBTex(std::string strYUVPath, 
+    std::string strPostfixTex, 
+    std::string strBitDepth, 
+    int nNoofView, 
+    std::vector<unsigned char>& data, 
+    int nTexWidth, int nTexHeight, bool bPointCloudConversion)
+{
+    const int nWidth = nTexWidth;
+    const int nHeight = nTexHeight;
+
+    int nImageWidth = nWidth;
+    int nImageHeight = nHeight;
+
+    std::vector<unsigned short> usYPlaneVec;
+    std::vector<unsigned short> usUVPlaneVec[2];
+    std::vector<unsigned short> TempShortBufVec;
+    
+    usYPlaneVec.resize(nImageWidth * nImageHeight);
+    usUVPlaneVec[0].resize(nImageWidth / 2 * nImageHeight / 2);
+    usUVPlaneVec[1].resize(nImageWidth / 2 * nImageHeight / 2);
+    TempShortBufVec.resize(nImageWidth * nImageHeight + nImageWidth * nImageHeight / 2);
+
+    char* buffer = NULL;
+    data.resize(nWidth * nHeight * 3);
+
+    std::string strFilename = strYUVPath + "v" + std::to_string(nNoofView) + strPostfixTex + strBitDepth + ".yuv";
+    int nFileSize = ReadYUV(strFilename, buffer, 0, nWidth, nHeight);
+    memcpy(&TempShortBufVec[0], buffer, nFileSize);
+
+
+
+    int nYuv = 0;
+    {
         for (int i = 0; i < nImageHeight; i++)
         {
             for (int j = 0; j < nImageWidth; j++)
             {
-                float Y = float(usYPlane[i][j]) / 1024.0 * 256.0;
-                float U = float(usUVPlane[0][i / 2][j / 2]) / 1024.0 * 256.0;
-                float V = float(usUVPlane[1][i / 2][j / 2]) / 1024.0 * 256.0;
-
-                float fR = 1.164 * (Y - 16.0) + 2.018 * (U - 128.0);
-                float fG = 1.164 * (Y - 16.0) - 0.391 * (U - 128.0) - 0.813 * (V - 128.0);
-                float fB = 1.164 * (Y - 16.0) + 1.596 * (V - 128.0);
-
-                unsigned char R = unsigned char(CLIP(fR));
-                unsigned char G = unsigned char(CLIP(fG));
-                unsigned char B = unsigned char(CLIP(fB));
-
-                data[nRGBIndex++] = B;
-                data[nRGBIndex++] = G;
-                data[nRGBIndex++] = R;
-             
+                usYPlaneVec[i * nWidth + j] = TempShortBufVec[nWidth * i + j];
             }
         }
+
+        nYuv = 1;
+        nImageWidth /= 2;
+        nImageHeight /= 2;
+
+        for (int i = 0; i < nImageHeight; i++)
+        {
+            for (int j = 0; j < nImageWidth; j++)
+            {
+                {
+                    usUVPlaneVec[0][i * nImageWidth + j] = TempShortBufVec[nImageHeight * i + j + nWidth * nHeight];
+                    usUVPlaneVec[1][i * nImageWidth + j] = TempShortBufVec[nImageHeight * i + j + (nWidth /2 * nHeight /2) + nWidth * nHeight];
+                }
+            }
+        }
+    }
+
+
+    unsigned short* pShortBuf = &usYPlaneVec[0];
+    std::vector<unsigned short> usYPlaneVec_;
+    usYPlaneVec_.resize(usYPlaneVec.size());
+    if (bPointCloudConversion) {
+        TextureUpDown(pShortBuf, usYPlaneVec_, nWidth, nHeight);
+    }
+    else {
+        std::copy(usYPlaneVec.begin(), usYPlaneVec.end(), usYPlaneVec_.begin());
+    }
+
+    pShortBuf = &usUVPlaneVec[0][0];
+    std::vector<unsigned short> usUPlaneVec_;
+    usUPlaneVec_.resize(usUVPlaneVec[0].size());
+    if (bPointCloudConversion) {
+        TextureUpDown(pShortBuf, usUPlaneVec_, nImageWidth, nImageHeight);
+    }
+    else {
+        std::copy(usUVPlaneVec[0].begin(), usUVPlaneVec[0].end(), usUPlaneVec_.begin());
+    }
+
+    pShortBuf = &usUVPlaneVec[1][0];
+    std::vector<unsigned short> usVPlaneVec_;
+    usVPlaneVec_.resize(usUVPlaneVec[1].size());
+    if (bPointCloudConversion) {
+        TextureUpDown(pShortBuf, usVPlaneVec_, nImageWidth, nImageHeight);
+    }
+    else {
+        std::copy(usUVPlaneVec[1].begin(), usUVPlaneVec[1].end(), usVPlaneVec_.begin());
+    }
+
+    nImageWidth *= 2;
+    nImageHeight *= 2;
+
+    int nRGBIndex = 0;
+
+    for (int i = 0; i < nImageHeight; i++)
+    {
+        for (int j = 0; j < nImageWidth; j++)
+        {
+            float Y = float(usYPlaneVec_[i * nImageWidth + j]) / 1024.0 * 256.0;
+            float U = float(usUPlaneVec_[i / 2 * nImageWidth / 2 + j / 2]) / 1024.0 * 256.0;
+            float V = float(usVPlaneVec_[i / 2 * nImageWidth / 2 + j / 2]) / 1024.0 * 256.0;
+
+            float fR = 1.164 * (Y - 16.0) + 2.018 * (U - 128.0);
+            float fG = 1.164 * (Y - 16.0) - 0.391 * (U - 128.0) - 0.813 * (V - 128.0);
+            float fB = 1.164 * (Y - 16.0) + 1.596 * (V - 128.0);
+
+            unsigned char R = unsigned char(CLIP(fR));
+            unsigned char G = unsigned char(CLIP(fG));
+            unsigned char B = unsigned char(CLIP(fB));
+
+            data[nRGBIndex++] = B;
+            data[nRGBIndex++] = G;
+            data[nRGBIndex++] = R;
+        }
+    }
+
+    delete buffer;
+    buffer = NULL;
+
 
 }

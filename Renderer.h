@@ -11,6 +11,7 @@
 #include "ReaderObjectMesh.h"
 #include "ReaderSequenceParameters.h"
 #include "vMeshReadSequence.h"
+#include <array>
 
 namespace gsn {
   /*!
@@ -29,14 +30,15 @@ namespace gsn {
 
   public:
     //! initialize all rendering resources
-    void init();
+      void init();
+      void Preinit();
     void initShader();
     //! resize event
     void resize(int w, int h);
 
     //! draw call
     void display();
-
+    void ImageProcessingInBg();
     //! release all rendering resources
     void dispose();
 
@@ -45,15 +47,35 @@ namespace gsn {
     int selectedOutput;
     int nCamIndex;
     int nMaxCamCount = 24;
+    bool bPointCloudConversion = false;
+    int nProgMode = 0;
   public:
     int windowWidth;
     int windowHeight;
 
     std::string strMIVSequencePath ;
-    std::string strJsonPath;
+    std::string strHeterObjPath;
+    std::string strPostfixTex;
+    std::string strPostfixGeo;
+    std::string strPostfixEntity;
+    
+    std::string strTexBitDepth;
+    std::string strGeoBitDepth;
     std::string strOutputPath;
     std::string strOutputType;
-    std::string strHeterObjPath;
+
+    std::string strGeoOutputFile;
+    std::string strTexOutputFile;
+    std::string strEntityOutputFile;
+
+    float fFieldOfView0 = 3.14159;
+    float fFieldOfView1 = 1.5708;
+    float fNearPlane = 0.5;
+    float fFarPlane = 25.0;
+
+    float fObjScale = 0.17;
+
+    bool bAutoCapture = false;
 
     struct ShaderSettings {
       int width = 512;
@@ -96,8 +118,30 @@ namespace gsn {
 
    // bool loadHetro(std::vector<float>& verts, std::vector<float>& normals, std::vector<float>& texCoords, Mesh& mesh);
     void readSequence(vMeshParameters& params, Sequence& eVmeshSequence);
-    //uint8_t* image_hetro = NULL;
+
     std::vector<uint8_t> SceneTex[24];
+    std::vector<unsigned short> SceneGeo[24];
   };
 }
+
+struct Camera {
+    std::string name;
+    std::array<double, 3> position{};
+    std::array<double, 3> rotation{};
+    int depthmap{};
+    int background{};
+    std::array<int, 2> resolution{};
+    std::string projection;
+    std::array<double, 2> focal{};
+    std::array<double, 2> principle_point{};
+    std::array<double, 2> depth_range{};
+    std::array<int, 2> HorRange;
+    std::array<int, 2> VerRange;
+    int bit_depth_color{};
+    int bit_depth_depth{};
+    bool has_invalid_depth{};
+    std::string color_space;
+    std::string depth_color_space;
+};
+
 #endif

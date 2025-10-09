@@ -43,13 +43,20 @@ namespace gsn {
     //! loads a PFM (PortableFloatMap) file with a separate alpha channel PFM file
     static bool loadAlphaPFM(const std::string& filename, int& width, int& height, std::vector<float>& data);
 
-    //static unsigned char RGB[IMAGEWIDTH * IMAGEHEIGHT * 3];
-    //static unsigned short usYPlane[IMAGEWIDTH][IMAGEHEIGHT];
-    //static unsigned short usUVPlane[2][IMAGEHEIGHT / 2][IMAGEHEIGHT / 2];
-    //static unsigned short TempShortBuf[IMAGEWIDTH * IMAGEHEIGHT + IMAGEWIDTH / 2 * IMAGEHEIGHT / 2 + IMAGEWIDTH / 2 * IMAGEHEIGHT / 2];
+    static void TextureUpDown(unsigned short* pShortBuf, std::vector<unsigned short>& data, int nTexWidth, int nTexHeight);
 
-    static int ReadYUV(std::string pStrFile, char*& buffer, int nFilePosition);
-    static void YUVToRGBTex(std::string strYUVPath, std::string strPostfix, std::string strBitDepth, int nNoofView, std::vector<unsigned char>& data);
+    static int ReadYUV(std::string pStrFile, char*& buffer, int nFilePosition, int nWidht, int nHeight);
+    static void YUVToRGBTex(std::string strYUVPath, 
+        std::string strPostfixTex,
+        std::string strBitDepth, 
+        int nNoofView, std::vector<unsigned char>& data, 
+        int nTexWidth, int nTexHeight, bool bPointCloudConversion);
+    static void YUVToGeoTex(std::string strYUVPath, 
+        std::string strPostfixTex, 
+        std::string strBitDepth, 
+        int nNoofView, 
+        std::vector<unsigned short>& data, 
+        int nTexWidth, int nTexHeight);
 
   };
 

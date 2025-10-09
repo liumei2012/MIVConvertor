@@ -677,7 +677,7 @@ void ShaderNode::setUniformsFromSeq(std::string strname) {
     // bind texture
     glBindTexture(GL_TEXTURE_2D, textureID);
     nTexIDSeq = textureID;
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 4096, 4096, 0, GL_RGB, GL_UNSIGNED_BYTE, image_hetro_);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, nHetroImageDimWidth, nHetroImageDimHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, image_hetro_);
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -685,12 +685,21 @@ void ShaderNode::setUniformsFromSeq(std::string strname) {
     setUniformImage(strname, textureID, false);
 }
 
-void ShaderNode::renderHetro( const Mesh& meshHetroObj, const Matrix& background, Matrix& backgroundMeshTransformint, Matrix& backgroundProjTransform, int width, int height, bool renderToFBO)
+void ShaderNode::renderHetro( const Mesh& meshHetroObj, 
+    const Matrix& background, 
+    Matrix& backgroundMeshTransformint, 
+    Matrix& backgroundProjTransform, 
+    int width, int height, 
+    bool renderToFBO,
+    std::string strGeoOutput,
+    std::string strTexOutput,
+    std::string strEntityOutput
+    )
 {
     if (renderToFBO)
     {
-        width = 2048;
-        height = 2048;
+        width = nHetroBGImageDimWidth;
+        height = nHetroBGImageDimHeight;
     }
 
     setUniformInteger("width", width);
@@ -785,7 +794,7 @@ void ShaderNode::renderHetro( const Mesh& meshHetroObj, const Matrix& background
     i = 0;
     {
         setUniformBool("IsBackGroundGuide", false);
-        setUniformBool("IsDepth", true);
+        setUniformBool("IsDepth", bIsDepth);
         setAllUniforms();
 
         const Mesh::ElementArrayBuffer& eb = meshHetroObj.elementArrayBuffers[0];
@@ -797,60 +806,129 @@ void ShaderNode::renderHetro( const Mesh& meshHetroObj, const Matrix& background
     for (int i = 0; i < int(enabledAttribArrayHetro.size()); i++) {
         glDisableVertexAttribArray(enabledAttribArrayHetro[i]);
     }
-
+   
     if (renderToFBO) {
+        if(bCaptureing)
+        {
+            std::vector<unsigned short> pData, pYUVOutput;
+            std::vector<unsigned char>  pEntityColor;
+            unsigned short* pSrc;
+            pData.resize(4 * nHetroBGImageDimWidth * nHetroBGImageDimHeight);
+            pYUVOutput.resize(nHetroBGImageDimWidth * nHetroBGImageDimHeight + nHetroBGImageDimWidth * nHetroBGImageDimHeight / 2);
+            pEntityColor.resize(nHetroBGImageDimWidth * nHetroBGImageDimHeight + nHetroBGImageDimWidth * nHetroBGImageDimHeight / 2);
 
-        if(false) {
-        
-            size_t size = width * height * 4;
+            glReadPixels(0, 0, nHetroBGImageDimWidth, nHetroBGImageDimHeight, GL_RGB, GL_UNSIGNED_SHORT, pData.data());
 
-            //GLfloat* pixels = new GLfloat[size];
-            unsigned char* pixelsWord = new unsigned char[size];
-            //GLfloat* pixelscpy = new GLfloat[size];
-            unsigned char* pixelscpyWord = new unsigned char[size];
-            //glReadPixels(0, 0, width, height, GL_RGBA, GL_FLOAT, pixels);
-            //glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-            glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixelsWord);
+            pSrc = pData.data();
 
+            char strView[64];
+            FILE* pFile = NULL;
+            FILE* pEntityFile = NULL;
 
-            int nTestCount = 0;
-            for (int i = height - 1; i >= 0; i--) {
-                // GLfloat* pTempSrc = pixels + (i * width * 4);
-                unsigned char* pTempSrc = pixelsWord + (i * width * 4);
+            int nEntityID = -1;
 
-                for (int j = 0; j < width; j++, pTempSrc += 4)
+            int nInitValue = 0;
+            if (bIsDepth)
+            {
+                char path[128];
+                std::string strGeoFileFormat = strHetroObjOutputPath + strGeoOutput;
+                pFile = fopen(strGeoFileFormat.data(), "ab+");
+                nInitValue = 0;
+
+                std::string strEntityFileFormat = strHetroObjOutputPath + strEntityOutput;
+                pEntityFile = fopen(strEntityFileFormat.data(), "ab+");
+
+            }
+            else
+            {
+                char path[128];
+                std::string strTexFileFormat = strHetroObjOutputPath + strTexOutput;
+                pFile = fopen(strTexFileFormat.data(), "ab+");
+                nInitValue = 512;
+            }
+
+            unsigned short* pY = &(pYUVOutput[nHetroBGImageDimWidth * nHetroBGImageDimHeight - 1]);
+            unsigned char* EntitypY = &(pEntityColor[nHetroBGImageDimWidth * nHetroBGImageDimHeight - 1]);
+            unsigned short* pU = &(pYUVOutput[nHetroBGImageDimWidth * nHetroBGImageDimHeight + nHetroBGImageDimWidth * nHetroBGImageDimHeight / 4 - 1]);
+            unsigned short* pV = &(pYUVOutput[nHetroBGImageDimWidth * nHetroBGImageDimHeight + nHetroBGImageDimWidth * nHetroBGImageDimHeight / 2 - 1]);
+
+            for (int i = 0; i < nHetroBGImageDimHeight; i++) {
+                unsigned short* pTempSrc = pSrc + ((i + 1) * nHetroBGImageDimWidth * 3 - 1);
+                for (int j = 0; j < nHetroBGImageDimWidth; j++, pTempSrc -= 3)
                 {
-                    unsigned char r = *(pTempSrc);
-                    unsigned char g = *(pTempSrc + 1);
-                    unsigned char b = *(pTempSrc + 2);
-                    unsigned char a = *(pTempSrc + 3);
+                    unsigned short r = *(pTempSrc - 2);
+                    unsigned short g = *(pTempSrc - 1);
+                    unsigned short b = *(pTempSrc);
 
-                    pixelscpyWord[nTestCount] = b; nTestCount++;
-                    pixelscpyWord[nTestCount] = g; nTestCount++;
-                    pixelscpyWord[nTestCount] = r; nTestCount++;
-                    pixelscpyWord[nTestCount] = a; nTestCount++;
+                    float fr = (float)r;
+                    float fg = (float)g;
+                    float fb = (float)b;
+
+                    if (!bIsDepth)
+                    {
+                        unsigned short temp = unsigned short(fr * 0.257 + fg * 0.504 + fb * 0.098);
+                        float fTemp = ((float)temp) / 65535.0 * 1024.0;
+                        if (fTemp == 0.0)
+                        {
+                            nInitValue = 512;
+                        }
+                        else
+                        {
+                            nInitValue = 0;
+                        }
+                        unsigned short RGB10bit = unsigned short(fTemp + nInitValue);
+                        *(pY) = RGB10bit;
+                    }
+
+                    else if (bIsDepth)
+                    {
+                        //*(pY) = unsigned short(fr * 0.257 + fg * 0.504 + fb * 0.098) + nInitValue;
+                        *(pY) = unsigned short(fr) + nInitValue;
+                        if (*(pY) != 0)
+                            *(EntitypY) = 254;
+                        else {
+                            *(EntitypY) = nInitValue;
+                        }
+                    }
+
+                    pY--;
+                    EntitypY--;
+
+                    if (i % 2 == 0 && j % 2 == 0 && !false)
+                    {
+                        unsigned short tempu = unsigned short(fr * (-0.147) + fg * (-0.291) + fb * 0.439) + 32767;
+                        unsigned short tempv = unsigned short(fr * 0.439 + fg * (-0.368) + fb * (-0.071)) + 32767;
+
+                        float fTempu = ((float)tempu) / 65535.0 * 1024.0;
+                        unsigned short RGB10bitu = unsigned short(fTempu);
+                        *(pU--) = RGB10bitu;
+
+                        float fTempv = ((float)tempv) / 65535.0 * 1024.0;
+                        unsigned short RGB10bitv = unsigned short(fTempv);
+                        *(pV--) = RGB10bitv;
+                    }
                 }
             }
 
 
-            FILE* pFile = NULL;
-            char path[128];
-            sprintf(path, "MyTex.raw");
-            pFile = fopen(path, "wb+");
-            fwrite(pixelscpyWord, size * sizeof(unsigned char), 1, pFile);
-            fclose(pFile);
+            fwrite(pYUVOutput.data(), (nHetroBGImageDimWidth * nHetroBGImageDimHeight + nHetroBGImageDimWidth * nHetroBGImageDimHeight / 2) * sizeof(unsigned short), 1, pFile);
+            if (pEntityFile)
+                fwrite(pEntityColor.data(), (nHetroBGImageDimWidth * nHetroBGImageDimHeight + nHetroBGImageDimWidth * nHetroBGImageDimHeight / 2) * sizeof(unsigned char), 1, pEntityFile);
 
-            delete[] pixelsWord;
-            delete[] pixelscpyWord;
-            bCapture = false;
+            fclose(pFile);
+            if (pEntityFile)
+                fclose(pEntityFile);
+
+            pData.clear();
+            pYUVOutput.clear();
+            pEntityColor.clear();
+            bCaptureing = false;
+
         }
  
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
-
-
-
 
      if (!renderToFBO)
      {
@@ -894,7 +972,7 @@ void ShaderNode::renderHetro( const Mesh& meshHetroObj, const Matrix& background
 
         UniformVariable& u = uniforms.at("MIVBackgroundGuide");
         glBindTexture(GL_TEXTURE_2D, u.texVal.texID);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2048, 2048, 0, GL_RGB, GL_UNSIGNED_BYTE, image_hetro_background);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, nHetroBGImageDimWidth, nHetroBGImageDimHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, image_hetro_background);
         setUniformImage("MIVBackgroundGuide", u.texVal.texID, false);
 
         setAllUniforms();

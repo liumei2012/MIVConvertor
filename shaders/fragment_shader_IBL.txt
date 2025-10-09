@@ -161,7 +161,7 @@ void main()
 	
   if(!IsBackGroundGuide)
   {
-	if(false)
+	if(IsDepth)
 	{
 		float camdist = sqrt( (cPosition.x) * (cPosition.x) + (cPosition.y) * (cPosition.y) + (cPosition.z) * (cPosition.z) );
 		float range = (1.0 / (camdist) - 1.0 / 25.0) / 1.96;
@@ -169,6 +169,7 @@ void main()
 	}
 	else
 	{
+	
 		outColor.rgb = renderMesh();
 	}
   

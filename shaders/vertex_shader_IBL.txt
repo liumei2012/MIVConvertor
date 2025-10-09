@@ -14,6 +14,9 @@ uniform mat4 meshTransformTransposedInverse; // transposed inverse of meshTransf
 uniform mat4 uView;
 uniform bool IsBackGroundGuide;
 
+uniform float fFieldOfViewH;
+uniform float fFieldOfViewV;
+
 out vec2 tc; // output texture coordinate of vertex
 out vec3 wfn; // output fragment normal of vertex in world space
 out vec3 vertPos; // output 3D position in world space
@@ -36,15 +39,16 @@ void main(){
 	vec4 vPosition = uView * vertPos4;
 	
 	float fa = sqrt(vPosition.r  * vPosition.r + vPosition.g  * vPosition.g + vPosition.b  * vPosition.b);
-  	float fb = sqrt(vPosition.r  * vPosition.r +  vPosition.b  * vPosition.b);
-  	float fTheta = acos(vPosition.r/fb) ;
-  	float fAlpha = asin(vPosition.g/fa) ;
+	float fTheta = atan(vPosition.r, vPosition.b) ;
+	float fAlpha = asin(vPosition.g/fa) ;
 	
 	vec4 fragPos = vPosition;
-	if(vPosition.r < 0.0){fTheta -= 1.5708; fTheta *= -1.0;fragPos.r = (fTheta / 1.5708  ) ;}
-	else{ fTheta = 1.5708 - fTheta; fragPos.r = (fTheta / 1.5708 ) ;}
-	if(vPosition.g < 0.0){ fragPos.g = (fAlpha/ 1.5708) ;}
-	else{fragPos.g = (fAlpha/ 1.5708) ; }
+
+	fragPos.r = (fTheta / fFieldOfViewH);
+
+	if(vPosition.g < 0.0){ fragPos.g = (fAlpha/ fFieldOfViewV) ;}
+	else{fragPos.g = (fAlpha/ fFieldOfViewV) ; }
+	
 	if(!IsBackGroundGuide)
     {
 		gl_Position = cameraProjection * fragPos;
