@@ -98,6 +98,29 @@ static void glutKeyboard(unsigned char key, int x, int y)
         renderer->shaderNodeHetroObj.bCaptureing = true;
         std::cout << "glutKeyboard event 'c' pressed " << std::endl;
     }
+
+    if (key == 'q')
+    {
+        meshTranformMat.e[13] += 0.1;
+        renderer->shaderNodeHetroObj.setUniformMatrix("meshTransform", meshTranformMat);
+        std::cout << "glutKeyboard event 'a' pressed" << std::endl;
+    }
+
+    if (key == 'e')
+    {
+        meshTranformMat.e[13] -= 0.1;
+        renderer->shaderNodeHetroObj.setUniformMatrix("meshTransform", meshTranformMat);
+        std::cout << "glutKeyboard event 'a' pressed" << std::endl;
+    }
+
+    if (key == 'z')
+    {
+
+    }
+    if (key == 'x')
+    {
+
+    }
 }
 
 static void glutResize(int w, int h)
@@ -138,12 +161,15 @@ void print_manual(int nMode) {
         printf(YELLOW "argv:6 " RESET "Texture bit depth format (e.g., 10-bit → 10le)\n");
         printf(YELLOW "argv:7 " RESET "Depth bit depth format (e.g., 16-bit → 16le)\n");
         printf(YELLOW "argv:8 " RESET "Path to heterogeneous object (obj, ply)\n");
-        printf(YELLOW "argv:9 " RESET "Number of cameras\n");
-        printf(YELLOW "argv:10 " RESET "Texture resolution width for heterogeneous object\n");
-        printf(YELLOW "argv:11 " RESET "Texture resolution height for heterogeneous object\n");
-        printf(YELLOW "argv:12 " RESET "Background texture resolution width\n");
-        printf(YELLOW "argv:13 " RESET "Background texture resolution height\n");
-        printf(YELLOW "argv:11 " RESET "Output folder \n");
+       // printf(YELLOW "argv:9 " RESET "Number of cameras\n");
+       // printf(YELLOW "argv:9 " RESET "Texture resolution width for heterogeneous object\n");
+       // printf(YELLOW "argv:11 " RESET "Texture resolution height for heterogeneous object\n");
+        //printf(YELLOW "argv:12 " RESET "Background texture resolution width\n");
+       // printf(YELLOW "argv:13 " RESET "Background texture resolution height\n");
+        printf(YELLOW "argv:9 " RESET "Output folder \n");
+        printf(YELLOW "argv:10 " RESET "Enable auto-capturing \n");
+        printf(YELLOW "argv:11 " RESET "Activate composition \n");
+        printf(YELLOW "argv:12 " RESET "Specify the path for composited results \n");
 
         printf(GREEN "Keys: " RESET "a, s, d, f → Control heterogeneous object\n");
         printf(GREEN "Keys: " RESET "u, v → Control camera\n");
@@ -151,6 +177,7 @@ void print_manual(int nMode) {
         printf(GREEN "Keys: " RESET "b → Toggle guide background\n");
         printf(GREEN "Keys: " RESET "v → Toggle depth mode\n");
         printf(RED   BOLD "########################## End ###############################\n" RESET);
+        printf(RED   BOLD "Press any key to start. \n" RESET);
 
     }
     else if (nMode == 1)
@@ -257,6 +284,8 @@ int main(int argc, char** argv)
     std::string strFarPlane;
 
     bool bAutoCapture = false;
+    bool bAutoComposition = false;
+    std::string strCompositedRetOutPath;
 
     strMode = argv[1];
     strMIVSequencePath = argv[2];
@@ -267,29 +296,34 @@ int main(int argc, char** argv)
     strBitTexDepth = argv[7];
     strBitGeoDepth = argv[8];
 
-    std::vector<Camera> cameras;
-    JsonParser(strMIVSequenceJsonPath.data(), cameras);
+    //std::vector<Camera> cameras;
 
-    if (argc == 11)
+
+    renderer = new Renderer;
+    print_manual(renderer->nProgMode);
+    getchar();
+
+    JsonParser(strMIVSequenceJsonPath.data(), renderer->cameras);
+
+    if (argc == 10)
     {
         strPointCloudOutPath = argv[9];
-        bAutoCapture = !!atoi(argv[10]);
+        //bAutoCapture = !!atoi(argv[10]); // ???
     }
 
-    if (argc == 12)
+    if (argc == 14)
     {
         strHeterObjPath = argv[9];
         strHeterObjOutPath = argv[10];
         bAutoCapture = !!atoi(argv[11]);
-
+        bAutoComposition = !!atoi(argv[12]);
+        strCompositedRetOutPath = argv[13];
     }
-
-    renderer = new Renderer;
 
     renderer->strMIVSequencePath = strMIVSequencePath;
     renderer->nProgMode = atoi(strMode.data());
 
-    print_manual(renderer->nProgMode);
+
 
     renderer->strPostfixTex = strPostTexFix;
     renderer->strPostfixGeo = strPostGeoFix;
@@ -298,30 +332,33 @@ int main(int argc, char** argv)
     renderer->strTexBitDepth = strBitTexDepth;
     renderer->strGeoBitDepth = strBitGeoDepth;
     renderer->strHeterObjPath = strHeterObjPath;
-    renderer->nMaxCamCount = cameras.size()-1;
+    renderer->nMaxCamCount = renderer->cameras.size()-1;
 
     renderer->shaderNodeHetroObj.nHetroImageDimWidth = atoi(strHetroObjTexWidth.data());
     renderer->shaderNodeHetroObj.nHetroImageDimHeight = atoi(strHetroObjTexHeight.data());
 
-    renderer->shaderNodeHetroObj.nHetroBGImageDimWidth = cameras.at(0).resolution[0];
-    renderer->shaderNodeHetroObj.nHetroBGImageDimHeight = cameras.at(0).resolution[1];
+    renderer->shaderNodeHetroObj.nHetroBGImageDimWidth = renderer->cameras.at(0).resolution[0];
+    renderer->shaderNodeHetroObj.nHetroBGImageDimHeight = renderer->cameras.at(0).resolution[1];
 
     renderer->shaderNodeHetroObj.strHetroObjOutputPath = strHeterObjOutPath;
     renderer->bAutoCapture = bAutoCapture;
 
-    int nHorDegree = -cameras.at(0).HorRange[0] + cameras.at(0).HorRange[1];
+    int nHorDegree = -renderer->cameras.at(0).HorRange[0] + renderer->cameras.at(0).HorRange[1];
     double dRadianHor = (nHorDegree == 360) ? 3.14159 : 1.5708;
     renderer->fFieldOfView0 = dRadianHor;
 
-    int nVerDegree = -cameras.at(0).VerRange[0] + cameras.at(0).VerRange[1];
+    int nVerDegree = -renderer->cameras.at(0).VerRange[0] + renderer->cameras.at(0).VerRange[1];
     double dRadianVer = (nVerDegree == 180) ? 1.5708 : 3.14159;
     renderer->fFieldOfView1 = dRadianVer;
 
     renderer->fNearPlane = atof(strNearPlane.data());
-    renderer->fNearPlane = cameras.at(0).depth_range[0];
+    renderer->fNearPlane = renderer->cameras.at(0).depth_range[0];
 
     renderer->fFarPlane = atof(strFarPlane.data());
-    renderer->fFarPlane = cameras.at(0).depth_range[1];
+    renderer->fFarPlane = renderer->cameras.at(0).depth_range[1];
+
+    renderer->bAutoComposition = bAutoComposition;
+    renderer->strCompositedRetOutPath = strCompositedRetOutPath;
 
     if (renderer->nProgMode == 1)
     {

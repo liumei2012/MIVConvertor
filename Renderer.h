@@ -18,7 +18,26 @@ namespace gsn {
   \class Renderer Renderer.h
   \brief This class defines a renderer.
   */
-    
+    struct Camera {
+        std::string name;
+        std::array<double, 3> position{};
+        std::array<double, 3> rotation{};
+        int depthmap{};
+        int background{};
+        std::array<int, 2> resolution{};
+        std::string projection;
+        std::array<double, 2> focal{};
+        std::array<double, 2> principle_point{};
+        std::array<double, 2> depth_range{};
+        std::array<int, 2> HorRange;
+        std::array<int, 2> VerRange;
+        int bit_depth_color{};
+        int bit_depth_depth{};
+        bool has_invalid_depth{};
+        std::string color_space;
+        std::string depth_color_space;
+    };
+
   class Renderer {
   public:
 
@@ -33,6 +52,16 @@ namespace gsn {
       void init();
       void Preinit();
     void initShader();
+    void ComposeContents(std::string strYUVPath,
+        std::string strYUVOutputPath,
+        std::string strPostfixTex,
+        std::string strPostfixGeo,
+        std::string strPostfixEntity,
+        std::string strBitDepthTex,
+        std::string strBitDepthGeo,
+        std::string strCompositionRetOutPath,
+        /*int nNoofView, */
+        int nTexWidth, int nTexHeight, bool bEnableCompositionTool);
     //! resize event
     void resize(int w, int h);
 
@@ -73,9 +102,12 @@ namespace gsn {
     float fNearPlane = 0.5;
     float fFarPlane = 25.0;
 
-    float fObjScale = 0.17;
+    //float fObjScale = 0.0017;
+    float fObjScale = 1.0;
 
     bool bAutoCapture = false;
+    bool bAutoComposition = false;
+    std::string strCompositedRetOutPath ;
 
     struct ShaderSettings {
       int width = 512;
@@ -121,27 +153,11 @@ namespace gsn {
 
     std::vector<uint8_t> SceneTex[24];
     std::vector<unsigned short> SceneGeo[24];
+    std::vector<Camera> cameras;
+
   };
 }
 
-struct Camera {
-    std::string name;
-    std::array<double, 3> position{};
-    std::array<double, 3> rotation{};
-    int depthmap{};
-    int background{};
-    std::array<int, 2> resolution{};
-    std::string projection;
-    std::array<double, 2> focal{};
-    std::array<double, 2> principle_point{};
-    std::array<double, 2> depth_range{};
-    std::array<int, 2> HorRange;
-    std::array<int, 2> VerRange;
-    int bit_depth_color{};
-    int bit_depth_depth{};
-    bool has_invalid_depth{};
-    std::string color_space;
-    std::string depth_color_space;
-};
+
 
 #endif

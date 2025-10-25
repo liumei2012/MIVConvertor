@@ -227,7 +227,7 @@ int FileTools::ReadYUV(std::string pStrFile, char*& buffer, int nFilePosition, i
     }
     else
     {
-        std::cout << "Fail to read YUV source" << std::endl;
+        //std::cout << "Fail to read YUV source" << std::endl;
     }
 
     return length;
@@ -315,7 +315,7 @@ void FileTools::YUVToRGBTex(std::string strYUVPath,
 
 
 
-    int nYuv = 0;
+
     {
         for (int i = 0; i < nImageHeight; i++)
         {
@@ -325,7 +325,7 @@ void FileTools::YUVToRGBTex(std::string strYUVPath,
             }
         }
 
-        nYuv = 1;
+
         nImageWidth /= 2;
         nImageHeight /= 2;
 

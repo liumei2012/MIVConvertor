@@ -145,7 +145,7 @@ namespace gsn {
     unsigned fbo = 0;
     int fboWidth = -1;
     int fboHeight = -1;
-    bool bCapture = true;
+    //bool bCapture = true;
     void findAllUniforms(const std::string& code);
     void findTexturePara(UniformVariable& u, const std::string& line) const;
     void findRenderOptions(const std::string& code);
