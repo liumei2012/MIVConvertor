@@ -255,9 +255,13 @@ struct CammeraProperty
 
 		double dCamFactor1 = 1.0 / fCamPlane[0] - 1.0 / fCamPlane[1];
 
+		float fov0 = fFOV[0] * 2;
+		float fov1 = fFOV[1] * 2;
+
+
 		float fcamdist = 1.0 / (dz * dCamFactor1 + 1.0 / fCamPlane[1]);
-		float fxAngle = dx * fFOV[0];
-		float fyAngle = dy * fFOV[0];
+		float fxAngle = dx * fov0;
+		float fyAngle = dy * fov1;
 		float fVerRot[4] = { 0,0,0,0 };
 		float fpointvec[4] = { 0,0,0,0 };
 
@@ -282,7 +286,8 @@ struct CammeraProperty
 
 		float fDistXZ = sqrt(fpointvec[0] * fpointvec[0] + fpointvec[2] * fpointvec[2]);
 
-		float  fxCam = fDistXZ * cosf(fFOV[1] - fxAngle);
+		//float  fxCam = fDistXZ * cosf(fFOV[0] - fxAngle);
+		float  fxCam = fpointvec[2] * tanf(fxAngle);
 		float  fyCam = fcamdist * sinf(fyAngle);
 
 		float fPoint[4] = { fxCam  ,fyCam   ,fpointvec[2],1.0 };

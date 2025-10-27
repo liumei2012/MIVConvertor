@@ -652,6 +652,14 @@ void Renderer::Preinit()
 
     for (int i = 0; i <= nMaxCamCount; i++)
     {
+        ViewID[i][0] = cameras.at(i).position[0];
+        ViewID[i][1] = cameras.at(i).position[2];
+        ViewID[i][2] = cameras.at(i).position[1];
+
+        ViewRotID[i][0] = cameras.at(i).rotation[0];
+        ViewRotID[i][1] = cameras.at(i).rotation[1];
+        ViewRotID[i][2] = cameras.at(i).rotation[2];
+
         pCamProp[i] = new CammeraProperty(ViewID[i], ViewRotID[i]);
     }
 
