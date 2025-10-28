@@ -259,6 +259,7 @@ void JsonParser(std::string jsonfile, std::vector<Camera>& cameras)
 
 int main(int argc, char** argv)
 {
+    std::string strSW;
     std::string strMode;
     std::string strMIVSequencePath;
     std::string strMIVSequenceJsonPath;
@@ -287,6 +288,7 @@ int main(int argc, char** argv)
     bool bAutoComposition = false;
     std::string strCompositedRetOutPath;
 
+    strSW = argv[0];
     strMode = argv[1];
     strMIVSequencePath = argv[2];
     strMIVSequenceJsonPath = argv[3];
@@ -296,19 +298,30 @@ int main(int argc, char** argv)
     strBitTexDepth = argv[7];
     strBitGeoDepth = argv[8];
 
-    //std::vector<Camera> cameras;
-
-
     renderer = new Renderer;
     print_manual(renderer->nProgMode);
-    getchar();
-
-    JsonParser(strMIVSequenceJsonPath.data(), renderer->cameras);
+    std::string strCommnd = strSW + " " 
+        + strMode 
+        + " " 
+        + strMIVSequencePath
+        + " " 
+        + strMIVSequenceJsonPath
+        + " " 
+        + strPostTexFix
+        + " " 
+        + strPostGeoFix 
+        + " "
+        + strPostEntityFix
+        + " "
+        + strBitTexDepth
+        + " "
+        + strBitGeoDepth
+        ;
 
     if (argc == 10)
     {
-        strPointCloudOutPath = argv[9];
-        //bAutoCapture = !!atoi(argv[10]); // ???
+        strPointCloudOutPath = argv[9]; 
+        strCommnd = strCommnd + " " + strPointCloudOutPath;
     }
 
     if (argc == 14)
@@ -318,12 +331,21 @@ int main(int argc, char** argv)
         bAutoCapture = !!atoi(argv[11]);
         bAutoComposition = !!atoi(argv[12]);
         strCompositedRetOutPath = argv[13];
+        strCommnd = strCommnd + " " + strHeterObjPath + " " 
+            + strHeterObjOutPath 
+            + " " + std::to_string(bAutoCapture) 
+            + " " + std::to_string(bAutoComposition)
+            + " " + strCompositedRetOutPath;
     }
+
+    std::cout << strCommnd << std::endl;
+
+    getchar();
+
+    JsonParser(strMIVSequenceJsonPath.data(), renderer->cameras);
 
     renderer->strMIVSequencePath = strMIVSequencePath;
     renderer->nProgMode = atoi(strMode.data());
-
-
 
     renderer->strPostfixTex = strPostTexFix;
     renderer->strPostfixGeo = strPostGeoFix;
@@ -333,9 +355,6 @@ int main(int argc, char** argv)
     renderer->strGeoBitDepth = strBitGeoDepth;
     renderer->strHeterObjPath = strHeterObjPath;
     renderer->nMaxCamCount = renderer->cameras.size()-1;
-
-    renderer->shaderNodeHetroObj.nHetroImageDimWidth = atoi(strHetroObjTexWidth.data());
-    renderer->shaderNodeHetroObj.nHetroImageDimHeight = atoi(strHetroObjTexHeight.data());
 
     renderer->shaderNodeHetroObj.nHetroBGImageDimWidth = renderer->cameras.at(0).resolution[0];
     renderer->shaderNodeHetroObj.nHetroBGImageDimHeight = renderer->cameras.at(0).resolution[1];
@@ -360,9 +379,10 @@ int main(int argc, char** argv)
     renderer->bAutoComposition = bAutoComposition;
     renderer->strCompositedRetOutPath = strCompositedRetOutPath;
 
+    renderer->Preinit();
+
     if (renderer->nProgMode == 1)
-    {
-        renderer->Preinit();
+    {       
         delete renderer;
         renderer = NULL;
         exit(0);
@@ -391,6 +411,5 @@ int main(int argc, char** argv)
     renderer->init();
 
     glutTimerFunc(unsigned(20), timer, 0);
-
     glutMainLoop();
 }

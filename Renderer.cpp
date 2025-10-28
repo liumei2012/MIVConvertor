@@ -139,7 +139,7 @@ void initBufers_in()
 }
 
 
-void initMeshHetroObj(float fModelScale)
+void Renderer:: initMeshHetroObj(float fModelScale)
 {
     float fMaxOfBox[3] = { -999999999.9 , -999999999.9 , -999999999.9 };
     float fMinOfBox[3] = { 999999999.9 ,999999999.9 ,999999999.9 };
@@ -171,7 +171,7 @@ void initMeshHetroObj(float fModelScale)
 
         for (int i = 0; i < Tmpvertices.size(); i++)
         {
-            if (fMinOfBox[0] > Tmpvertices[i].position_.x)
+           /* if (fMinOfBox[0] > Tmpvertices[i].position_.x)
             {
                 fMinOfBox[0] = Tmpvertices[i].position_.x;
             }
@@ -199,7 +199,9 @@ void initMeshHetroObj(float fModelScale)
             if (fMaxOfBox[2] <= Tmpvertices[i].position_.z)
             {
                 fMaxOfBox[2] = Tmpvertices[i].position_.z;
-            }
+            }*/
+
+            getBoundingBox(fMaxOfBox, fMinOfBox, Tmpvertices[i].position_.x, Tmpvertices[i].position_.y , Tmpvertices[i].position_.z);
         }
         int nAxis = 0;
         for (int k = 0; k < 3; k++)
@@ -236,41 +238,43 @@ void initMeshHetroObj(float fModelScale)
 
         for (int i = 0; i < Tmpvertices.size(); i++)
         {
-            if (fMinOfBox[0] > Tmpvertices[i].position_.x)
-            {
-                fMinOfBox[0] = Tmpvertices[i].position_.x;
-            }
+            //if (fMinOfBox[0] > Tmpvertices[i].position_.x)
+            //{
+            //    fMinOfBox[0] = Tmpvertices[i].position_.x;
+            //}
 
-            if (fMinOfBox[1] > Tmpvertices[i].position_.y)
-            {
-                fMinOfBox[1] = Tmpvertices[i].position_.y;
-            }
+            //if (fMinOfBox[1] > Tmpvertices[i].position_.y)
+            //{
+            //    fMinOfBox[1] = Tmpvertices[i].position_.y;
+            //}
 
-            if (fMinOfBox[2] > Tmpvertices[i].position_.z)
-            {
-                fMinOfBox[2] = Tmpvertices[i].position_.z;
-            }
+            //if (fMinOfBox[2] > Tmpvertices[i].position_.z)
+            //{
+            //    fMinOfBox[2] = Tmpvertices[i].position_.z;
+            //}
 
-            if (fMaxOfBox[0] <= Tmpvertices[i].position_.x)
-            {
-                fMaxOfBox[0] = Tmpvertices[i].position_.x;
-            }
+            //if (fMaxOfBox[0] <= Tmpvertices[i].position_.x)
+            //{
+            //    fMaxOfBox[0] = Tmpvertices[i].position_.x;
+            //}
 
-            if (fMaxOfBox[1] <= Tmpvertices[i].position_.y)
-            {
-                fMaxOfBox[1] = Tmpvertices[i].position_.y;
-            }
+            //if (fMaxOfBox[1] <= Tmpvertices[i].position_.y)
+            //{
+            //    fMaxOfBox[1] = Tmpvertices[i].position_.y;
+            //}
 
-            if (fMaxOfBox[2] <= Tmpvertices[i].position_.z)
-            {
-                fMaxOfBox[2] = Tmpvertices[i].position_.z;
-            }
+            //if (fMaxOfBox[2] <= Tmpvertices[i].position_.z)
+            //{
+            //    fMaxOfBox[2] = Tmpvertices[i].position_.z;
+            //}
+            getBoundingBox(fMaxOfBox, fMinOfBox, Tmpvertices[i].position_.x, Tmpvertices[i].position_.y, Tmpvertices[i].position_.z);
+
         }
 
         for (int i = 0; i < Tmpvertices.size(); i++)
         {
             Hetro_vertices[j].push_back(Tmpvertices[i].position_.x - fMinOfBox[0]);
-            Hetro_vertices[j].push_back(Tmpvertices[i].position_.y - fMinOfBox[1]);
+            Hetro_vertices[j].push_back(Tmpvertices[i].position_.y - fMinOfBox[1] + fMinOfBoxMIV[1]);
             Hetro_vertices[j].push_back(Tmpvertices[i].position_.z - fMinOfBox[2]);
 
             Hetro_normals[j].push_back(Tmpvertices[i].normal_.x);
@@ -323,8 +327,19 @@ Renderer::~Renderer() {
     int nWidth = shaderNodeHetroObj.nHetroBGImageDimWidth;
     int nHeight = shaderNodeHetroObj.nHetroBGImageDimHeight;
     std::string strOutputPath = shaderNodeHetroObj.strHetroObjOutputPath;
-    ComposeContents(strMIVSequencePath, strOutputPath, strPostfixTex, strPostfixGeo, strPostfixEntity, strTexBitDepth,strGeoBitDepth,strCompositedRetOutPath,nWidth, nHeight,bAutoComposition);
 
+    if (nProgMode == 0) {
+        ComposeContents(strMIVSequencePath, strOutputPath, strPostfixTex, strPostfixGeo, strPostfixEntity, strTexBitDepth, strGeoBitDepth, strCompositedRetOutPath, nWidth, nHeight, bAutoComposition);
+
+        for (int i = 0; i <= nMaxCamCount; i++)
+        {
+            SceneTex[i].clear();
+            SceneGeo[i].clear();
+
+            delete pCamProp[i];
+            pCamProp[i] = NULL;
+        }
+    }
 }
 
 void Renderer::ComposeContents(std::string strYUVPath,
@@ -342,8 +357,6 @@ void Renderer::ComposeContents(std::string strYUVPath,
     {
         return;
     }
-
-
 
     for (int nCam = 0; nCam <= nMaxCamCount; nCam++)
     {
@@ -466,8 +479,6 @@ void Renderer::ComposeContents(std::string strYUVPath,
             buffer = NULL;
         }
 
-
-
         for (int i = 0; i < nTexHeight; i++)
         {
             for (int j = 0; j < nTexWidth; j++)
@@ -568,6 +579,38 @@ void Renderer::ComposeContents(std::string strYUVPath,
     }
 }
 
+void Renderer::getBoundingBox(float fMaxOfBox[3], float fMinOfBox[3], float fx, float fy, float fz)
+{
+    if (fMinOfBox[0] > fx)
+    {
+        fMinOfBox[0] = fx;
+    }
+
+    if (fMinOfBox[1] > fy)
+    {
+        fMinOfBox[1] = fy;
+    }
+
+    if (fMinOfBox[2] > fz)
+    {
+        fMinOfBox[2] = fz;
+    }
+
+    if (fMaxOfBox[0] <= fx)
+    {
+        fMaxOfBox[0] = fx;
+    }
+
+    if (fMaxOfBox[1] <= fy)
+    {
+        fMaxOfBox[1] = fy;
+    }
+
+    if (fMaxOfBox[2] <= fz)
+    {
+        fMaxOfBox[2] = fz;
+    }
+}
 
 void Renderer::initShader() {
     // Initialize shader A
@@ -637,10 +680,10 @@ void Renderer::Preinit()
 
     for (int nView = 0; nView <= nMaxCamCount; nView++)
     {
-        if (bPointCloudConversion) {
+       /* if (bPointCloudConversion) {*/
             FileTools::YUVToGeoTex(strMIVSequencePath, strPostfixGeo, strGeoBitDepth, nView, SceneGeo[nView],
                 shaderNodeHetroObj.nHetroBGImageDimWidth, shaderNodeHetroObj.nHetroBGImageDimHeight);
-        }
+       // }
         FileTools::YUVToRGBTex(strMIVSequencePath,
             strPostfixTex,
             strTexBitDepth,
@@ -663,7 +706,7 @@ void Renderer::Preinit()
         pCamProp[i] = new CammeraProperty(ViewID[i], ViewRotID[i]);
     }
 
-    if (bPointCloudConversion) {
+    //if (bPointCloudConversion) {
         struct PointCloudAttribute
         {
             unsigned char r;
@@ -705,6 +748,8 @@ void Renderer::Preinit()
                             vOutputPoints[1] = fOutputPoints[1];
                             vOutputPoints[2] = fOutputPoints[2];
 
+                            getBoundingBox(fMaxOfBoxMIV, fMinOfBoxMIV, fOutputPoints[0], fOutputPoints[1], fOutputPoints[2]);
+
                             pointCloud.push_back(vOutputPoints);
 
                             PointCloudAttribute pcRGB;
@@ -718,23 +763,25 @@ void Renderer::Preinit()
             }
 
             pcc::PCCPointSet3 OutputPointCloud;
-            OutputPointCloud.resize(pointCloud.size());
-            OutputPointCloud.addColors();
-            for (int i = 0; i < OutputPointCloud.getPointCount(); i++)
-            {
-                OutputPointCloud[i] = pointCloud[i];
-                pcc::Vec3<unsigned char> tempCol;
-                tempCol[0] = attrpointCloud[i].g;
-                tempCol[1] = attrpointCloud[i].b;
-                tempCol[2] = attrpointCloud[i].r;
-                OutputPointCloud.setColor(i, tempCol);
+            if (bPointCloudConversion) {
+                
+                OutputPointCloud.resize(pointCloud.size());
+                OutputPointCloud.addColors();
+                for (int i = 0; i < OutputPointCloud.getPointCount(); i++)
+                {
+                    OutputPointCloud[i] = pointCloud[i];
+                    pcc::Vec3<unsigned char> tempCol;
+                    tempCol[0] = attrpointCloud[i].g;
+                    tempCol[1] = attrpointCloud[i].b;
+                    tempCol[2] = attrpointCloud[i].r;
+                    OutputPointCloud.setColor(i, tempCol);
+                }
+                std::string strPointCloudPostfix = "test";
+                std::string strPointCLoudPath = strPointCloudPostfix + std::to_string(c) + ".ply";
+                pcc::ply::PropertyNameMap propNames;
+                propNames.position = { "x", "y", "z" };
+                pcc::ply::write(OutputPointCloud, propNames, 1.0, 0.0, strPointCLoudPath, 1);
             }
-            std::string strPointCloudPostfix = "test";
-            std::string strPointCLoudPath = strPointCloudPostfix + std::to_string(c) + ".ply";
-            pcc::ply::PropertyNameMap propNames;
-            propNames.position = { "x", "y", "z" };
-            pcc::ply::write(OutputPointCloud, propNames, 1.0, 0.0, strPointCLoudPath, 1);
-
             pointCloud.clear();
             OutputPointCloud.clear();
             attrVec.clear();
@@ -746,7 +793,7 @@ void Renderer::Preinit()
             //outFile.close();
         }
      
-    }
+    //}
 
     for (int i = 0; i <= nMaxCamCount; i++)
     {
@@ -756,7 +803,7 @@ void Renderer::Preinit()
         delete pCamProp[i];
         pCamProp[i] = NULL;
     }
-    //exit(0);
+
 }
 
 void Renderer::init()
@@ -968,7 +1015,6 @@ void Renderer::display() {
   }
 
   shaderNodeHetroObj.setUniformMatrix("uView", mCamMat);
-
   shaderNodeHetroObj.setUniformImage("envmapDiffuse", shaderNodeEnv.getRenderTarget(selectedOutput));
   shaderNodeHetroObj.setUniformImage("envmapSpecularLevel5", shaderNodeInputTexMipmap.getRenderTarget(selectedOutput));
   shaderNodeHetroObj.setUniformFloat("fFieldOfViewH", fFieldOfView0);

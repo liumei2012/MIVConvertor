@@ -52,6 +52,8 @@ namespace gsn {
       void init();
       void Preinit();
     void initShader();
+    void getBoundingBox(float fMax[3], float fMin[3], float fx, float fy, float fz);
+    void initMeshHetroObj(float fModelScale);
     void ComposeContents(std::string strYUVPath,
         std::string strYUVOutputPath,
         std::string strPostfixTex,
@@ -78,6 +80,10 @@ namespace gsn {
     int nMaxCamCount = 24;
     bool bPointCloudConversion = false;
     int nProgMode = 0;
+
+    float fMaxOfBoxMIV[3] = { -999999999.9 , -999999999.9 , -999999999.9 };
+    float fMinOfBoxMIV[3] = { 999999999.9 ,999999999.9 ,999999999.9 };
+
   public:
     int windowWidth;
     int windowHeight;
