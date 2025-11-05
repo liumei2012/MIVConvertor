@@ -7,7 +7,9 @@ This guide explains how to install **OpenGL** along with the **FreeGLUT** and **
 We have included the OpenGL library we are using in glinstall folder.  
 Alternatively, you can install OpenGL manually using the link provided below.
 
----
+https://www.opengl.org/
+http://freeglut.sourceforge.net/
+http://glew.sourceforge.net/
 
 ## Installation Steps
 
@@ -16,10 +18,10 @@ Alternatively, you can install OpenGL manually using the link provided below.
    - You can use the provided library or download it manually.
 
 2. **Header File Path**
-   C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\gl
+   - C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\gl
    **DLL File Path**
-   C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x64
+   - C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x64
    **(Optional) Copy the required .dll files to the following folder if needed:**
-   C:\Windows\System32
+   - C:\Windows\System32
 
    
