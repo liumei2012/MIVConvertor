@@ -18,12 +18,12 @@ To build and run this software, make sure the following tools and libraries are 
 - **OpenGL**
 - **GLEW**
 - **FreeGLUT**
-
+- **GLM**
 ---
 
 ### Notes
 
-- Ensure that the **OpenGL**, **GLEW**, and **FreeGLUT** libraries are correctly linked in your Visual Studio project.  
+- Ensure that the **OpenGL**, **GLEW**, **GLM** and **FreeGLUT** libraries are correctly linked in your Visual Studio project.  
 
 
 # Step 1 OpenGL Installation 
@@ -39,19 +39,29 @@ http://freeglut.sourceforge.net/
 
 http://glew.sourceforge.net/
 
+https://github.com/g-truc/glm
+
 ## Installation Steps
 
-1. **Install OpenGL**
+**Install OpenGL**
    - Make sure to install OpenGL together with the **FreeGLUT** and **GLEW** libraries.
    - You can use the provided library or download it manually.
 
-2. **Header File Path**
-   - C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\gl
-   
-   **DLL File Path**
-   - C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x64
-   
-   **(Optional) Copy the required .dll files to the following folder if needed:**
-   - C:\Windows\System32
+## File Paths
 
-   
+This section provides the default file paths for the OpenGL libraries required for the project.
+
+---
+
+### 1. Header File Path
+```text
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\gl
+
+
+### 2. DLL File Path
+```text
+C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x64
+
+If necessary, copy the required .dll files to the following folder:
+
+C:\Windows\System32
