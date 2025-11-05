@@ -54,14 +54,15 @@ This section provides the default file paths for the OpenGL libraries required f
 ---
 
 ### 1. Header File Path
-```text
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\gl
-```
 
-### 2. DLL File Path
-```text
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\gl
+
+### 2. DLL and Lib File Path
+
 C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x64
 
 If necessary, copy the required .dll files to the following folder:
 
 C:\Windows\System32
+
+---
