@@ -1,5 +1,31 @@
 # MIVConvertor
 
+MIV Converter is a conversion software designed to comply with the MIV Standard v2 for representing heterogeneous objects.
+Its main features include heterogeneous object embedding—particularly geometric information processing of heterogeneous object models—and MIV conversion of point cloud models
+
+## Development Environment
+
+This software is developed in **C++17** using the **Visual Studio 2022** Windows development environment.  
+It relies on **OpenGL** library functions for rendering and visualization.
+
+---
+
+### Required Tools
+
+To build and run this software, make sure the following tools and libraries are installed:
+
+- **Visual Studio 2022**
+- **OpenGL**
+- **GLEW**
+- **FreeGLUT**
+
+---
+
+### Notes
+
+- Ensure that the **OpenGL**, **GLEW**, and **FreeGLUT** libraries are correctly linked in your Visual Studio project.  
+
+
 # Step 1 OpenGL Installation 
 
 This guide explains how to install **OpenGL** along with the **FreeGLUT** and **GLEW** libraries required for the project.
