@@ -36,12 +36,11 @@ static void glutKeyboard(unsigned char key, int x, int y)
         renderer->selectedOutput = int(key) - int('1');
         
     }
-    //float Trs[16];
+
     Matrix meshTranformMat = renderer->shaderNodeHetroObj.uniforms.at("meshTransform").matVal;
 
     if (key == 'a')
     {
-        //
         meshTranformMat.e[12] += 0.1;
         renderer->shaderNodeHetroObj.setUniformMatrix("meshTransform", meshTranformMat);
         std::cout << "glutKeyboard event 'a' pressed" << std::endl;
@@ -69,7 +68,7 @@ static void glutKeyboard(unsigned char key, int x, int y)
     if (key == 'u')
     {
         renderer->nCamIndex++;
-        if (renderer->nCamIndex == renderer->nMaxCamCount)
+        if (renderer->nCamIndex == renderer->nMaxCamCount + 1)
         {
             renderer->nCamIndex = 0;
         }

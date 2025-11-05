@@ -51,6 +51,12 @@ namespace gsn {
         std::string strBitDepth, 
         int nNoofView, std::vector<unsigned char>& data, 
         int nTexWidth, int nTexHeight, bool bPointCloudConversion);
+
+    static void YUVToRGBTexFile(
+        std::string strFile,
+        std::vector<unsigned char>& data,
+        int nTexWidth, int nTexHeight, bool bPointCloudConversion);
+
     static void YUVToGeoTex(std::string strYUVPath, 
         std::string strPostfixTex, 
         std::string strBitDepth, 

@@ -284,11 +284,9 @@ void FileTools::TextureUpDown(unsigned short* pShortBuf, std::vector<unsigned sh
     TempData.clear();
 }
 
-void FileTools::YUVToRGBTex(std::string strYUVPath, 
-    std::string strPostfixTex, 
-    std::string strBitDepth, 
-    int nNoofView, 
-    std::vector<unsigned char>& data, 
+void FileTools::YUVToRGBTexFile(
+    std::string strFile,
+    std::vector<unsigned char>& data,
     int nTexWidth, int nTexHeight, bool bPointCloudConversion)
 {
     const int nWidth = nTexWidth;
@@ -300,7 +298,7 @@ void FileTools::YUVToRGBTex(std::string strYUVPath,
     std::vector<unsigned short> usYPlaneVec;
     std::vector<unsigned short> usUVPlaneVec[2];
     std::vector<unsigned short> TempShortBufVec;
-    
+
     usYPlaneVec.resize(nImageWidth * nImageHeight);
     usUVPlaneVec[0].resize(nImageWidth / 2 * nImageHeight / 2);
     usUVPlaneVec[1].resize(nImageWidth / 2 * nImageHeight / 2);
@@ -309,11 +307,9 @@ void FileTools::YUVToRGBTex(std::string strYUVPath,
     char* buffer = NULL;
     data.resize(nWidth * nHeight * 3);
 
-    std::string strFilename = strYUVPath + "v" + std::to_string(nNoofView) + strPostfixTex + strBitDepth + ".yuv";
-    int nFileSize = ReadYUV(strFilename, buffer, 0, nWidth, nHeight);
+
+    int nFileSize = ReadYUV(strFile, buffer, 0, nWidth, nHeight);
     memcpy(&TempShortBufVec[0], buffer, nFileSize);
-
-
 
 
     {
@@ -334,13 +330,12 @@ void FileTools::YUVToRGBTex(std::string strYUVPath,
             for (int j = 0; j < nImageWidth; j++)
             {
                 {
-                    usUVPlaneVec[0][i * nImageWidth + j] = TempShortBufVec[nImageHeight * i + j + nWidth * nHeight];
-                    usUVPlaneVec[1][i * nImageWidth + j] = TempShortBufVec[nImageHeight * i + j + (nWidth /2 * nHeight /2) + nWidth * nHeight];
+                    usUVPlaneVec[0][i * nImageWidth + j] = TempShortBufVec[nImageWidth * i + j + nWidth * nHeight];
+                    usUVPlaneVec[1][i * nImageWidth + j] = TempShortBufVec[nImageWidth * i + j + (nWidth / 2 * nHeight / 2) + nWidth * nHeight];
                 }
             }
         }
     }
-
 
     unsigned short* pShortBuf = &usYPlaneVec[0];
     std::vector<unsigned short> usYPlaneVec_;
@@ -377,6 +372,7 @@ void FileTools::YUVToRGBTex(std::string strYUVPath,
 
     int nRGBIndex = 0;
 
+
     for (int i = 0; i < nImageHeight; i++)
     {
         for (int j = 0; j < nImageWidth; j++)
@@ -384,6 +380,8 @@ void FileTools::YUVToRGBTex(std::string strYUVPath,
             float Y = float(usYPlaneVec_[i * nImageWidth + j]) / 1024.0 * 256.0;
             float U = float(usUPlaneVec_[i / 2 * nImageWidth / 2 + j / 2]) / 1024.0 * 256.0;
             float V = float(usVPlaneVec_[i / 2 * nImageWidth / 2 + j / 2]) / 1024.0 * 256.0;
+            //float U = 0.0;
+            //float V = 0.0;
 
             float fR = 1.164 * (Y - 16.0) + 2.018 * (U - 128.0);
             float fG = 1.164 * (Y - 16.0) - 0.391 * (U - 128.0) - 0.813 * (V - 128.0);
@@ -401,6 +399,16 @@ void FileTools::YUVToRGBTex(std::string strYUVPath,
 
     delete buffer;
     buffer = NULL;
+}
 
-
+void FileTools::YUVToRGBTex(std::string strYUVPath, 
+    std::string strPostfixTex, 
+    std::string strBitDepth, 
+    int nNoofView, 
+    std::vector<unsigned char>& data, 
+    int nTexWidth, int nTexHeight, bool bPointCloudConversion)
+{
+    std::string strFilename = strYUVPath + "v" + std::to_string(nNoofView) + strPostfixTex + strBitDepth + ".yuv";
+    
+    YUVToRGBTexFile(strFilename, data,nTexWidth, nTexHeight, bPointCloudConversion);
 }

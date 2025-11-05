@@ -61,7 +61,9 @@ struct CammeraProperty
 		float nAt[4] = { 0,0,0,0 };
 		float l;
 		float fHorRot[4] = { 0,0,0,0 };
+		float fHorRotUp[4] = { 0,0,0,0 };
 		float fVerRot[4] = { 0,0,0,0 };
+		float fVerRotUp[4] = { 0,0,0,0 };
 		float u[3];
 		float fRotAngle = 0.0;
 		float fRotAngley = 0.0;
@@ -85,6 +87,13 @@ struct CammeraProperty
 
 		_vecMult(nAt, _rotZ, fVerRot);
 		_vecMult(fVerRot, _rotY, fHorRot);
+
+		_vecMult(_up, _rotZ, fVerRotUp);
+		_vecMult(fVerRotUp, _rotY, fHorRotUp);
+		
+		_up[0] = fHorRotUp[0];
+		_up[1] = fHorRotUp[1];
+		_up[2] = fHorRotUp[2];
 
 		_at[0] = fHorRot[0] + _eye[0];
 		_at[1] = fHorRot[1] + _eye[1];
@@ -168,11 +177,20 @@ struct CammeraProperty
 		l = sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
 		n[0] /= l; n[1] /= l; n[2] /= l;
 
+		float fNormalI = l;
+
 		u[0] = n[1] * _up[2] - n[2] * _up[1];
 		u[1] = n[2] * _up[0] - n[0] * _up[2];
 		u[2] = n[0] * _up[1] - n[1] * _up[0];
 
-		l = sqrt(u[0] * u[0] + u[1] * u[1] + u[2] * u[2]);
+		sqrt(u[0] * u[0] + u[1] * u[1] + u[2] * u[2]);
+
+		float fUpI = sqrt(_up[0] * _up[0] + _up[1] * _up[1] + _up[2] * _up[2]);
+		float fDotProd = n[0] * _up[0] + n[1] * _up[1] + n[2] * _up[2];
+		float fAnglen2_up = std::acosf(fDotProd / (fNormalI * fUpI));
+
+
+
 		u[0] /= l; u[1] /= l; u[2] /= l;
 
 		//printf("up %f,", u[0]);

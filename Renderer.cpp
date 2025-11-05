@@ -35,8 +35,6 @@ std::vector<Vertex> Tmpvertices;
 std::vector<unsigned int> Tmpindexes;
 std::vector<Texture> Tmptextures;
 
-
-
 vMeshParameters params;
 Sequence           eVmeshSequence;
 
@@ -171,38 +169,9 @@ void Renderer:: initMeshHetroObj(float fModelScale)
 
         for (int i = 0; i < Tmpvertices.size(); i++)
         {
-           /* if (fMinOfBox[0] > Tmpvertices[i].position_.x)
-            {
-                fMinOfBox[0] = Tmpvertices[i].position_.x;
-            }
-
-            if (fMinOfBox[1] > Tmpvertices[i].position_.y)
-            {
-                fMinOfBox[1] = Tmpvertices[i].position_.y;
-            }
-
-            if (fMinOfBox[2] > Tmpvertices[i].position_.z)
-            {
-                fMinOfBox[2] = Tmpvertices[i].position_.z;
-            }
-
-            if (fMaxOfBox[0] <= Tmpvertices[i].position_.x)
-            {
-                fMaxOfBox[0] = Tmpvertices[i].position_.x;
-            }
-
-            if (fMaxOfBox[1] <= Tmpvertices[i].position_.y)
-            {
-                fMaxOfBox[1] = Tmpvertices[i].position_.y;
-            }
-
-            if (fMaxOfBox[2] <= Tmpvertices[i].position_.z)
-            {
-                fMaxOfBox[2] = Tmpvertices[i].position_.z;
-            }*/
-
             getBoundingBox(fMaxOfBox, fMinOfBox, Tmpvertices[i].position_.x, Tmpvertices[i].position_.y , Tmpvertices[i].position_.z);
         }
+
         int nAxis = 0;
         for (int k = 0; k < 3; k++)
         {
@@ -238,43 +207,13 @@ void Renderer:: initMeshHetroObj(float fModelScale)
 
         for (int i = 0; i < Tmpvertices.size(); i++)
         {
-            //if (fMinOfBox[0] > Tmpvertices[i].position_.x)
-            //{
-            //    fMinOfBox[0] = Tmpvertices[i].position_.x;
-            //}
-
-            //if (fMinOfBox[1] > Tmpvertices[i].position_.y)
-            //{
-            //    fMinOfBox[1] = Tmpvertices[i].position_.y;
-            //}
-
-            //if (fMinOfBox[2] > Tmpvertices[i].position_.z)
-            //{
-            //    fMinOfBox[2] = Tmpvertices[i].position_.z;
-            //}
-
-            //if (fMaxOfBox[0] <= Tmpvertices[i].position_.x)
-            //{
-            //    fMaxOfBox[0] = Tmpvertices[i].position_.x;
-            //}
-
-            //if (fMaxOfBox[1] <= Tmpvertices[i].position_.y)
-            //{
-            //    fMaxOfBox[1] = Tmpvertices[i].position_.y;
-            //}
-
-            //if (fMaxOfBox[2] <= Tmpvertices[i].position_.z)
-            //{
-            //    fMaxOfBox[2] = Tmpvertices[i].position_.z;
-            //}
             getBoundingBox(fMaxOfBox, fMinOfBox, Tmpvertices[i].position_.x, Tmpvertices[i].position_.y, Tmpvertices[i].position_.z);
-
         }
 
         for (int i = 0; i < Tmpvertices.size(); i++)
         {
             Hetro_vertices[j].push_back(Tmpvertices[i].position_.x - fMinOfBox[0]);
-            Hetro_vertices[j].push_back(Tmpvertices[i].position_.y - fMinOfBox[1] + fMinOfBoxMIV[1]);
+            Hetro_vertices[j].push_back(Tmpvertices[i].position_.y - fMinOfBox[1] /*+ fMinOfBoxMIV[1]*/);
             Hetro_vertices[j].push_back(Tmpvertices[i].position_.z - fMinOfBox[2]);
 
             Hetro_normals[j].push_back(Tmpvertices[i].normal_.x);
@@ -283,7 +222,6 @@ void Renderer:: initMeshHetroObj(float fModelScale)
 
             Hetro_texcoords[j].push_back(Tmpvertices[i].texCoords_.x);
             Hetro_texcoords[j].push_back(1.0 - Tmpvertices[i].texCoords_.y);
-
         }
 
 
@@ -291,10 +229,6 @@ void Renderer:: initMeshHetroObj(float fModelScale)
         {
             Hetro_indexes[j].push_back(Tmpindexes[i]);
         }
-
-        //nTextureDim[0] = Tmptextures[j].width_;
-        //nTextureDim[1] = Tmptextures[j].height_;
-
     }
 }
 
@@ -748,6 +682,7 @@ void Renderer::Preinit()
                             vOutputPoints[1] = fOutputPoints[1];
                             vOutputPoints[2] = fOutputPoints[2];
 
+                            
                             getBoundingBox(fMaxOfBoxMIV, fMinOfBoxMIV, fOutputPoints[0], fOutputPoints[1], fOutputPoints[2]);
 
                             pointCloud.push_back(vOutputPoints);
@@ -867,18 +802,20 @@ void Renderer::init()
   LoadOBJ::loadHetro(Hetro_vertices[0], Hetro_normals[0], Hetro_texcoords[0], Hetro_indexes[0], meshHetroObj);
 
 #ifdef IMAGPROCESSINGTEST
-  shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/parameters.csv"));
-  shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/parameters_lod.csv"));
-  shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/parameters_gray.csv"));
-  shaderNodeRowAvg.setUniformsFromFile(FileTools::findFile("data/parameters_RowAvg.csv"));
-  shaderNodeColAvg.setUniformsFromFile(FileTools::findFile("data/parameters_ColAvg.csv"));
-  shaderNodePDFJoint.setUniformsFromFile(FileTools::findFile("data/parameters_PDFJoint.csv"));
-  shaderNodePDFMarg.setUniformsFromFile(FileTools::findFile("data/parameters_PDFMarg.csv"));
-  shaderNodePDFCond.setUniformsFromFile(FileTools::findFile("data/parameters_PDFCond.csv"));
-  shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/parameters_CDFMarg.csv"));
-  shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/parameters_CDFCond.csv"));
-  shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/parameters_Env.csv"));
+   //shaderNodeInputTex.TestImage = SceneTex[0];
+   shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/parameters.csv"));
+  //shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/parameters_lod.csv"));
+  //shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/parameters_gray.csv"));
+  //shaderNodeRowAvg.setUniformsFromFile(FileTools::findFile("data/parameters_RowAvg.csv"));
+  //shaderNodeColAvg.setUniformsFromFile(FileTools::findFile("data/parameters_ColAvg.csv"));
+  //shaderNodePDFJoint.setUniformsFromFile(FileTools::findFile("data/parameters_PDFJoint.csv"));
+  //shaderNodePDFMarg.setUniformsFromFile(FileTools::findFile("data/parameters_PDFMarg.csv"));
+  //shaderNodePDFCond.setUniformsFromFile(FileTools::findFile("data/parameters_PDFCond.csv"));
+  //shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/parameters_CDFMarg.csv"));
+  //shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/parameters_CDFCond.csv"));
+  //shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/parameters_Env.csv"));
 #else
+  std::string strImageProcessingParaPath = strMIVSequencePath;
   shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
   shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
   shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
@@ -908,6 +845,7 @@ void Renderer::init()
   fragSrc += "  vec2 tcc = (vec2(aspectX, aspectY) * (tc - vec2(0.5))) + vec2(0.5);\n";
   fragSrc += "  if(tcc.x >= 0.0 && tcc.x <= 1.0 && tcc.y >= 0.0 && tcc.y <= 1.0) {\n";
   fragSrc += "    outColor = texture(img, tcc);\n";
+  //fragSrc += "    outColor = vec4(1.0, 0.0, 0.0, 1.0);\n";
   fragSrc += "  } else {\n";
   fragSrc += "    discard;\n";
   fragSrc += "  }\n";
@@ -937,8 +875,8 @@ void Renderer::resize(int w, int h) {
 
 void Renderer::ImageProcessingInBg() {
 
-    shaderNodeInputTex.render(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height/*, shaderSettingsMipmap.wireframe*/, true);
-    shaderNodeInputTexMipmap.render(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height/*, shaderSettingsMipmap.wireframe*/, true);
+    shaderNodeInputTex.render(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, 1024, 512/*, shaderSettingsMipmap.wireframe*/, true);
+   // shaderNodeInputTexMipmap.render(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height/*, shaderSettingsMipmap.wireframe*/, true);
 
     shaderNodeGray.setUniformImage("MyTex", shaderNodeInputTex.getRenderTarget(selectedOutput));
     shaderNodeGray.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height/*, shaderSettingsMipmap.wireframe*/, true);
@@ -982,7 +920,7 @@ void Renderer::display() {
   // compute aspect ratio for shaderNodeImageWindowPlane
   float aspectX = 1.0;
   float aspectY = 1.0;
-  float aspectShader = float(shaderSettingsMipmap.width) / float(shaderSettingsMipmap.height);
+  float aspectShader = float(4096) / float(2048);
   float aspectWindow = float(windowWidth) / float(windowHeight);
   if (aspectShader >= aspectWindow) {
     aspectY = aspectShader / aspectWindow;
@@ -992,10 +930,11 @@ void Renderer::display() {
   shaderNodeImageWindowPlane.setUniformFloat("aspectX", aspectX);
   shaderNodeImageWindowPlane.setUniformFloat("aspectY", aspectY);
 
-  shaderNodeImageWindowPlane.setUniformImage("img", shaderNodeEnv.getRenderTarget(selectedOutput));
-  shaderNodeImageWindowPlane.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, shaderSettingsMipmap.width, shaderSettingsMipmap.height, false);
+  shaderNodeImageWindowPlane.setUniformImage("img", shaderNodeInputTex.getRenderTarget(selectedOutput));
+  shaderNodeImageWindowPlane.renderBgHDRImage(meshDummyImagePlane, shaderSettingsMipmap.backgroundColor, 1024, 512, false);
 
 #else
+    
   Matrix projection(4, 4);
   projection.setPerspectiveNew();
   shaderNodeHetroObj.setUniformMatrix("cameraProjection", projection);

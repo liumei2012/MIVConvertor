@@ -233,7 +233,7 @@ void ShaderNode::setShaderSourceFromFile(const std::string& vertexShaderFilename
     vertexShader = FileTools::readTextFile(vertexShaderFilename);
   }
   string fragmentShader = FileTools::readTextFile(fragmentShaderFilename);
-  setShaderSource(vertexShader, fragmentShader);
+  setShaderSource(vertexShader, fragmentShader); 
 }
 
 void ShaderNode::findTexturePara(UniformVariable& u,  const std::string& line) const{
@@ -1331,58 +1331,41 @@ void ShaderNode::setUniformsFromFile(const std::string& filename) {
           int width = 0;
           int height = 0;
           bool bReadFileFail = FileTools::loadAlphaPFM(imgFileName, width, height, data);
-
+          
           if (bReadFileFail == false)
           {
-              
-             string imgFileName = FileTools::getDirectory(filename) + "/" + name + ".raw";
-             std::vector<float> data;
+             string imgFileName = FileTools::getDirectory(filename) + "/" + name + ".yuv";
              
-             int width = 1024;
-             int height = 512;
+             std::vector<unsigned char> _data;
              
-             data.resize(width * height * 4);
+             int width = 4096;
+             int height = 2048;
+             
+             _data.resize(width * height * 3);
+
              FILE* file = fopen(imgFileName.data(), "rb");
              if (file == NULL)
              {
                  continue;
              }
+             fclose(file);
 
-             fread(&data[0], sizeof(float), width * height * 4, file);
-
-             float* pixelscpy = new float[width * height * 4];
-             int nTestCount = 0;
-             for (int i = height - 1; i >= 0; i--) {
-                 float* pTempSrc = &data[i * width * 4];
-                 for (int j = 0; j < width; j++, pTempSrc += 4)
-                 {
-                     float r = *(pTempSrc);
-                     float g = *(pTempSrc + 1);
-                     float b = *(pTempSrc + 2);
-                     float a = *(pTempSrc + 3);
-
-                     pixelscpy[nTestCount] = r; nTestCount++;
-                     pixelscpy[nTestCount] = g; nTestCount++;
-                     pixelscpy[nTestCount] = b; nTestCount++;
-                     pixelscpy[nTestCount] = a; nTestCount++;
-                 }
-             }
-
+             FileTools::YUVToRGBTexFile(imgFileName, _data, width, height, true);
  
+
              GLuint textureID;
              glGenTextures(1, &textureID);
-
              glBindTexture(GL_TEXTURE_2D, textureID);
-             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, &pixelscpy[0]);
+             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, &_data[0]);
 
              glGenerateMipmap(GL_TEXTURE_2D);
 
              glBindTexture(GL_TEXTURE_2D, 0);
+             setUniformImage("MyTex", textureID, false);
 
-             setUniformImage(name, textureID, false);
+             //delete[] pixelscpy;
+             _data.clear();
 
-             delete[] pixelscpy;
-             fclose(file);
              continue;
           }
 
@@ -1392,16 +1375,11 @@ void ShaderNode::setUniformsFromFile(const std::string& filename) {
 
           // bind texture
           glBindTexture(GL_TEXTURE_2D, textureID);
-
           // specify the 2D texture map
           glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, &data[0]);
-
           glGenerateMipmap(GL_TEXTURE_2D);
-
           glBindTexture(GL_TEXTURE_2D, 0);
-
           setUniformImage(name, textureID, false);
-        
       }
     }
   }
