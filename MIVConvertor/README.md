@@ -43,10 +43,6 @@ https://github.com/g-truc/glm
 
 ## Installation Steps
 
-**Install OpenGL**
-   - Make sure to install OpenGL together with the **FreeGLUT** and **GLEW** libraries.
-   - You can use the provided library or download it manually.
-
 ## File Paths
 
 This section provides the default file paths for the OpenGL libraries required for the project.
@@ -66,3 +62,8 @@ If necessary, copy the required .dll files to the following folder:
 C:\Windows\System32
 
 ---
+
+# Step 2 Project build
+After opening the configured .sln file in Visual Studio and building the project, an executable file will be generated.
+
+# Step 3 Run batch
