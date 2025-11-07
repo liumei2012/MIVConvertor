@@ -15,10 +15,10 @@ It relies on **OpenGL** library functions for rendering and visualization.
 To build and run this software, make sure the following tools and libraries are installed:
 
 - **Visual Studio**
-- **OpenGL**
-- **GLEW**
-- **FreeGLUT**
-- **GLM**
+- **[OpenGL](https://www.opengl.org/)**
+- **[GLEW](http://glew.sourceforge.net/)**
+- **[FreeGLUT](http://freeglut.sourceforge.net/)**
+- **[GLM](https://github.com/g-truc/glm)**
 ---
 
 ### Notes
@@ -31,15 +31,8 @@ To build and run this software, make sure the following tools and libraries are 
 This guide explains how to install **OpenGL** along with the **FreeGLUT** and **GLEW** libraries required for the project.
 
 We have included the OpenGL library we are using in glinstall folder.  
-Alternatively, you can install OpenGL manually using the link provided below.
+Alternatively, you can install OpenGL manually.
 
-https://www.opengl.org/
-
-http://freeglut.sourceforge.net/
-
-http://glew.sourceforge.net/
-
-https://github.com/g-truc/glm
 
 ## Installation Steps
 
@@ -81,7 +74,7 @@ The datasets required by this software are based on the MIV standard and can be 
 - 3D models (.obj) for heterogeneous objects: [Textured Mesh Repository](https://texturedmesh.isti.cnr.it/download)
 
 
-The .bat files serve as example scripts for running the software, providing users with pre-configured program parameters.
+
 
 ## Environment Light Rendering Support
 
@@ -93,14 +86,16 @@ Preprocessed environment light images are stored in the `dataset` folder, sharin
 
 
 
-# Software manual
+## Software manual
 
+### Heterogeneous object to MIV
 ![Heterogeneous object to MIV](./ReadmeImage0.png)
 
+### MIV to Point cloud
 ![MIV to Point cloud](./ReadmeImage1.png)
 
-# Excute batch
-
+## Excute batch
+The .bat files serve as example scripts for running the software, providing users with pre-configured program parameters.
 ```
 .\MIVConvertor.exe 1 ".\data\chess\\" ".\data\chess\Chess.json" "_texture_2048x2048_yuv420p" "_depth_2048x2048_yuv420p" "_entity_2048x2048_yuv420p" "10le" "16le" ".\Output\\"
 ```
