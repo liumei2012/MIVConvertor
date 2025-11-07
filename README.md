@@ -65,6 +65,8 @@ The software package includes the following key components:
 - **experiment** – Experimental scripts and utilities for testing and evaluation  
 - **data** – Contains datasets required by the software, including original MIV image frames such as *chess*, *classroomvideo*, and *museum*.
 
+![Heterogeneous object to MIV](./ExperimentFolder.png)
+
 ## Dataset and 3D Model Resources
 
 The datasets required by this software are based on the MIV standard and can be downloaded from:
@@ -72,8 +74,6 @@ The datasets required by this software are based on the MIV standard and can be 
 - Public MIV datasets: [MPEG Content Database](https://mpeg-miv.org/index.php/content-database-2/)  
 - Restricted datasets (e.g., *museum*): available with permission from the [MPEG Expert Group](https://mpegfs.int-evry.fr/)  
 - 3D models (.obj) for heterogeneous objects: [Textured Mesh Repository](https://texturedmesh.isti.cnr.it/download)
-
-
 
 
 ## Environment Light Rendering Support
@@ -85,7 +85,6 @@ As part of the MIV standard, the software uses the renderer included in the MIV 
 Preprocessed environment light images are stored in the `dataset` folder, sharing filenames with the corresponding `.json` files but using the `.yuv` extension.
 
 
-
 ## Software manual
 
 ### Heterogeneous object to MIV
@@ -94,8 +93,15 @@ Preprocessed environment light images are stored in the `dataset` folder, sharin
 ### MIV to Point cloud
 ![MIV to Point cloud](./ReadmeImage1.png)
 
-## Excute batch
+## Example
 The .bat files serve as example scripts for running the software, providing users with pre-configured program parameters.
+
+### Heterogeneous object to MIV example
+```
+.\MIVConvertor.exe 0 ".\data\classroomvideo\\" ".\data\classroomvideo\ClassroomVideo.json" "_texture_4096x2048_yuv420p" "_depth_4096x2048_yuv420p" "_entity_4096x2048_yuv420p" "10le" "16le" ".\data\RWT121\CHASSEUR.obj" ".\Output\\" 0 0 ".\CompositedResults\\"
+```
+
+### MIV to Point cloud example
 ```
 .\MIVConvertor.exe 1 ".\data\chess\\" ".\data\chess\Chess.json" "_texture_2048x2048_yuv420p" "_depth_2048x2048_yuv420p" "_entity_2048x2048_yuv420p" "10le" "16le" ".\Output\\"
 ```
