@@ -14,7 +14,7 @@ It relies on **OpenGL** library functions for rendering and visualization.
 
 To build and run this software, make sure the following tools and libraries are installed:
 
-- **Visual Studio 2022**
+- **Visual Studio**
 - **OpenGL**
 - **GLEW**
 - **FreeGLUT**
@@ -26,7 +26,7 @@ To build and run this software, make sure the following tools and libraries are 
 - Ensure that the **OpenGL**, **GLEW**, **GLM** and **FreeGLUT** libraries are correctly linked in your Visual Studio project.  
 
 
-# Step 1 OpenGL Installation 
+# OpenGL Installation 
 
 This guide explains how to install **OpenGL** along with the **FreeGLUT** and **GLEW** libraries required for the project.
 
@@ -63,37 +63,43 @@ C:\Windows\System32
 
 ---
 
-# Step 2 Project build
-After opening the configured .sln file in Visual Studio and building the project, an executable file will be generated.
+# Building the Project
+After opening the configured `.sln` file in Visual Studio, build the project to generate the executable file.
 
-# Step 3 Project file organization
-In addition to the source code folder MIVconverter, this software includes an experiment folder for user convenience.
+# Project Structure
+The software package includes the following key components:
+- **MIVconverter** – Source code for the main application  
+- **experiment** – Experimental scripts and utilities for testing and evaluation  
+- **data** – Contains datasets required by the software, including original MIV image frames such as *chess*, *classroomvideo*, and *museum*.
 
-The data folder contains the datasets required by the software, such as the original MIV image frames chest, classroomvideo, and museum. The original data is publicly available according to the MIV standard and can be downloaded from the link below.
+## Dataset and 3D Model Resources
 
-https://mpeg-miv.org/index.php/content-database-2/
+The datasets required by this software are based on the MIV standard and can be downloaded from:
 
-Unreleased datasets, such as museum, require permission from the MPEG expert group and can also be obtained from the link provided.
+- Public MIV datasets: [MPEG Content Database](https://mpeg-miv.org/index.php/content-database-2/)  
+- Restricted datasets (e.g., *museum*): available with permission from the [MPEG Expert Group](https://mpegfs.int-evry.fr/)  
+- 3D models (.obj) for heterogeneous objects: [Textured Mesh Repository](https://texturedmesh.isti.cnr.it/download)
 
-https://mpegfs.int-evry.fr/
-
-3D model (.obj) files representing heterogeneous objects are available from the following link.
-
-https://texturedmesh.isti.cnr.it/download
 
 The .bat files serve as example scripts for running the software, providing users with pre-configured program parameters.
 
-To enable environment light rendering, the software includes several CSV files in the data folder that support GLSL uniform parameters, allowing for efficient GLSL-based image processing such as importance sampling.
+## Environment Light Rendering Support
 
-As this functionality is part of the MIV standard, the software requires the renderer included in the MIV reference software to generate environment map when needed.
+To enable environment light rendering, the software includes several `.csv` files in the `data` folder that define GLSL uniform parameters.  
+These parameters support GLSL-based image processing techniques, such as importance sampling.
 
-To further facilitate environment light rendering, we have preprocessed some environment light images and stored them in the dataset folder. The filenames are identical to the .json files provided in the original data, but with the .yuv extension.
+As part of the MIV standard, the software uses the renderer included in the MIV reference implementation to generate environment maps.  
+Preprocessed environment light images are stored in the `dataset` folder, sharing filenames with the corresponding `.json` files but using the `.yuv` extension.
 
 
-# Step 4 Run prepared batch
 
+# Software manual
 
----
+![Heterogeneous object to MIV](./ReadmeImage0.png)
+
+![MIV to Point cloud](./ReadmeImage1.png)
+
+# Excute batch
 
 ```
 .\MIVConvertor.exe 1 ".\data\chess\\" ".\data\chess\Chess.json" "_texture_2048x2048_yuv420p" "_depth_2048x2048_yuv420p" "_entity_2048x2048_yuv420p" "10le" "16le" ".\Output\\"
