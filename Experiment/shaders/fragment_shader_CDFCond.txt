@@ -1,0 +1,61 @@
+#version 300 es
+precision highp float;
+precision highp int;
+out vec4 outColor; // name of the output variable
+
+in vec2 interpolatedTexCoord;
+
+uniform sampler2D PDFCon;
+
+uniform int width;
+uniform int height;
+uniform int samples; // description="Number of samples" defaultval="256"
+uniform bool debug; // description="Enable debugging of sampling locations" defaultval="false"
+
+uniform int inputImageWidth;
+uniform int inputImageHeight;
+
+
+#define PI 3.1415926535897932384626433832795
+
+
+
+// pixel to textureCoord 
+float p2t(in float p, in int noOfPixels) {
+   return (p + 0.5) / float(noOfPixels);
+}
+
+// round to nearest integer
+int round2Integer(in float val) {
+  return int(val + 0.5);
+}
+
+
+
+
+// convert texture coordinates to pixels
+float t2p(in float t, in int noOfPixels) {
+  return t * float(noOfPixels) - 0.5;
+}
+
+
+
+
+void main() {
+   // CDF Condit inverse
+  float sum = 0.0;
+  int y = round2Integer(t2p(interpolatedTexCoord.y, inputImageHeight));
+  float u = interpolatedTexCoord.x;
+  int x;
+  for(x = 0; x < inputImageWidth; x++) {
+    float gray = texelFetch(PDFCon, ivec2(x, y), 0).r;
+    sum += gray / float(inputImageWidth);
+    if(sum >= u) {
+      break;
+    }
+  }
+  float cdfXInv = p2t(float(x), inputImageWidth);
+  outColor = vec4(cdfXInv, cdfXInv, cdfXInv, 1.0);
+  
+  
+}
