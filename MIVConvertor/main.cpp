@@ -152,23 +152,18 @@ static void timer(int v)
 void print_manual(int nMode) {
     if (nMode == 0) {
         printf(CYAN BOLD "###################### Software Manual ########################\n" RESET);
-        printf(YELLOW "argv:1 " RESET "Program Mode (0: Heterogeneous Object → MIV [OpenGL Viewer], 1: MIV → Point Cloud Conversion, 2: MIV → Mesh Conversion)\n");
-        printf(YELLOW "argv:2 " RESET "Path to MIV Sequence Data\n");
-        printf(YELLOW "argv:3 " RESET "Prefix string for texture files\n");
-        printf(YELLOW "argv:4 " RESET "Prefix string for depth files\n");
-        printf(YELLOW "argv:5 " RESET "Prefix string for entity files (optional)\n");
-        printf(YELLOW "argv:6 " RESET "Texture bit depth format (e.g., 10-bit → 10le)\n");
-        printf(YELLOW "argv:7 " RESET "Depth bit depth format (e.g., 16-bit → 16le)\n");
-        printf(YELLOW "argv:8 " RESET "Path to heterogeneous object (obj, ply)\n");
-       // printf(YELLOW "argv:9 " RESET "Number of cameras\n");
-       // printf(YELLOW "argv:9 " RESET "Texture resolution width for heterogeneous object\n");
-       // printf(YELLOW "argv:11 " RESET "Texture resolution height for heterogeneous object\n");
-        //printf(YELLOW "argv:12 " RESET "Background texture resolution width\n");
-       // printf(YELLOW "argv:13 " RESET "Background texture resolution height\n");
+        printf(YELLOW "argv:1 " RESET "Program Mode (0: Heterogeneous Object → MIV [OpenGL Viewer], 1: MIV → Point Cloud Conversion)\n");
+        printf(YELLOW "argv:2 " RESET "Path to the MIV sequence data(.yuv)\n");
+        printf(YELLOW "argv:3 " RESET "Path to the MIV sequence description file (.json)\n");
+        printf(YELLOW "argv:4 " RESET "Prefix string for texture files(.yuv)\n");
+        printf(YELLOW "argv:5 " RESET "Prefix string for depth files(.yuv)\n");
+        printf(YELLOW "argv:6 " RESET "Texture bit-depth format (e.g., 10-bit → 10le)\n");
+        printf(YELLOW "argv:7 " RESET "Depth bit-depth format (e.g., 16-bit → 16le)\n");
+        printf(YELLOW "argv:8 " RESET "Path to heterogeneous object (.obj)\n");
         printf(YELLOW "argv:9 " RESET "Output folder \n");
-        printf(YELLOW "argv:10 " RESET "Enable auto-capturing \n");
-        printf(YELLOW "argv:11 " RESET "Activate composition \n");
-        printf(YELLOW "argv:12 " RESET "Specify the path for composited results \n");
+        printf(YELLOW "argv:10 " RESET "Enable auto-capturing (0 or 1)\n");
+        printf(YELLOW "argv:11 " RESET "Enable composition (0 or 1)\n");
+        printf(YELLOW "argv:12 " RESET "Path for composited results \n");
 
         printf(GREEN "Keys: " RESET "a, s, d, f → Control heterogeneous object\n");
         printf(GREEN "Keys: " RESET "u, v → Control camera\n");
@@ -182,18 +177,16 @@ void print_manual(int nMode) {
     else if (nMode == 1)
     {
         printf(CYAN BOLD "###################### Software Manual ########################\n" RESET);
-        printf(YELLOW "argv:1 " RESET "Program Mode (0: Heterogeneous Object → MIV [OpenGL Viewer], 1: MIV → Point Cloud, 2: MIV → Mesh)\n");
-        printf(YELLOW "argv:2 " RESET "Path to MIV Sequence Data\n");
-        printf(YELLOW "argv:3 " RESET "Prefix string for texture files\n");
-        printf(YELLOW "argv:4 " RESET "Prefix string for depth files\n");
-        printf(YELLOW "argv:5 " RESET "Prefix string for entity files (optional)\n");
-        printf(YELLOW "argv:6 " RESET "Texture bit depth format (e.g., 10-bit → 10le)\n");
-        printf(YELLOW "argv:7 " RESET "Depth bit depth format (e.g., 16-bit → 16le)\n");
-        printf(YELLOW "argv:8 " RESET "Number of cameras\n");
-        printf(YELLOW "argv:9 " RESET "Background texture resolution width\n");
-        printf(YELLOW "argv:10 " RESET "Background texture resolution height\n");
-        printf(YELLOW "argv:11 " RESET "Output folder path\n");
+        printf(YELLOW "argv:1 " RESET "Program Mode (0: Heterogeneous Object → MIV [OpenGL Viewer], 1: MIV → Point Cloud)\n");
+        printf(YELLOW "argv:2 " RESET "Path to the MIV sequence data(.yuv)\n");
+        printf(YELLOW "argv:3 " RESET "Path to the MIV sequence description file (.json) (.json)\n");
+        printf(YELLOW "argv:4 " RESET "Prefix string for texture files\n");
+        printf(YELLOW "argv:5 " RESET "Prefix string for depth files\n");
+        printf(YELLOW "argv:6 " RESET "Texture bit-depth format (e.g., 10-bit → 10le)\n");
+        printf(YELLOW "argv:7 " RESET "Depth bit-depth format (e.g., 16-bit → 16le)\n");
+        printf(YELLOW "argv:8 " RESET "Output folder path\n");
         printf(RED   BOLD "########################## End ###############################\n" RESET);
+        printf(RED   BOLD "Press any key to start. \n" RESET);
 
     }
 }
@@ -298,7 +291,7 @@ int main(int argc, char** argv)
     strBitGeoDepth = argv[8];
 
     renderer = new Renderer;
-    print_manual(renderer->nProgMode);
+    print_manual(atoi(strMode.data()));
     std::string strCommnd = strSW + " " 
         + strMode 
         + " " 
@@ -377,7 +370,7 @@ int main(int argc, char** argv)
 
     renderer->bAutoComposition = bAutoComposition;
     renderer->strCompositedRetOutPath = strCompositedRetOutPath;
-
+    renderer->strPointCloudOutPath = strPointCloudOutPath;
     renderer->Preinit();
 
     if (renderer->nProgMode == 1)

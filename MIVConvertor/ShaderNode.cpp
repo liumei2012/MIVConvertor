@@ -1334,36 +1334,55 @@ void ShaderNode::setUniformsFromFile(const std::string& filename) {
           
           if (bReadFileFail == false)
           {
-             string imgFileName = FileTools::getDirectory(filename) + "/" + name + ".yuv";
+             string imgFileName = FileTools::getDirectory(filename) + "/" + name + ".raw";
              
-             std::vector<unsigned char> _data;
+             std::vector<float> _data;
              
-             int width = 4096;
-             int height = 2048;
+             int width = 1024;
+             int height = 512;
              
-             _data.resize(width * height * 3);
+             _data.resize(width * height * 4);
 
              FILE* file = fopen(imgFileName.data(), "rb");
              if (file == NULL)
              {
                  continue;
              }
-             fclose(file);
+            // fclose(file);
 
-             FileTools::YUVToRGBTexFile(imgFileName, _data, width, height, true);
+            // FileTools::YUVToRGBTexFile(imgFileName, _data, width, height, true);
  
+             fread(&_data[0], sizeof(GLfloat), width * height * 4, file);
+             GLfloat* pixelscpy = new GLfloat[width * height * 4];
+             int nTestCount = 0;
+             for (int i = height - 1; i >= 0; i--) {
+
+                 GLfloat* pTempSrc = &_data[i * width * 4];
+                 for (int j = 0; j < width; j++, pTempSrc += 4)
+                 {
+                     GLfloat r = *(pTempSrc);
+                     GLfloat g = *(pTempSrc + 1);
+                     GLfloat b = *(pTempSrc + 2);
+                     GLfloat a = *(pTempSrc + 3);
+
+                     pixelscpy[nTestCount] = r; nTestCount++;
+                     pixelscpy[nTestCount] = g; nTestCount++;
+                     pixelscpy[nTestCount] = b; nTestCount++;
+                     pixelscpy[nTestCount] = a; nTestCount++;
+                 }
+             }
 
              GLuint textureID;
              glGenTextures(1, &textureID);
              glBindTexture(GL_TEXTURE_2D, textureID);
-             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, &_data[0]);
+             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, &pixelscpy[0]);
 
              glGenerateMipmap(GL_TEXTURE_2D);
 
              glBindTexture(GL_TEXTURE_2D, 0);
              setUniformImage("MyTex", textureID, false);
 
-             //delete[] pixelscpy;
+             delete[] pixelscpy;
              _data.clear();
 
              continue;

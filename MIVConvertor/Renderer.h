@@ -113,10 +113,11 @@ namespace gsn {
 
     bool bAutoCapture = false;
     bool bAutoComposition = false;
-    std::string strCompositedRetOutPath ;
-
+    std::string strCompositedRetOutPath;
+    std::string strPointCloudOutPath;
+    
     struct ShaderSettings {
-      int width = 512;
+      int width = 1024;
       int height = 512;
       /*bool wireframe = false;*/
       Matrix backgroundColor; 
@@ -147,8 +148,8 @@ namespace gsn {
     Mesh meshHetroObj;
     Mesh meshSphere;
 
-    ShaderSettings shaderSettingsMipmap;
-    ShaderSettings shaderSettingsHetroObj;
+    ShaderSettings shaderSettingsBGImgProc;
+    //ShaderSettings shaderSettingsHetroObj;
    
     ShaderNode shaderNodeImageWindowPlane;
 
