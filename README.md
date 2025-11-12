@@ -52,11 +52,11 @@ C:\Program Files (x86)\Windows Kits\10\Lib\xx.x.xxxxx.x\um\x64
 
 The locations of the .dll files required for OpenGL installation are shown in the image. They can be placed in a local folder or copied to the system folder. 
 
-C:\Windows\System32
+**C:\Windows\System32**
 
 ![dll path0](./dllpath.png)
 
-.\Experiment\
+**.\Experiment\**
 
 ![dll path1](./dllpath2.png)
 
@@ -105,7 +105,7 @@ With the widespread use of point cloud data, this program also provides MIV tran
 ![MIV to Point cloud](./ReadmeImage1.png)
 
 ## Example
-The .bat files serve as example scripts for running the software, providing users with pre-configured program parameters.
+The .bat files serve as example scripts for running the software, providing users with pre-configured program parameters. Users can easily run the program’s default functions by simply double-clicking the executable file in the current folder.
 
 ### Heterogeneous object to MIV example
 ```
