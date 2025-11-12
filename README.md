@@ -86,6 +86,8 @@ Preprocessed environment light images are stored in the `dataset` folder, sharin
 
 
 ## Software manual
+After configuring the experimental files, run the program. The program operates in two modes. When the mode code is set to zero, a simple OpenGL rendering window is launched, displaying the MIV image rendered by the current camera along with the foreign object. The program provides basic keyboard controls that allow the user to move the foreign object within the MIV space. Once the object is positioned satisfactorily, it can be automatically captured by pressing the 'c' key. During automatic capture, the OpenGL window will automatically switch between cameras to record images of the object from multiple angles, collecting both texture and geometric information. Each automatic capture cycle corresponds to one frame, and the program will close automatically upon completion.
+If the user wishes to composite the captured image with the original frame, the auto composition parameter can be set to 1 in the execution parameters. The composited MIV data will then be saved in the compositionResult folder.
 
 ### Heterogeneous object to MIV
 ![Heterogeneous object to MIV](./ReadmeImage0.png)
