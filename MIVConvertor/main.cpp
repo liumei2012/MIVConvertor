@@ -191,6 +191,27 @@ void print_manual(int nMode) {
     }
 }
 
+namespace fs = std::filesystem;
+void CheckDirectory(std::string path)
+{
+    try {
+        if (!fs::exists(path)) {
+            if (fs::create_directories(path)) {
+                std::cout << "Create directory: " << path << std::endl;
+            }
+            else {
+                std::cout << "Fail to create directory." << std::endl;
+            }
+        }
+        else {
+            std::cout << "Directory already exist: " << path << std::endl;
+        }
+    }
+    catch (const fs::filesystem_error& e) {
+        std::cerr << "File system error: " << e.what() << std::endl;
+    }
+}
+
 void JsonParser(std::string jsonfile, std::vector<Camera>& cameras)
 {
     std::ifstream ifs(jsonfile.data());
@@ -289,6 +310,9 @@ int main(int argc, char** argv)
     strPostEntityFix = argv[6];
     strBitTexDepth = argv[7];
     strBitGeoDepth = argv[8];
+
+    CheckDirectory("Output");
+    CheckDirectory("CompositedResults");
 
     renderer = new Renderer;
     print_manual(atoi(strMode.data()));
