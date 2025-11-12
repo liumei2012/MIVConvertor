@@ -94,7 +94,8 @@ static void glutKeyboard(unsigned char key, int x, int y)
     }
     if (key == 'c')
     {
-        renderer->shaderNodeHetroObj.bCaptureing = true;
+        //renderer->shaderNodeHetroObj.bCaptureing = true;
+        renderer->bAutoCapture = true;
         std::cout << "glutKeyboard event 'c' pressed " << std::endl;
     }
 
@@ -297,7 +298,7 @@ int main(int argc, char** argv)
     std::string strNearPlane;
     std::string strFarPlane;
 
-    bool bAutoCapture = false;
+   // bool bAutoCapture = false;
     bool bAutoComposition = false;
     std::string strCompositedRetOutPath;
 
@@ -340,16 +341,16 @@ int main(int argc, char** argv)
         strCommnd = strCommnd + " " + strPointCloudOutPath;
     }
 
-    if (argc == 14)
+    if (argc == 13)
     {
         strHeterObjPath = argv[9];
         strHeterObjOutPath = argv[10];
-        bAutoCapture = !!atoi(argv[11]);
-        bAutoComposition = !!atoi(argv[12]);
-        strCompositedRetOutPath = argv[13];
+        //bAutoCapture = !!atoi(argv[11]);
+        bAutoComposition = !!atoi(argv[11]);
+        strCompositedRetOutPath = argv[12];
         strCommnd = strCommnd + " " + strHeterObjPath + " " 
             + strHeterObjOutPath 
-            + " " + std::to_string(bAutoCapture) 
+            //+ " " + std::to_string(bAutoCapture) 
             + " " + std::to_string(bAutoComposition)
             + " " + strCompositedRetOutPath;
     }
@@ -376,7 +377,7 @@ int main(int argc, char** argv)
     renderer->shaderNodeHetroObj.nHetroBGImageDimHeight = renderer->cameras.at(0).resolution[1];
 
     renderer->shaderNodeHetroObj.strHetroObjOutputPath = strHeterObjOutPath;
-    renderer->bAutoCapture = bAutoCapture;
+    renderer->bAutoCapture = false;
 
     int nHorDegree = -renderer->cameras.at(0).HorRange[0] + renderer->cameras.at(0).HorRange[1];
     double dRadianHor = (nHorDegree == 360) ? 3.14159 : 1.5708;
@@ -408,7 +409,7 @@ int main(int argc, char** argv)
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(0, 0);
 
-    int nWidonwSize[2] = { renderer->shaderNodeHetroObj.nHetroBGImageDimWidth * 0.5, renderer->shaderNodeHetroObj.nHetroBGImageDimHeight * 0.5 };
+    int nWidonwSize[2] = { renderer->shaderNodeHetroObj.nHetroBGImageDimWidth * 0.25, renderer->shaderNodeHetroObj.nHetroBGImageDimHeight * 0.25 };
 
     glutInitWindowSize(nWidonwSize[0], nWidonwSize[1]);
 

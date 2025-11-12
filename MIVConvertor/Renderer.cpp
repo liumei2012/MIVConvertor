@@ -20,6 +20,7 @@
 #include "Camera.h"
 #include "MIVCamInfo.h"
 #include "ply.h"
+
 //#define IMAGPROCESSINGTEST 
 
 using namespace std;
@@ -798,17 +799,29 @@ void Renderer::init()
 
 #ifdef IMAGPROCESSINGTEST
    //shaderNodeInputTex.TestImage = SceneTex[0];
-  shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/parameters.csv"));
-  shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/parameters_lod.csv"));
-  shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/parameters_gray.csv"));
-  shaderNodeRowAvg.setUniformsFromFile(FileTools::findFile("data/parameters_RowAvg.csv"));
-  shaderNodeColAvg.setUniformsFromFile(FileTools::findFile("data/parameters_ColAvg.csv"));
-  shaderNodePDFJoint.setUniformsFromFile(FileTools::findFile("data/parameters_PDFJoint.csv"));
-  shaderNodePDFMarg.setUniformsFromFile(FileTools::findFile("data/parameters_PDFMarg.csv"));
-  shaderNodePDFCond.setUniformsFromFile(FileTools::findFile("data/parameters_PDFCond.csv"));
-  shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/parameters_CDFMarg.csv"));
-  shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/parameters_CDFCond.csv"));
-  shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/parameters_Env.csv"));
+  //shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/parameters.csv"));
+  //shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/parameters_lod.csv"));
+  //shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/parameters_gray.csv"));
+  //shaderNodeRowAvg.setUniformsFromFile(FileTools::findFile("data/parameters_RowAvg.csv"));
+  //shaderNodeColAvg.setUniformsFromFile(FileTools::findFile("data/parameters_ColAvg.csv"));
+  //shaderNodePDFJoint.setUniformsFromFile(FileTools::findFile("data/parameters_PDFJoint.csv"));
+  //shaderNodePDFMarg.setUniformsFromFile(FileTools::findFile("data/parameters_PDFMarg.csv"));
+  //shaderNodePDFCond.setUniformsFromFile(FileTools::findFile("data/parameters_PDFCond.csv"));
+  //shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/parameters_CDFMarg.csv"));
+  //shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/parameters_CDFCond.csv"));
+  //shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/parameters_Env.csv"));
+  //std::string strImageProcessingParaPath = strMIVSequencePath;
+  //shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  //shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  //shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  //shaderNodeRowAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  //shaderNodeColAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  //shaderNodePDFJoint.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  //shaderNodePDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  //shaderNodePDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  //shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  //shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  //shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
 #else
   std::string strImageProcessingParaPath = strMIVSequencePath;
   shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
