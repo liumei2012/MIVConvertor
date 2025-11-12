@@ -93,19 +93,22 @@ Preprocessed environment light images are stored in the `dataset` folder, sharin
 
 
 ## Software manual
-After configuring the experimental files, run the program. The program operates in two modes. When the mode code is set to zero, a simple OpenGL rendering window is launched, displaying the MIV image rendered by the current camera along with the foreign object. The program provides basic keyboard controls that allow the user to move the foreign object within the MIV space. Once the object is positioned satisfactorily, it can be automatically captured by pressing the 'c' key. During automatic capture, the OpenGL window will automatically switch between cameras to record images of the object from multiple angles, collecting both texture and geometric information. Each automatic capture cycle corresponds to one frame, and the program will close automatically upon completion.
-If the user wishes to composite the captured image with the original frame, the auto composition parameter can be set to 1 in the execution parameters. The composited MIV data will then be saved in the compositionResult folder.
 
 ### Heterogeneous object to MIV
 ![Heterogeneous object to MIV](./ReadmeImage0.png)
 
-With the widespread use of point cloud data, this program also provides MIV transformation functionality for point cloud datasets. Setting the mode code to 1 in the parameters enables the program to read the original MIV data and perform point cloud reconstruction. Unlike mode code 0, this mode does not launch an OpenGL window for scene rendering or composition. Therefore, only the output path (the Output folder) needs to be specified in the parameters, and the composited results folder (CompositedResults folder) does not need to be defined.
+After configuring the experimental files, run the program. The program operates in two modes. When the mode code is set to zero, a simple OpenGL rendering window is launched, displaying the MIV image rendered by the current camera along with the foreign object. The program provides basic keyboard controls that allow the user to move the foreign object within the MIV space. Once the object is positioned satisfactorily, it can be automatically captured by pressing the 'c' key. During automatic capture, the OpenGL window will automatically switch between cameras to record images of the object from multiple angles, collecting both texture and geometric information. Each automatic capture cycle corresponds to one frame, and the program will close automatically upon completion.
+If the user wishes to composite the captured image with the original frame, the auto composition parameter can be set to 1 in the execution parameters. The composited MIV data will then be saved in the compositionResult folder.
+
 
 ### MIV to Point cloud
 ![MIV to Point cloud](./ReadmeImage1.png)
 
+With the widespread use of point cloud data, this program also provides MIV transformation functionality for point cloud datasets. Setting the mode code to 1 in the parameters enables the program to read the original MIV data and perform point cloud reconstruction. Unlike mode code 0, this mode does not launch an OpenGL window for scene rendering or composition. Therefore, only the output path (the Output folder) needs to be specified in the parameters, and the composited results folder (CompositedResults folder) does not need to be defined.
+
+
 ## Example
-The .bat files serve as example scripts for running the software, providing users with pre-configured program parameters. Users can easily run the program’s default functions by simply double-clicking the executable file in the current folder.
+The .bat files serve as example scripts for running the software, providing users with pre-configured program parameters. Users can easily run the program’s default functions by simply double-clicking the executable .bat file in the local folder.
 
 ### Heterogeneous object to MIV example
 ```
