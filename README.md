@@ -50,9 +50,16 @@ C:\Program Files (x86)\Windows Kits\10\Include\xx.x.xxxxx.x\um\gl
 
 C:\Program Files (x86)\Windows Kits\10\Lib\xx.x.xxxxx.x\um\x64
 
-If necessary, copy the required .dll files to the following folder:
+The locations of the .dll files required for OpenGL installation are shown in the image. They can be placed in a local folder or copied to the system folder. 
 
 C:\Windows\System32
+
+![dll path0](./dllpath.png)
+
+.\Experiment\
+
+![dll path1](./dllpath2.png)
+
 
 ---
 
@@ -72,7 +79,7 @@ The software package includes the following key components:
 The datasets required by this software are based on the MIV standard and can be downloaded from:
 
 - Public MIV datasets: [MPEG Content Database](https://mpeg-miv.org/index.php/content-database-2/)  
-- Restricted datasets (e.g., *museum*): available with permission from the [MPEG Expert Group](https://mpegfs.int-evry.fr/)  
+- Restricted datasets (e.g., *museum*, *loot*, *redandblack*, *longdress*): available with permission from the [MPEG Expert Group](https://mpegfs.int-evry.fr/)  
 - 3D models (.obj) for heterogeneous objects: [Textured Mesh Repository](https://texturedmesh.isti.cnr.it/download)
 
 
@@ -91,6 +98,8 @@ If the user wishes to composite the captured image with the original frame, the 
 
 ### Heterogeneous object to MIV
 ![Heterogeneous object to MIV](./ReadmeImage0.png)
+
+With the widespread use of point cloud data, this program also provides MIV transformation functionality for point cloud datasets. Setting the mode code to 1 in the parameters enables the program to read the original MIV data and perform point cloud reconstruction. Unlike mode code 0, this mode does not launch an OpenGL window for scene rendering or composition. Therefore, only the output path (the Output folder) needs to be specified in the parameters, and the composited results folder (CompositedResults folder) does not need to be defined.
 
 ### MIV to Point cloud
 ![MIV to Point cloud](./ReadmeImage1.png)
