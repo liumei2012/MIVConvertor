@@ -1,1 +1,1 @@
-.\MIVConvertor.exe 0 ".\data\Museum\\" ".\data\Museum\B.json" "_100_102_frames_texture_2048x2048_yuv420p" "_100_102_frames_depth_2048x2048_yuv420p" "_100_102_frames_entity_2048x2048_yuv420p" "10le" "16le" ".\data\RWT121\CHASSEUR.obj" ".\Output\\" 0 0 ".\CompositedResults\\"
+.\MIVConvertor.exe 0 ".\data\Museum\\" ".\data\Museum\B.json" "_100_102_frames_texture_2048x2048_yuv420p" "_100_102_frames_depth_2048x2048_yuv420p" "_100_102_frames_entity_2048x2048_yuv420p" "10le" "16le" ".\data\RWT121\CHASSEUR.obj" ".\Output\\" 0 ".\CompositedResults\\"
