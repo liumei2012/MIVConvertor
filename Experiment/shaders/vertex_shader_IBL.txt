@@ -21,10 +21,11 @@ out vec2 tc; // output texture coordinate of vertex
 out vec3 wfn; // output fragment normal of vertex in world space
 out vec3 vertPos; // output 3D position in world space
 out vec3 cPosition; // camera frame
+
+
 void main(){
     tc = texcoord;
 	
-    wfn = vec3(meshTransformTransposedInverse * vec4(normal, 0.0));
     vec4 vertPos4;
 	if(!IsBackGroundGuide)
 	{
@@ -49,6 +50,9 @@ void main(){
 	if(vPosition.g < 0.0){ fragPos.g = (fAlpha/ fFieldOfViewV) ;}
 	else{fragPos.g = (fAlpha/ fFieldOfViewV) ; }
 	
+	//mat4 mNormal = transpose(inverse(uView * meshTransform));
+	//wfn = vec3(mNormal * vec4(normal, 0.0)).xyz;
+	wfn = normal;
 	if(!IsBackGroundGuide)
     {
 		gl_Position = cameraProjection * fragPos;
@@ -56,6 +60,8 @@ void main(){
 	else{
 		gl_Position = cameraProjection * vPosition;
 	}
+	
+
 	
 	cPosition = vec3(vPosition.r,vPosition.g,vPosition.b );
 }

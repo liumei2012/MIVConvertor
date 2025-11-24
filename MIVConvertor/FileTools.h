@@ -7,9 +7,6 @@
 #include <vector>
 #include <iostream> 
 
-#define IMAGEWIDTH 2048
-#define IMAGEHEIGHT 2048
-
 namespace gsn {
   /*!
   \class FileTools FileToolss.h

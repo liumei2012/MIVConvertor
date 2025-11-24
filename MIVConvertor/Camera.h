@@ -165,15 +165,6 @@ struct CammeraProperty
 		n[1] = _at[1] - _eye[1];
 		n[2] = _at[2] - _eye[2];
 
-		//printf("eye %f,", _eye[0]);
-		//printf("%f,", _eye[1]);
-		//printf("%f\n", _eye[2]);
-
-		//printf("at %f,", _at[0]);
-		//printf("%f,", _at[1]);
-		//printf("%f\n", _at[2]);
-
-
 		l = sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
 		n[0] /= l; n[1] /= l; n[2] /= l;
 
@@ -189,13 +180,7 @@ struct CammeraProperty
 		float fDotProd = n[0] * _up[0] + n[1] * _up[1] + n[2] * _up[2];
 		float fAnglen2_up = std::acosf(fDotProd / (fNormalI * fUpI));
 
-
-
 		u[0] /= l; u[1] /= l; u[2] /= l;
-
-		//printf("up %f,", u[0]);
-		//printf("%f,", u[1]);
-		//printf("%f\n", u[2]);
 
 		v[0] = u[1] * n[2] - u[2] * n[1];
 		v[1] = u[2] * n[0] - u[0] * n[2];
@@ -215,24 +200,8 @@ struct CammeraProperty
 		_matB[3] = 0.0; _matB[7] = 0.0; _matB[11] = 0.0; _matB[15] = 1.0;
 		_matMult(_matView, _matA, _matB);
 
-		//for (int i = 0; i < 4; i += 1)
-		//{
-		//	printf("%f,", _matView[i]);
-		//	printf("%f,", _matView[i + 4]);
-		//	printf("%f,", _matView[i + 8]);
-		//	printf("%f\n", _matView[i + 12]);
-		//}
-
 		float _matInTrans[16];
 		transpose(_matView, _matInTrans);
-
-		//for (int i = 0; i < 4; i += 1)
-		//{
-		//	printf("%f,", _matInTrans[i]);
-		//	printf("%f,", _matInTrans[i + 4]);
-		//	printf("%f,", _matInTrans[i + 8]);
-		//	printf("%f\n", _matInTrans[i + 12]);
-		//}
 	}
 
 
