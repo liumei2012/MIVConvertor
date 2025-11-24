@@ -70,7 +70,7 @@ After opening the configured `.sln` file in Visual Studio, build the project to 
 The software package includes the following key components:
 - **MIVconverter** – Source code for the main application  
 - **experiment** – Experimental scripts and utilities for testing and evaluation  
-- **data** – Contains datasets required by the software, including original MIV image frames such as *chess*, *classroomvideo*, and *museum*.
+- **data** – Contains the datasets required by the software, including original MIV image frames such as chess, classroomvideo, and museum. In addition to the data, the folder also includes the GLSL global parameter files imageProcessingUniform.csv and parameters_hetro.csv, as well as brdfIntegrationMap.pfm, for ambient-light image processing and object–ambient-light interaction. 
 
 ![Heterogeneous object to MIV](./ExperimentFolder.png)
 
@@ -83,7 +83,7 @@ The datasets required by this software are based on the MIV standard and can be 
 - 3D models (.obj) for heterogeneous objects: [Textured Mesh Repository](https://texturedmesh.isti.cnr.it/download)
 
 
-## Environment Light Rendering Support
+## Environment Light Rendering Support (Optional)
 
 To enable environment light rendering, the software includes several `.csv` files in the `data` folder that define GLSL uniform parameters.  
 These parameters support GLSL-based image processing techniques, such as importance sampling.
