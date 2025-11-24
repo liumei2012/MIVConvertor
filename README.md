@@ -85,9 +85,7 @@ The datasets required by this software are based on the MIV standard and can be 
 
 ## Environment Light Rendering Support (Optional)
 
-To enable environment light rendering, the software includes several `.csv` files in the `data` folder that define GLSL uniform parameters.  
-These parameters support GLSL-based image processing techniques, such as importance sampling.
-
+To enable environment light rendering, the software includes two .csv files in the data folder that define GLSL uniform parameters, and it implements a set of GLSL shaders based on https://www.gsn-lib.org/, which are available in the shader folder. These parameters and shader programs support GLSL image processing techniques such as importance sampling and the interaction between environment map and heterogeneous objects.
 As part of the MIV standard, the software uses the renderer included in the MIV reference implementation to generate environment maps.  
 Preprocessed environment light images are stored in the `dataset` folder, sharing filenames with the corresponding `.json` files but using the `.yuv` extension.
 
