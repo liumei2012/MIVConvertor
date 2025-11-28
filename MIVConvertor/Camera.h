@@ -200,8 +200,7 @@ struct CammeraProperty
 		_matB[3] = 0.0; _matB[7] = 0.0; _matB[11] = 0.0; _matB[15] = 1.0;
 		_matMult(_matView, _matA, _matB);
 
-		float _matInTrans[16];
-		transpose(_matView, _matInTrans);
+
 	}
 
 

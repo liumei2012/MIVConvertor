@@ -117,3 +117,59 @@ The .bat files serve as example scripts for running the software, providing user
 ```
 .\MIVConvertor.exe 1 ".\data\chess\\" ".\data\chess\Chess.json" "_texture_2048x2048_yuv420p" "_depth_2048x2048_yuv420p" "_entity_2048x2048_yuv420p" "10le" "16le" ".\Output\\"
 ```
+
+## Evaluation
+
+Ensure the following prerequisites are installed:
+
+- A C++17 or newer compiler toolchain
+
+- Git
+
+- Internet connection
+
+- Python 3.10 or newer
+
+In Visual Studio, clone the repository:
+https://gitlab.com/mpeg-i-visual/tmiv.git
+
+Open the x64 Native Tools Command Prompt.
+
+Navigate to the directory where the repository was cloned.
+
+### Set up a Python virtual environment and install the required dependencies:
+```
+python -m venv venv
+venv\Scripts\activate    # On Windows
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### Install external dependencies, build the project, and run unit tests:
+```
+python scripts/install.py cl-release
+```
+
+Reference:
+https://gitlab.com/mpeg-i-visual/tmiv
+
+
+### Create the in folder and add the data
+After cloning, the repository directory is named tmiv.
+Inside the tmiv directory, create a new folder named in.
+If you are using the museum sequence, create a subfolder named B01 inside the in directory:
+```
+.\tmiv\in\B01
+
+```
+
+### Add the dataset to .\tmiv\in\B01
+Place the dataset files inside the .\tmiv\in\B01 directory.
+Ensure that the dataset filenames follow the required naming convention, such as:
+
+v0_depth_2048x2048_yuv420p16le.yuv
+v0_texture_2048x2048_yuv420p10le.yuv
+
+Reference:
+https://gitlab.com/mpeg-i-visual/tmiv/-/blob/master/doc/running.md
+
