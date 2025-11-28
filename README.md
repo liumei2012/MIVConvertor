@@ -168,8 +168,36 @@ Place the dataset files inside the .\tmiv\in\B01 directory.
 Ensure that the dataset filenames follow the required naming convention, such as:
 
 v0_depth_2048x2048_yuv420p16le.yuv
+
 v0_texture_2048x2048_yuv420p10le.yuv
 
 Reference:
 https://gitlab.com/mpeg-i-visual/tmiv/-/blob/master/doc/running.md
 
+### TMIV encoder configuring
+```
+.\out\install\cl-release\bin\TmivEncoder.exe -n 1 -s B01 -f 0 -c .\config\ctc\miv_main_anchor\A_1_TMIV_encode.json -p configDirectory .\config -p inputDirectory .\in -p outputDirectory .\out
+```
+### Example VVenC Encoder Configuration for Rate Point 1 (RP1)
+```
+.\out\install\cl-release\bin\vvencFFapp.exe -c .\config\ctc\miv_main_anchor\A_2_VVenC_encode_tex.cfg -i .\out\A1\B01\RP0\TMIV_A1_B01_RP0_tex_c00_2048x4352_yuv420p10le.yuv -b .\out\A1\B01\RP1\TMIV_A1_B01_RP1_tex_c00.bit -s 2048x4352 -q 29 -f 1 -fr 30
+```
+```
+.\out\install\cl-release\bin\vvencFFapp.exe -c .\config\ctc\miv_main_anchor\A_2_VVenC_encode_tex.cfg -i .\out\A1\B01\RP0\TMIV_A1_B01_RP0_tex_c01_2048x4352_yuv420p10le.yuv -b .\out\A1\B01\RP1\TMIV_A1_B01_RP1_tex_c01.bit -s 2048x4352 -q 29 -f 1 -fr 30
+```
+```
+.\out\install\cl-release\bin\vvencFFapp.exe -c .\config\ctc\miv_main_anchor\A_2_VVenC_encode_geo.cfg -i .\out\A1\B01\RP0\TMIV_A1_B01_RP0_geo_c00_1024x2176_yuv420p10le.yuv -b .\out\A1\B01\RP1\TMIV_A1_B01_RP1_geo_c00.bit -s 1024x2176 -q 9 -f 1 -fr 30
+```
+```
+.\out\install\cl-release\bin\vvencFFapp.exe -c .\config\ctc\miv_main_anchor\A_2_VVenC_encode_geo.cfg -i .\out\A1\B01\RP0\TMIV_A1_B01_RP0_geo_c01_1024x2176_yuv420p10le.yuv -b .\out\A1\B01\RP1\TMIV_A1_B01_RP1_geo_c01.bit -s 1024x2176 -q 9 -f 1 -fr 30
+```
+
+### Multiplexer Configuration
+```
+.\out\install\cl-release\bin\TmivMultiplexer.exe -n 1 -s B01 -r RP1 -c .\config\ctc\miv_main_anchor\A_3_TMIV_mux.json -p configDirectory .\config -p inputDirectory .\out -p outputDirectory .\out
+```
+### TMIV decoding
+
+```
+.\out\install\cl-release\bin\TmivDecoder.exe -n 1 -N 1 -s B01 -r RP1 -v v11 -c .\config\ctc\miv_main_anchor\A_4_TMIV_decode.json -p configDirectory .\config -p inputDirectory .\out -p outputDirectory .\out
+```
