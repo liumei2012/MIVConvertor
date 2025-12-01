@@ -242,7 +242,7 @@ ply::read(
   ifs.getline(tmp, MAX_BUFFER_SIZE);
   getTokens(tmp, sep, tokens);
   if (tokens.empty() || tokens[0] != "ply") {
-    std::cout << "Error: corrupted file!" << std::endl;
+    std::cout << "[ERROR] corrupted file!" << std::endl;
     return false;
   }
   bool isAscii = false;
@@ -251,7 +251,7 @@ ply::read(
   bool isVertexProperty = true;
   while (1) {
     if (ifs.eof()) {
-      std::cout << "Error: corrupted header!" << std::endl;
+      std::cout << "[ERROR] corrupted header!" << std::endl;
       return false;
     }
     ifs.getline(tmp, MAX_BUFFER_SIZE);
@@ -261,14 +261,14 @@ ply::read(
     }
     if (tokens[0] == "format") {
       if (tokens.size() != 3) {
-        std::cout << "Error: corrupted format info!" << std::endl;
+        std::cout << "[ERROR] corrupted format info!" << std::endl;
         return false;
       }
       isAscii = tokens[1] == "ascii";
       version = atof(tokens[2].c_str());
     } else if (tokens[0] == "element") {
       if (tokens.size() != 3) {
-        std::cout << "Error: corrupted element info!" << std::endl;
+        std::cout << "[ERROR] corrupted element info!" << std::endl;
         return false;
       }
       if (tokens[1] == "vertex") {
@@ -278,7 +278,7 @@ ply::read(
       }
     } else if (tokens[0] == "property" && isVertexProperty) {
       if (tokens.size() != 3) {
-        std::cout << "Error: corrupted property info!" << std::endl;
+        std::cout << "[ERROR] corrupted property info!" << std::endl;
         return false;
       }
       const std::string& propertyType = tokens[1];
@@ -323,7 +323,7 @@ ply::read(
     }
   }
   if (version != 1.0) {
-    std::cout << "Error: non-supported version!" << std::endl;
+    std::cout << "[ERROR] non-supported version!" << std::endl;
     return false;
   }
 
@@ -386,7 +386,7 @@ ply::read(
   if (
     indexX == PCC_UNDEFINED_INDEX || indexY == PCC_UNDEFINED_INDEX
     || indexZ == PCC_UNDEFINED_INDEX) {
-    std::cout << "Error: missing coordinates!" << std::endl;
+    std::cout << "[ERROR] missing coordinates!" << std::endl;
     return false;
   }
   bool withColors = indexR != PCC_UNDEFINED_INDEX

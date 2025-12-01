@@ -66,7 +66,7 @@ namespace gsn {
         int nTexWidth, int nTexHeight, bool bEnableCompositionTool);
     //! resize event
     void resize(int w, int h);
-
+    void printProgressBar(int progress, int total);
     //! draw call
     void display();
     void ImageProcessingInBg();
@@ -113,6 +113,7 @@ namespace gsn {
 
     bool bAutoCapture = false;
     bool bAutoComposition = false;
+    bool bEnableEnvironmentRelighting = false;
     std::string strCompositedRetOutPath;
     std::string strPointCloudOutPath;
     
@@ -121,8 +122,8 @@ namespace gsn {
       int height = 512;
       /*bool wireframe = false;*/
       Matrix backgroundColor; 
-      std::string nodeClassName;
-      std::string nodeName;
+      //std::string nodeClassName;
+      //std::string nodeName;
     };
 
     ShaderNode shaderNodeInputTex;

@@ -319,9 +319,16 @@ void Mesh::createFromArrays(std::string groupName, int numberOfPrimitives, const
 };
 
 void Mesh::createQuad() {
-  std::vector<float> positions = { -1.0, -1.0, 0.0, 1.0, -1.0, 0.0, -1.0, 1.0, 0.0, 1.0, 1.0, 0.0 };
+  std::vector<float> positions = { -1.0, -1.0, 0.0,
+      1.0, -1.0, 0.0, 
+      -1.0, 1.0, 0.0, 
+      1.0, 1.0, 0.0 };
+  
   std::vector<float> normals = { 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0 };
-  std::vector<float> texCoords = { 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0 };
+  std::vector<float> texCoords = { 0.0, 0.0, 
+      1.0, 0.0, 
+      0.0, 1.0, 
+      1.0, 1.0 };
   std::vector<unsigned int> indices = { 0, 1, 3, 2 };
 
   createFromArrays("Quad", 1, positions, normals, texCoords, indices, false);

@@ -661,7 +661,7 @@ void ShaderNode::setUniformsFromMIVTex() {
     // bind texture
     glBindTexture(GL_TEXTURE_2D, textureID);
     
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2048, 2048, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, nHetroImageDimWidth, nHetroImageDimHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -1248,7 +1248,7 @@ void ShaderNode::setUniformMatrix(const std::string& name, const Matrix& value)
       uniforms.at(name + "TransposedInverse").matVal = value.transpose().invert();
     }
   }
-  if (uniforms.count(name + "InverseTransposed") > 0) {
+  if (uniforms.count(name + "InverseTransposed") > 0) { 
     if (uniforms.at(name + "InverseTransposed").type == 3) {
       uniforms.at(name + "InverseTransposed").matVal = value.invert().transpose();
     }

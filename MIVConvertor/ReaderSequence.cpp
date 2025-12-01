@@ -13,7 +13,7 @@ Object& Sequence::getObject() {
   auto& eObject   =  m_eObject;
   int   iNumFrame = getNumFrames();
   if ( m_nFrameIndex < 0 && m_nFrameIndex > iNumFrame ) {
-    printf( "Error: can't load object of frame index = %d is not in [%d;%d] \n", m_nFrameIndex, 0, iNumFrame );
+    printf( "[ERROR] can't load object of frame index = %d is not in [%d;%d] \n", m_nFrameIndex, 0, iNumFrame );
     exit( -1 );
   }
   return *eObject[m_nFrameIndex];

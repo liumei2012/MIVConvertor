@@ -19,7 +19,7 @@ using namespace std;
 using namespace gsn;
 
 static Renderer* renderer;
-
+static float fangleY = 0.0;
 static void glutDisplay()
 {
     renderer->display();
@@ -43,26 +43,31 @@ static void glutKeyboard(unsigned char key, int x, int y)
     {
         meshTranformMat.e[12] += 0.1;
         renderer->shaderNodeHetroObj.setUniformMatrix("meshTransform", meshTranformMat);
-        std::cout << "glutKeyboard event 'a' pressed" << std::endl;
+        std::cout << "[INFO] event=glutKeyboard key= 'a' action=pressed" << std::endl;
     }
 
     if (key == 's')
     {
         meshTranformMat.e[14] += 0.1;
         renderer->shaderNodeHetroObj.setUniformMatrix("meshTransform", meshTranformMat);
-        std::cout << "glutKeyboard event 's' pressed" << std::endl;
+        std::cout << "[INFO] event=glutKeyboard key= 's' action=pressed" << std::endl;
     }
     if (key == 'd')
     {
         meshTranformMat.e[12] -= 0.1;
         renderer->shaderNodeHetroObj.setUniformMatrix("meshTransform", meshTranformMat);
-        std::cout << "glutKeyboard event 'd' pressed" << std::endl;
+        std::cout << "[INFO] event=glutKeyboard key= 'd' action=pressed " << std::endl;
     }
     if(key == 'w')
     {
         meshTranformMat.e[14] -= 0.1;
         renderer->shaderNodeHetroObj.setUniformMatrix("meshTransform", meshTranformMat);
-        std::cout << "glutKeyboard event 'w' pressed" << std::endl;
+        std::cout << "[INFO] event=glutKeyboard key= 'w' action=pressed " << std::endl;
+    }
+    if (key == 'l')
+    {
+        renderer->bEnableEnvironmentRelighting = !renderer->bEnableEnvironmentRelighting;
+        std::cout << "[INFO] event=glutKeyboard key= 'l' action=pressed " << std::endl;
     }
 
     if (key == 'u')
@@ -73,7 +78,7 @@ static void glutKeyboard(unsigned char key, int x, int y)
             renderer->nCamIndex = 0;
         }
 
-        std::cout << "glutKeyboard event 'u' pressed " << std::endl;
+        std::cout << "[INFO] event=glutKeyboard key= 'u' action=pressed " << std::endl;
     }
 
     if (key == 'y')
@@ -84,42 +89,46 @@ static void glutKeyboard(unsigned char key, int x, int y)
             renderer->nCamIndex = renderer->nMaxCamCount - 1;
         }
 
-        std::cout << "glutKeyboard event 'y' pressed " << std::endl;
+        std::cout << "[INFO] event=glutKeyboard key= 'y' action=pressed " << std::endl;
     }
     if (key == 'b')
     {
         bool bFlag = renderer->shaderNodeHetroObj.bIsDepth;
         renderer->shaderNodeHetroObj.bIsDepth = !bFlag;
-        std::cout << "glutKeyboard event 'b' pressed " << bFlag << std::endl;
+        std::cout << "[INFO] event=glutKeyboard key= 'b' action=pressed " << bFlag << std::endl;
     }
     if (key == 'c')
     {
         //renderer->shaderNodeHetroObj.bCaptureing = true;
         renderer->bAutoCapture = true;
-        std::cout << "glutKeyboard event 'c' pressed " << std::endl;
+        std::cout << "[INFO] event=glutKeyboard key= 'c' action=pressed " << std::endl;
+    }
+
+    if (key == 'r')
+    {
+        fangleY += 0.1;
+      
+        meshTranformMat.e[0] = cos(fangleY); meshTranformMat.e[4] = 0.0; meshTranformMat.e[8] = sin(fangleY); meshTranformMat.e[12] = meshTranformMat.e[12];
+        meshTranformMat.e[1] = 0.0; meshTranformMat.e[5] = 1.0; meshTranformMat.e[9] = 0.0; meshTranformMat.e[13] = meshTranformMat.e[13];
+        meshTranformMat.e[2] = -sin(fangleY); meshTranformMat.e[6] = 0.0; meshTranformMat.e[10] = cos(fangleY); meshTranformMat.e[14] = meshTranformMat.e[14];
+        meshTranformMat.e[3] = 0.0; meshTranformMat.e[7] = 0.0; meshTranformMat.e[11] = 0.0; meshTranformMat.e[15] = 1.0;
+
+        renderer->shaderNodeHetroObj.setUniformMatrix("meshTransform", meshTranformMat);
+        std::cout << "[INFO] event=glutKeyboard key= 'r' action=pressed" << std::endl;
     }
 
     if (key == 'q')
     {
         meshTranformMat.e[13] += 0.1;
         renderer->shaderNodeHetroObj.setUniformMatrix("meshTransform", meshTranformMat);
-        std::cout << "glutKeyboard event 'a' pressed" << std::endl;
+        std::cout << "[INFO] event=glutKeyboard key= 'q' action=pressed" << std::endl;
     }
 
     if (key == 'e')
     {
         meshTranformMat.e[13] -= 0.1;
         renderer->shaderNodeHetroObj.setUniformMatrix("meshTransform", meshTranformMat);
-        std::cout << "glutKeyboard event 'a' pressed" << std::endl;
-    }
-
-    if (key == 'z')
-    {
-
-    }
-    if (key == 'x')
-    {
-
+        std::cout << "[INFO] event=glutKeyboard key= 'e' action=pressed" << std::endl;
     }
 }
 
@@ -162,15 +171,15 @@ void print_manual(int nMode) {
         printf(YELLOW "argv:7 " RESET "Depth bit-depth format (e.g., 16-bit → 16le)\n");
         printf(YELLOW "argv:8 " RESET "Path to heterogeneous object (.obj)\n");
         printf(YELLOW "argv:9 " RESET "Output folder \n");
-        printf(YELLOW "argv:10 " RESET "Enable auto-capturing (0 or 1)\n");
-        printf(YELLOW "argv:11 " RESET "Enable composition (0 or 1)\n");
-        printf(YELLOW "argv:12 " RESET "Path for composited results \n");
+        printf(YELLOW "argv:10 " RESET "Enable composition (0 or 1)\n");
+        printf(YELLOW "argv:11 " RESET "Path for composited results \n");
 
         printf(GREEN "Keys: " RESET "a, s, d, f → Control heterogeneous object\n");
         printf(GREEN "Keys: " RESET "u, v → Control camera\n");
         printf(GREEN "Keys: " RESET "c → Capture MIV content\n");
         printf(GREEN "Keys: " RESET "b → Toggle guide background\n");
         printf(GREEN "Keys: " RESET "v → Toggle depth mode\n");
+        printf(GREEN "Keys: " RESET "l → Toggle Re-lighting mode\n");
         printf(RED   BOLD "########################## End ###############################\n" RESET);
         printf(RED   BOLD "Press any key to start. \n" RESET);
 
@@ -198,18 +207,18 @@ void CheckDirectory(std::string path)
     try {
         if (!fs::exists(path)) {
             if (fs::create_directories(path)) {
-                std::cout << "Create directory: " << path << std::endl;
+                std::cout << "[INFO] Create directory: " << path << std::endl;
             }
             else {
-                std::cout << "Fail to create directory." << std::endl;
+                std::cout << "[ERROR] Fail to create directory." << std::endl;
             }
         }
         else {
-            std::cout << "Directory already exist: " << path << std::endl;
+            std::cout << "[INFO] Directory already exist: " << path << std::endl;
         }
     }
     catch (const fs::filesystem_error& e) {
-        std::cerr << "File system error: " << e.what() << std::endl;
+        std::cerr << "[ERROR] File system error: " << e.what() << std::endl;
     }
 }
 
@@ -221,7 +230,7 @@ void JsonParser(std::string jsonfile, std::vector<Camera>& cameras)
     json root;
     try { ifs >> root; }
     catch (const std::exception& e) {
-        std::cerr << "JSON Error: " << e.what() << "\n"; exit(0) ;
+        std::cerr << "JSON [ERROR] " << e.what() << "\n"; exit(0) ;
     }
 
     int nCamCount = 0;
@@ -345,7 +354,7 @@ int main(int argc, char** argv)
     {
         strHeterObjPath = argv[9];
         strHeterObjOutPath = argv[10];
-        //bAutoCapture = !!atoi(argv[11]);
+       
         bAutoComposition = !!atoi(argv[11]);
         strCompositedRetOutPath = argv[12];
         strCommnd = strCommnd + " " + strHeterObjPath + " " 
@@ -419,6 +428,7 @@ int main(int argc, char** argv)
     if (GLEW_OK != err) {
         fprintf(stderr, "Glew error: %s\n", glewGetErrorString(err));
     }
+
 
     glutDisplayFunc(glutDisplay);
     glutReshapeFunc(glutResize);

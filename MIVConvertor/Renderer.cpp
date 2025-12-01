@@ -140,8 +140,8 @@ void initBufers_in()
 
 void Renderer:: initMeshHetroObj(float fModelScale)
 {
-    float fMaxOfBox[3] = { -999999999.9 , -999999999.9 , -999999999.9 };
-    float fMinOfBox[3] = { 999999999.9 ,999999999.9 ,999999999.9 };
+    float fMaxOfBox[3] = { -999999999.9, -999999999.9, -999999999.9 };
+    float fMinOfBox[3] = { 999999999.9,999999999.9,999999999.9 };
 
     float fViewBoxMin[3] = { -0.314663142, -0.830880880, -0.198152751 };
     float fViewBoxMax[3] = { 0.314663142, 0.830880880, 0.198152751 };
@@ -170,7 +170,7 @@ void Renderer:: initMeshHetroObj(float fModelScale)
 
         for (int i = 0; i < Tmpvertices.size(); i++)
         {
-            getBoundingBox(fMaxOfBox, fMinOfBox, Tmpvertices[i].position_.x, Tmpvertices[i].position_.y , Tmpvertices[i].position_.z);
+            getBoundingBox(fMaxOfBox, fMinOfBox, Tmpvertices[i].position_.x, Tmpvertices[i].position_.y, Tmpvertices[i].position_.z);
         }
 
         int nAxis = 0;
@@ -259,22 +259,7 @@ Renderer::Renderer()
 
 Renderer::~Renderer() {
 
-    int nWidth = shaderNodeHetroObj.nHetroBGImageDimWidth;
-    int nHeight = shaderNodeHetroObj.nHetroBGImageDimHeight;
-    std::string strOutputPath = shaderNodeHetroObj.strHetroObjOutputPath;
 
-    if (nProgMode == 0) {
-        ComposeContents(strMIVSequencePath, strOutputPath, strPostfixTex, strPostfixGeo, strPostfixEntity, strTexBitDepth, strGeoBitDepth, strCompositedRetOutPath, nWidth, nHeight, bAutoComposition);
-
-        for (int i = 0; i <= nMaxCamCount; i++)
-        {
-            SceneTex[i].clear();
-            SceneGeo[i].clear();
-
-            delete pCamProp[i];
-            pCamProp[i] = NULL;
-        }
-    }
 }
 
 void Renderer::ComposeContents(std::string strYUVPath,
@@ -288,13 +273,17 @@ void Renderer::ComposeContents(std::string strYUVPath,
    /* int nNoofView,*/
     int nTexWidth, int nTexHeight, bool bEnableCompositionTool)
 {
+
     if (!bEnableCompositionTool)
     {
         return;
     }
 
+    std::cout << "[INFO] Contents composition start" << std::endl;
+
     for (int nCam = 0; nCam <= nMaxCamCount; nCam++)
     {
+        printProgressBar(nCam, nMaxCamCount);
         std::string strCompositionRetTexPath = "";
         std::string strCompositionRetGeoPath = "";
         std::string strCompositionRetEntityPath = "";
@@ -810,20 +799,36 @@ void Renderer::init()
   //shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/parameters_CDFMarg.csv"));
   //shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/parameters_CDFCond.csv"));
   //shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/parameters_Env.csv"));
-  //std::string strImageProcessingParaPath = strMIVSequencePath;
-  //shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  //shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  //shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  //shaderNodeRowAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  //shaderNodeColAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  //shaderNodePDFJoint.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  //shaderNodePDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  //shaderNodePDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  //shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  //shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  //shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  std::string strImageProcessingParaPath = strMIVSequencePath;
+  shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodeRowAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodeColAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodePDFJoint.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodePDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodePDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
 #else
   std::string strImageProcessingParaPath = strMIVSequencePath;
+
+  std::string strImageProcUniform = "Museum/B,Image,,,,\n\
+ Gray, Image,,,,\n\
+ RowAvg, Image,,,,\n\
+ ColAvg, Image,,,,\n\
+ PDFMarg, Image,,,,\n\
+ PDFJoint, Image,,,,\n\
+ PDFCon, Image,,,,\n\
+ CDFCon, Image,,,,\n\
+ CDFMarg, Image,,,,\n\
+ level, Float, 0,,,\n\
+ Background, Color, 0, 0, 0, 1\n\
+ width, Integer, 1024,,,\n\
+ height, Integer, 512,,,";
+
+
   shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
   shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
   shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
@@ -866,6 +871,32 @@ void Renderer::init()
   shaderNodeHetroObj.nHetroImageDimWidth = pGeometry->m_Meshes[0].getTextures()[0].width_;
   shaderNodeHetroObj.nHetroImageDimHeight = pGeometry->m_Meshes[0].getTextures()[0].height_;
 
+  std::string strContents = "baseColorTexture,Image,,,,,,,,,,,,,,,,,,\n\
+ MyTex, Image,,,,,,,,,,,,,,,,,,\n\
+ envmapDiffuse, Image,,,,,,,,,,,,,,,,,,\n\
+ brdfIntegrationMap, Image,,,,,,,,,,,,,,,,,,\n\
+ envmapSpecularLevel0, Image,,,,,,,,,,,,,,,,,,\n\
+ envmapSpecularLevel1, Image,,,,,,,,,,,,,,,,,,\n\
+ envmapSpecularLevel2, Image,,,,,,,,,,,,,,,,,,\n\
+ envmapSpecularLevel3, Image,,,,,,,,,,,,,,,,,,\n\
+ envmapSpecularLevel4, Image,,,,,,,,,,,,,,,,,,\n\
+ envmapSpecularLevel5, Image,,,,,,,,,,,,,,,,,,\n\
+ MIVBackgroundGuide, Image,,,,,,,,,,,,,,,,,,\n\
+ NodeClassName, Text, ShaderPluginNode,,,,,,,,,,,,,,,,,\n\
+ NodeName, Text, Shader,,,,,,,,,,,,,,,,,\n\
+ Background, Color, 0, 0, 0, 1,,,,,,,,,,,,,,\n\
+ IsDepth, Boolean, FALSE,,,,,,,,,,,,,,,,,\n\
+ IsBackGroundGuide, Boolean, FALSE,,,,,,,,,,,,,,,,,\n\
+ Wireframe, Boolean, FALSE,,,,,,,,,,,,,,,,,\n\
+ mipLevelCount, Integer, 0,,,,,,,,,,,,,,,,,\n\
+ metallic, Float, 0,,,,,,,,,,,,,,,,,\n\
+ reflectance, Float, 0,,,,,,,,,,,,,,,,,\n\
+ irradiPerp, Float, 10,,,,,,,,,,,,,,,,,\n\
+ ProjTransformBackground, Matrix, 4, 4, 1, 0, 0, 0, 0.00E+00, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1\n\
+ meshTransformBackground, Matrix, 4, 4, 1, 0, 0, 0, 0.00E+00, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1\n\
+ meshTransform, Matrix, 4, 4, 1, 0, 0, 0, 0.00E+00, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1\n\
+ uView, Matrix, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0";
+
   shaderNodeHetroObj.setUniformsFromFile(FileTools::findFile("data/parameters_hetro.csv"));
   shaderNodeHetroObj.setUniformsFromSeq("baseColorTexture");
   shaderNodeHetroObj.setUniformsFromMIVTex();
@@ -879,6 +910,23 @@ void Renderer::init()
 void Renderer::resize(int w, int h) {
   windowWidth = w;
   windowHeight = h;
+}
+
+void Renderer::printProgressBar(int progress, int total) {
+    const int barWidth = 50; // Width of the progress bar in characters
+    float percentage = static_cast<float>(progress) / total;
+    int filledWidth = static_cast<int>(barWidth * percentage);
+
+    std::cout << "\r["; // Carriage return to start from the beginning of the line
+    for (int i = 0; i < filledWidth; ++i) {
+        std::cout << "=";
+    }
+    for (int i = filledWidth; i < barWidth; ++i) {
+        std::cout << " ";
+    }
+    if (percentage > 1.0) percentage = 1.0;
+    std::cout << "] " << static_cast<int>(percentage * 100.0) << "%";
+    std::cout.flush(); // Ensure the output is immediately written to the console
 }
 
 void Renderer::ImageProcessingInBg() {
@@ -937,7 +985,7 @@ void Renderer::display() {
   shaderNodeImageWindowPlane.setUniformFloat("aspectX", aspectX);
   shaderNodeImageWindowPlane.setUniformFloat("aspectY", aspectY);
 
-  shaderNodeImageWindowPlane.setUniformImage("img", shaderNodeEnv.getRenderTarget(selectedOutput));
+  shaderNodeImageWindowPlane.setUniformImage("img", shaderNodeInputTexMipmap.getRenderTarget(selectedOutput));
   shaderNodeImageWindowPlane.renderBgHDRImage(meshDummyImagePlane, shaderSettingsBGImgProc.backgroundColor, shaderSettingsBGImgProc.width, shaderSettingsBGImgProc.height, false);
 
 #else
@@ -961,10 +1009,12 @@ void Renderer::display() {
   }
 
   shaderNodeHetroObj.setUniformMatrix("uView", mCamMat);
+  shaderNodeHetroObj.setUniformBool("IsEnvLight", bEnableEnvironmentRelighting);
   shaderNodeHetroObj.setUniformImage("envmapDiffuse", shaderNodeEnv.getRenderTarget(selectedOutput));
   shaderNodeHetroObj.setUniformImage("envmapSpecularLevel5", shaderNodeInputTexMipmap.getRenderTarget(selectedOutput));
   shaderNodeHetroObj.setUniformFloat("fFieldOfViewH", fFieldOfView0);
-  shaderNodeHetroObj.setUniformFloat("fFieldOfViewV",fFieldOfView1);
+  shaderNodeHetroObj.setUniformFloat("fFieldOfViewV", fFieldOfView1);
+
 
   shaderNodeHetroObj.image_hetro_background =  &SceneTex[nCamIndex].at(0);
 
@@ -983,12 +1033,13 @@ void Renderer::display() {
       mPlaneMeshTransform,
       mPlaneProjTransform, windowWidth, windowHeight, true, strGeoOutputFile, strTexOutputFile, strEntityOutputFile);
 
-  shaderNodeHetroObj.renderHetro(meshHetroObj, 
+  shaderNodeHetroObj.renderHetro(meshHetroObj,
       shaderSettingsBGImgProc.backgroundColor, 
       mPlaneMeshTransform, 
       mPlaneProjTransform, windowWidth, windowHeight, false, strGeoOutputFile, strTexOutputFile, strEntityOutputFile);
 
   if (bAutoCapture) {
+
       nCamIndex++;
       if (nCamIndex == nMaxCamCount + 1 && !shaderNodeHetroObj.bIsDepth)
       {
@@ -996,9 +1047,31 @@ void Renderer::display() {
           shaderNodeHetroObj.bIsDepth = true;
       }
 
+      printProgressBar(nCamIndex, nMaxCamCount);
+
       if (nCamIndex == nMaxCamCount + 1 && shaderNodeHetroObj.bIsDepth)
       {
-          std::cout << "Done! cur cam:" << nCamIndex  << std::endl;
+          std::cout << std::endl;
+          std::cout << "[INFO] Capture process completed successfully!" << std::endl;
+
+          int nWidth = shaderNodeHetroObj.nHetroBGImageDimWidth;
+          int nHeight = shaderNodeHetroObj.nHetroBGImageDimHeight;
+          std::string strOutputPath = shaderNodeHetroObj.strHetroObjOutputPath;
+
+          if (nProgMode == 0) {
+              
+              ComposeContents(strMIVSequencePath, strOutputPath, strPostfixTex, strPostfixGeo, strPostfixEntity, strTexBitDepth, strGeoBitDepth, strCompositedRetOutPath, nWidth, nHeight, bAutoComposition);
+
+              for (int i = 0; i <= nMaxCamCount; i++)
+              {
+                  SceneTex[i].clear();
+                  SceneGeo[i].clear();
+
+                  delete pCamProp[i];
+                  pCamProp[i] = NULL;
+              }
+          }
+          std::cout << "[INFO] Composition process completed successfully!" << std::endl;
           exit(0);
       }
   }
@@ -1041,12 +1114,12 @@ Renderer::ShaderSettings Renderer::loadShaderSettings(const std::string& filenam
         Matrix mat(x, y, z, w);
         settings.backgroundColor = mat;
       }
-      if (type == "text" && name == "NodeClassName" && items.size() >= 3) {
-        settings.nodeClassName = items[2];
-      }
-      if (type == "text" && name == "NodeName" && items.size() >= 3) {
-        settings.nodeName = items[2];
-      }
+      //if (type == "text" && name == "NodeClassName" && items.size() >= 3) {
+      //  settings.nodeClassName = items[2];
+      //}
+      //if (type == "text" && name == "NodeName" && items.size() >= 3) {
+      //  settings.nodeName = items[2];
+      //}
     }
   }
 
