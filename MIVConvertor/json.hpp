@@ -1682,8 +1682,8 @@ JSON_HEDLEY_DIAGNOSTIC_POP
   JSON_HEDLEY_GCC_VERSION_CHECK(9,0,0) || \
   JSON_HEDLEY_MCST_LCC_VERSION_CHECK(1,25,10)
 #  define JSON_HEDLEY_PREDICT(expr, value, probability) __builtin_expect_with_probability(  (expr), (value), (probability))
-#  define JSON_HEDLEY_PREDICT_TRUE(expr, probability)   __builtin_expect_with_probability(!!(expr),    1   , (probability))
-#  define JSON_HEDLEY_PREDICT_FALSE(expr, probability)  __builtin_expect_with_probability(!!(expr),    0   , (probability))
+#  define JSON_HEDLEY_PREDICT_TRUE(expr, probability)   __builtin_expect_with_probability(!!(expr),    1  , (probability))
+#  define JSON_HEDLEY_PREDICT_FALSE(expr, probability)  __builtin_expect_with_probability(!!(expr),    0  , (probability))
 #  define JSON_HEDLEY_LIKELY(expr)                      __builtin_expect                 (!!(expr),    1                  )
 #  define JSON_HEDLEY_UNLIKELY(expr)                    __builtin_expect                 (!!(expr),    0                  )
 #elif \
@@ -5525,7 +5525,7 @@ template<typename IteratorType> class iteration_proxy_value
     noexcept(std::is_nothrow_move_constructible<IteratorType>::value
              && std::is_nothrow_default_constructible<string_type>::value)
         : anchor(std::move(it))
-        , array_index(array_index_)
+       , array_index(array_index_)
     {}
 
     iteration_proxy_value(iteration_proxy_value const&) = default;
@@ -6259,15 +6259,15 @@ class byte_container_with_subtype : public BinaryType
     /// @sa https://json.nlohmann.me/api/byte_container_with_subtype/byte_container_with_subtype/
     byte_container_with_subtype(const container_type& b, subtype_type subtype_) noexcept(noexcept(container_type(b)))
         : container_type(b)
-        , m_subtype(subtype_)
-        , m_has_subtype(true)
+       , m_subtype(subtype_)
+       , m_has_subtype(true)
     {}
 
     /// @sa https://json.nlohmann.me/api/byte_container_with_subtype/byte_container_with_subtype/
     byte_container_with_subtype(container_type&& b, subtype_type subtype_) noexcept(noexcept(container_type(std::move(b))))
         : container_type(std::move(b))
-        , m_subtype(subtype_)
-        , m_has_subtype(true)
+       , m_subtype(subtype_)
+       , m_has_subtype(true)
     {}
 
     bool operator==(const byte_container_with_subtype& rhs) const
@@ -7191,8 +7191,8 @@ class lexer : public lexer_base<BasicJsonType>
 
     explicit lexer(InputAdapterType&& adapter, bool ignore_comments_ = false) noexcept
         : ia(std::move(adapter))
-        , ignore_comments(ignore_comments_)
-        , decimal_point_char(static_cast<char_int_type>(get_decimal_point()))
+       , ignore_comments(ignore_comments_)
+       , decimal_point_char(static_cast<char_int_type>(get_decimal_point()))
     {}
 
     // deleted because of pointer members
@@ -12991,9 +12991,9 @@ class parser
                     const bool ignore_comments = false,
                     const bool ignore_trailing_commas_ = false)
         : callback(std::move(cb))
-        , m_lexer(std::move(adapter), ignore_comments)
-        , allow_exceptions(allow_exceptions_)
-        , ignore_trailing_commas(ignore_trailing_commas_)
+       , m_lexer(std::move(adapter), ignore_comments)
+       , allow_exceptions(allow_exceptions_)
+       , ignore_trailing_commas(ignore_trailing_commas_)
     {
         // read first token
         get_token();
@@ -18877,12 +18877,12 @@ class serializer
     serializer(output_adapter_t<char> s, const char ichar,
                error_handler_t error_handler_ = error_handler_t::strict)
         : o(std::move(s))
-        , loc(std::localeconv())
-        , thousands_sep(loc->thousands_sep == nullptr ? '\0' : std::char_traits<char>::to_char_type(* (loc->thousands_sep)))
-        , decimal_point(loc->decimal_point == nullptr ? '\0' : std::char_traits<char>::to_char_type(* (loc->decimal_point)))
-        , indent_char(ichar)
-        , indent_string(512, indent_char)
-        , error_handler(error_handler_)
+       , loc(std::localeconv())
+       , thousands_sep(loc->thousands_sep == nullptr ? '\0' : std::char_traits<char>::to_char_type(* (loc->thousands_sep)))
+       , decimal_point(loc->decimal_point == nullptr ? '\0' : std::char_traits<char>::to_char_type(* (loc->decimal_point)))
+       , indent_char(ichar)
+       , indent_string(512, indent_char)
+       , error_handler(error_handler_)
     {}
 
     // deleted because of pointer members
@@ -20034,7 +20034,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
         // We start at first and re-construct (viz. copy) the elements from
         // the back of the vector. Example for the first iteration:
 
-        //               ,--------.
+        //              ,--------.
         //               v        |   destroy e and re-construct with h
         // [ a, b, c, d, e, f, g, h, i, j ]
         //               ^        ^
@@ -21257,8 +21257,8 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     basic_json(const basic_json& other)
         : json_base_class_t(other)
 #if JSON_DIAGNOSTIC_POSITIONS
-        , start_position(other.start_position)
-        , end_position(other.end_position)
+       , start_position(other.start_position)
+       , end_position(other.end_position)
 #endif
     {
         m_data.m_type = other.m_data.m_type;
@@ -21331,8 +21331,8 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         : json_base_class_t(std::forward<json_base_class_t>(other)),
           m_data(std::move(other.m_data)) // cppcheck-suppress[accessForwarded] TODO check
 #if JSON_DIAGNOSTIC_POSITIONS
-        , start_position(other.start_position) // cppcheck-suppress[accessForwarded] TODO check
-        , end_position(other.end_position) // cppcheck-suppress[accessForwarded] TODO check
+       , start_position(other.start_position) // cppcheck-suppress[accessForwarded] TODO check
+       , end_position(other.end_position) // cppcheck-suppress[accessForwarded] TODO check
 #endif
     {
         // check that the passed value is valid

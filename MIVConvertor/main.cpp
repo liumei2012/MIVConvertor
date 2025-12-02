@@ -179,7 +179,7 @@ void print_manual(int nMode) {
         printf(GREEN "Keys: " RESET "c → Capture MIV content\n");
         printf(GREEN "Keys: " RESET "b → Toggle guide background\n");
         printf(GREEN "Keys: " RESET "v → Toggle depth mode\n");
-        printf(GREEN "Keys: " RESET "l → Toggle Re-lighting mode\n");
+        printf(GREEN "Keys: " RESET "l → Toggle re-lighting mode\n");
         printf(RED   BOLD "########################## End ###############################\n" RESET);
         printf(RED   BOLD "Press any key to start. \n" RESET);
 
@@ -230,7 +230,7 @@ void JsonParser(std::string jsonfile, std::vector<Camera>& cameras)
     json root;
     try { ifs >> root; }
     catch (const std::exception& e) {
-        std::cerr << "JSON [ERROR] " << e.what() << "\n"; exit(0) ;
+        std::cerr << "[ERROR] JSON error " << e.what() << "\n"; exit(0) ;
     }
 
     int nCamCount = 0;

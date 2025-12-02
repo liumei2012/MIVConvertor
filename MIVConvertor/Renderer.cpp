@@ -785,6 +785,7 @@ void Renderer::init()
   initShader();
 
   LoadOBJ::loadHetro(Hetro_vertices[0], Hetro_normals[0], Hetro_texcoords[0], Hetro_indexes[0], meshHetroObj);
+  //LoadOBJ::loadHetro(vertex_in, normal_in, texcoords_in, indices_in, meshSphere);
 
 #ifdef IMAGPROCESSINGTEST
    //shaderNodeInputTex.TestImage = SceneTex[0];

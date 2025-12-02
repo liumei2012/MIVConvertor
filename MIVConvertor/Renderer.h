@@ -81,8 +81,8 @@ namespace gsn {
     bool bPointCloudConversion = false;
     int nProgMode = 0;
 
-    float fMaxOfBoxMIV[3] = { -999999999.9 , -999999999.9 , -999999999.9 };
-    float fMinOfBoxMIV[3] = { 999999999.9 ,999999999.9 ,999999999.9 };
+    float fMaxOfBoxMIV[3] = { -999999999.9, -999999999.9, -999999999.9 };
+    float fMinOfBoxMIV[3] = { 999999999.9,999999999.9,999999999.9 };
 
   public:
     int windowWidth;
