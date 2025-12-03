@@ -11,7 +11,7 @@ void main() {
   // Env samp
 
   //vec3 texColor = texture(myTexture, interpolatedTexCoord).rgb;
-  vec3 texColor = textureLod(MyTex, interpolatedTexCoord, 5.0).rgb;
+  vec3 texColor = textureLod(MyTex, interpolatedTexCoord, 7.0).rgb;
   outColor.rgb = vec3(texColor.r, texColor.g, texColor.b);
   outColor.a = 1.0;
 }

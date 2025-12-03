@@ -1285,7 +1285,7 @@ void ShaderNode::setUniformImage(const std::string& name, unsigned int textureID
   }
 }
 
-void ShaderNode::setUniformsFromFile(const std::string& filename) {
+void ShaderNode::setUniformsFromFile(const std::string& filename, const std::string& filename2) {
   std::string content = FileTools::readTextFile(filename);
   const std::vector <string> lines = StringTools::split(content, "\n");
   for (int i = 0; i < int(lines.size()); i++) {
@@ -1348,6 +1348,7 @@ void ShaderNode::setUniformsFromFile(const std::string& filename) {
              {
                  continue;
              }
+
             // fclose(file);
 
             // FileTools::YUVToRGBTexFile(imgFileName, _data, width, height, true);

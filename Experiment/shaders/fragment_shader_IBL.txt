@@ -15,14 +15,15 @@ uniform sampler2D envmapDiffuse; // min_filter="NEAREST" mag_filter="NEAREST"
 uniform sampler2D envmapSpecularLevel5; // min_filter="NEAREST" mag_filter="NEAREST"
 uniform sampler2D brdfIntegrationMap;
 
-uniform float irradiPerp; 
 uniform vec3 cameraPosition;
 uniform mat4 meshTransform; // mesh transformation
 uniform mat4 uView;
 uniform float reflectance;
 uniform float metallic;
+uniform float roughness;
 uniform bool IsBackGroundGuide;
 uniform bool IsDepth;
+uniform bool IsEnvLight;
 vec3 rgb2lin(vec3 rgb) { // sRGB to linear approximation
   return pow(rgb, vec3(2.2));
 }
@@ -33,51 +34,6 @@ vec3 lin2rgb(vec3 lin) { // linear to sRGB approximation
 
 #define RECIPROCAL_PI 0.3183098861837907
 #define RECIPROCAL_2PI 0.15915494309189535
-
-
-float roughnessToShininess( const in float roughness ) {
-	return pow(1000.0, 1.0-roughness);
-}
-
-
-
-vec3 fresnelSchlick(float cosTheta, vec3 F0) {
-  return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
-}
-
-float D_GGX(float NoH, float roughness) {
-  float alpha = roughness * roughness;
-  float alpha2 = alpha * alpha;
-  float NoH2 = NoH * NoH;
-  float b = (NoH2 * (alpha2 - 1.0) + 1.0);
-  return alpha2 * RECIPROCAL_PI / (b * b);
-}
-
-
-float G1_GGX_Schlick(float NoV, float roughness) {
-  float alpha = roughness * roughness;
-  float k = alpha / 2.0;
-  return max(NoV, 0.001) / (NoV * (1.0 - k) + k);
-}
-
-float G_Smith(float NoV, float NoL, float roughness) {
-  return G1_GGX_Schlick(NoL, roughness) * G1_GGX_Schlick(NoV, roughness);
-}
-
-float fresnelSchlick90(float cosTheta, float F0, float F90) {
-  return F0 + (F90 - F0) * pow(1.0 - cosTheta, 5.0);
-} 
-
-float disneyDiffuseFactor(float NoV, float NoL, float VoH, float roughness) {
-  float alpha = roughness * roughness;
-  float F90 = 0.5 + 2.0 * alpha * VoH * VoH;
-  float F_in = fresnelSchlick90(NoL, 1.0, F90);
-  float F_out = fresnelSchlick90(NoV, 1.0, F90);
-  return F_in * F_out;
-}
-
-
-
 
 #define PI 3.1415926535897932384626433832795
 
@@ -132,39 +88,37 @@ vec3 specularIBL(vec3 F0, float roughness, vec3 N, vec3 V) {
   vec3 T1 = texture(envmapSpecularLevel5, uv).rgb;
   vec4 brdfIntegration = texture(brdfIntegrationMap, vec2(NoV, roughness));
   vec3 T2 = (F0 * brdfIntegration.x + brdfIntegration.y);
-  return T1 + T2 ;
+  return T1 * T2 ;
 }
 
 vec3 renderMesh() {
-  //vec3 baseCol = rgb2lin(texture(baseColorTexture, tc).rgb);
-  vec3 baseCol = vec3(0.0,0.0,0.0);
-  float roughness = 0.9;
+  vec3 baseCol = rgb2lin(texture(baseColorTexture, tc).rgb);
+  //vec3 baseCol = vec3(0.5, 0.5, 0.5);
   vec3 viewDir = normalize(cameraPosition - vertPos);
-  //vec4 emission = texture(emissionTexture, tc);
+
   vec3 n = normalize(wfn);
-  
-  mat4 mNormal = transpose(inverse( uView * meshTransform));
-  vec4 wNormal = vec4(vec3(mNormal * vec4(n, 0.0)).xyz , 1.0) ;
   
   vec3 radiance = vec3(0.0, 0.0, 0.0);
   
   // compute F0
-  vec3 f0 = vec3(0.001 * (reflectance * reflectance));
+  vec3 f0 = vec3(0.16 * (reflectance * reflectance));
   f0 = mix(f0, baseCol, metallic);
   
   // image-based lighting (diffuse part)
   vec2 envUV = directionToSphericalEnvmap(n.xyz);
 
-  vec3 rhoD = (1.0 - metallic) * baseCol;
-  //rhoD *= vec3(1.0) - f0; // optionally
-  radiance =  texture(envmapDiffuse, envUV).rgb;
-  
-  //radiance = vec3(n.x, n.y, n.z);
-  
+  radiance += baseCol * texture(envmapDiffuse, envUV).rgb;
+
   // image-based lighting (specular part)
-  radiance =  specularIBL(f0, roughness, n, viewDir);
+  radiance +=  specularIBL(f0, roughness, n, viewDir);
+  if(IsEnvLight)
+  {
+	return lin2rgb(radiance);
+  }
+  else{
+	return lin2rgb(baseCol);
+  }
   
-  return (radiance);
 }
 
 void main() 
@@ -181,7 +135,6 @@ void main()
 	else
 	{
 		outColor.rgb = renderMesh();
-		//outColor.rgb = vec3(1.0, 0.0, 0.0);
 	}
   
   }

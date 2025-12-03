@@ -830,17 +830,17 @@ void Renderer::init()
  height, Integer, 512,,,";
 
 
-  shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodeRowAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodeColAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodePDFJoint.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodePDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodePDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+  shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+  shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+  shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+  shaderNodeRowAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+  shaderNodeColAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+  shaderNodePDFJoint.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+  shaderNodePDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+  shaderNodePDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+  shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+  shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+  shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
 #endif
 
 #ifdef IMAGPROCESSINGTEST
@@ -898,7 +898,7 @@ void Renderer::init()
  meshTransform, Matrix, 4, 4, 1, 0, 0, 0, 0.00E+00, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1\n\
  uView, Matrix, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0";
 
-  shaderNodeHetroObj.setUniformsFromFile(FileTools::findFile("data/parameters_hetro.csv"));
+  shaderNodeHetroObj.setUniformsFromFile(FileTools::findFile("data/parameters_hetro.csv"), "");
   shaderNodeHetroObj.setUniformsFromSeq("baseColorTexture");
   shaderNodeHetroObj.setUniformsFromMIVTex();
   

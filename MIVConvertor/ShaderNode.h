@@ -51,7 +51,7 @@ namespace gsn {
     void setUniformMatrix(const std::string& name, const Matrix& value);
 
     //! sets uniform variables from a file
-    void setUniformsFromFile(const std::string& filename);
+    void setUniformsFromFile(const std::string& filename, const std::string& filename2);
 
     void setUniformsFromSeq(std::string strname);
     void setUniformsFromMIVTex();

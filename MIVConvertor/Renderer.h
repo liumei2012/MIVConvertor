@@ -102,7 +102,7 @@ namespace gsn {
     std::string strGeoOutputFile;
     std::string strTexOutputFile;
     std::string strEntityOutputFile;
-
+    std::string strEnvironmentmapFile;
     float fFieldOfView0 = 3.14159;
     float fFieldOfView1 = 1.5708;
     float fNearPlane = 0.5;

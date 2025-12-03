@@ -46,12 +46,14 @@ void main(){
 	vec4 fragPos = vPosition;
 
 	fragPos.r = (fTheta / fFieldOfViewH);
-
-	if(vPosition.g < 0.0){ fragPos.g = (fAlpha/ fFieldOfViewV) ;}
-	else{fragPos.g = (fAlpha/ fFieldOfViewV) ; }
+	fragPos.g = (fAlpha/ fFieldOfViewV) ;	
+	
+	//if(vPosition.g < 0.0){ fragPos.g = (fAlpha/ fFieldOfViewV) ;}
+	//else{fragPos.g = (fAlpha/ fFieldOfViewV) ; }
 	
 	//mat4 mNormal = transpose(inverse(uView * meshTransform));
 	//wfn = vec3(mNormal * vec4(normal, 0.0)).xyz;
+	
 	wfn = normal;
 	if(!IsBackGroundGuide)
     {
