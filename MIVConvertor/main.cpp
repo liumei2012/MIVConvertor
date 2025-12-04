@@ -100,6 +100,7 @@ static void glutKeyboard(unsigned char key, int x, int y)
     if (key == 'c')
     {
         //renderer->shaderNodeHetroObj.bCaptureing = true;
+        renderer->nCamIndex = 0;
         renderer->bAutoCapture = true;
         std::cout << "[INFO] event=glutKeyboard key= 'c' action=pressed " << std::endl;
     }
@@ -301,6 +302,7 @@ int main(int argc, char** argv)
     std::string strBGTexHeight;
     std::string strHeterObjOutPath;
     std::string strPointCloudOutPath;
+    std::string strEnvironmentMap;
 
     std::string strFieldOfView0;
     std::string strFieldOfView1;
@@ -350,18 +352,21 @@ int main(int argc, char** argv)
         strCommnd = strCommnd + " " + strPointCloudOutPath;
     }
 
-    if (argc == 13)
+    if (argc == 14)
     {
         strHeterObjPath = argv[9];
         strHeterObjOutPath = argv[10];
        
         bAutoComposition = !!atoi(argv[11]);
         strCompositedRetOutPath = argv[12];
+        strEnvironmentMap = argv[13];
+
         strCommnd = strCommnd + " " + strHeterObjPath + " " 
             + strHeterObjOutPath 
             //+ " " + std::to_string(bAutoCapture) 
             + " " + std::to_string(bAutoComposition)
-            + " " + strCompositedRetOutPath;
+            + " " + strCompositedRetOutPath
+            + " " + strEnvironmentMap; 
     }
 
     std::cout << strCommnd << std::endl;
@@ -405,6 +410,8 @@ int main(int argc, char** argv)
     renderer->bAutoComposition = bAutoComposition;
     renderer->strCompositedRetOutPath = strCompositedRetOutPath;
     renderer->strPointCloudOutPath = strPointCloudOutPath;
+    renderer->strEnvironmentmapFile = strEnvironmentMap;
+
     renderer->Preinit();
 
     if (renderer->nProgMode == 1)

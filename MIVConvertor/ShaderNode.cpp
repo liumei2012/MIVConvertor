@@ -1352,7 +1352,13 @@ void ShaderNode::setUniformsFromFile(const std::string& filename, const std::str
             // fclose(file);
 
             // FileTools::YUVToRGBTexFile(imgFileName, _data, width, height, true);
- 
+             if (imgFileName != filename2)
+             {
+                 fclose(file);
+                 file = fopen(filename2.data(), "rb");
+
+             }
+
              fread(&_data[0], sizeof(GLfloat), width * height * 4, file);
              GLfloat* pixelscpy = new GLfloat[width * height * 4];
              int nTestCount = 0;
