@@ -423,17 +423,17 @@ void Renderer::ComposeContents(std::string strYUVPath,
             for (int j = 0; j < nImageWidth; j++)
             {
                 
-                usUVPlaneVecTexSource[0][i * nImageWidth + j] = TempShortBufVec0[nImageHeight * i + j + nTexWidth * nTexHeight];
-                usUVPlaneVecTexSource[1][i * nImageWidth + j] = TempShortBufVec0[nImageHeight * i + j + (nTexWidth / 2 * nTexHeight / 2) + nTexWidth * nTexHeight];
+                usUVPlaneVecTexSource[0][i * nImageWidth + j] = TempShortBufVec0[nImageWidth * i + j + nTexWidth * nTexHeight];
+                usUVPlaneVecTexSource[1][i * nImageWidth + j] = TempShortBufVec0[nImageWidth * i + j + (nTexWidth / 2 * nTexHeight / 2) + nTexWidth * nTexHeight];
 
-                usUVPlaneVecGeoSource[0][i * nImageWidth + j] = TempShortBufVec1[nImageHeight * i + j + nTexWidth * nTexHeight];
-                usUVPlaneVecGeoSource[1][i * nImageWidth + j] = TempShortBufVec1[nImageHeight * i + j + (nTexWidth / 2 * nTexHeight / 2) + nTexWidth * nTexHeight];
+                usUVPlaneVecGeoSource[0][i * nImageWidth + j] = TempShortBufVec1[nImageWidth * i + j + nTexWidth * nTexHeight];
+                usUVPlaneVecGeoSource[1][i * nImageWidth + j] = TempShortBufVec1[nImageWidth * i + j + (nTexWidth / 2 * nTexHeight / 2) + nTexWidth * nTexHeight];
 
-                usUVPlaneVecTexTarget[0][i * nImageWidth + j] = TempShortBufVec2[nImageHeight * i + j + nTexWidth * nTexHeight];
-                usUVPlaneVecTexTarget[1][i * nImageWidth + j] = TempShortBufVec2[nImageHeight * i + j + (nTexWidth / 2 * nTexHeight / 2) + nTexWidth * nTexHeight];
+                usUVPlaneVecTexTarget[0][i * nImageWidth + j] = TempShortBufVec2[nImageWidth * i + j + nTexWidth * nTexHeight];
+                usUVPlaneVecTexTarget[1][i * nImageWidth + j] = TempShortBufVec2[nImageWidth * i + j + (nTexWidth / 2 * nTexHeight / 2) + nTexWidth * nTexHeight];
 
-                usUVPlaneVecGeoTarget[0][i * nImageWidth + j] = TempShortBufVec3[nImageHeight * i + j + nTexWidth * nTexHeight];
-                usUVPlaneVecGeoTarget[1][i * nImageWidth + j] = TempShortBufVec3[nImageHeight * i + j + (nTexWidth / 2 * nTexHeight / 2) + nTexWidth * nTexHeight];
+                usUVPlaneVecGeoTarget[0][i * nImageWidth + j] = TempShortBufVec3[nImageWidth * i + j + nTexWidth * nTexHeight];
+                usUVPlaneVecGeoTarget[1][i * nImageWidth + j] = TempShortBufVec3[nImageWidth * i + j + (nTexWidth / 2 * nTexHeight / 2) + nTexWidth * nTexHeight];
                 
             }
         }
@@ -483,9 +483,9 @@ void Renderer::ComposeContents(std::string strYUVPath,
         std::memcpy(TempShortBufVec1.data() + usYPlaneVecGeoOut.size() + usUVPlaneVecGeoOut[0].size(), usUVPlaneVecGeoOut[1].data(), usUVPlaneVecGeoOut[1].size() * sizeof(unsigned short));
 
 
-        strCompositionRetTexPath = strCompositedRetOutPath + strFilenameTexComposited + ".yuv";
-        strCompositionRetGeoPath = strCompositedRetOutPath + strFilenameGeoComposited + ".yuv";
-        strCompositionRetEntityPath = strCompositedRetOutPath + strFilenameEntityComposited  + ".yuv";
+        strCompositionRetTexPath = strCompositedRetOutPath + strFilenameTexComposited ;
+        strCompositionRetGeoPath = strCompositedRetOutPath + strFilenameGeoComposited ;
+        strCompositionRetEntityPath = strCompositedRetOutPath + strFilenameEntityComposited  ;
 
 
         // for texture
@@ -1072,6 +1072,7 @@ void Renderer::display() {
                   pCamProp[i] = NULL;
               }
           }
+          std::cout << std::endl;
           std::cout << "[INFO] Composition process completed successfully!" << std::endl;
           exit(0);
       }
