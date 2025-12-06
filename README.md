@@ -156,18 +156,17 @@ https://gitlab.com/mpeg-i-visual/tmiv
 ### Create the in folder and add the data
 After cloning, the repository directory is named tmiv.
 Inside the tmiv directory, create a new folder named in.
-If you are using the museum sequence, create a subfolder named B01 inside the in directory:
+If you are using the classroomvideo sequence, create a subfolder named according to the dataset code (for example, A01) inside the in directory.
 ```
-.\tmiv\in\B01
+.\tmiv\in\A01
 
 ```
 
-### Add the dataset to .\tmiv\in\B01
-Place the dataset files inside the .\tmiv\in\B01 directory.
+### Add the dataset to .\tmiv\in\A01
+Place the dataset files inside the .\tmiv\in\A01 directory.
 Ensure that the dataset filenames follow the required naming convention, such as:
 
 v0_depth_2048x2048_yuv420p16le.yuv
-
 v0_texture_2048x2048_yuv420p10le.yuv
 
 Reference:
@@ -175,28 +174,31 @@ https://gitlab.com/mpeg-i-visual/tmiv/-/blob/master/doc/running.md
 
 ### TMIV encoder configuring
 ```
-.\out\install\cl-release\bin\TmivEncoder.exe -n 1 -s B01 -f 0 -c .\config\ctc\miv_main_anchor\A_1_TMIV_encode.json -p configDirectory .\config -p inputDirectory .\in -p outputDirectory .\out
+.\out\install\cl-release\bin\TmivEncoder.exe -n 1 -s A01 -f 0 -c .\config\ctc\miv_main_anchor\A_1_TMIV_encode.json -p configDirectory .\config -p inputDirectory .\in -p outputDirectory .\out
 ```
 ### Example VVenC Encoder Configuration for Rate Point 1 (RP1)
 ```
-.\out\install\cl-release\bin\vvencFFapp.exe -c .\config\ctc\miv_main_anchor\A_2_VVenC_encode_tex.cfg -i .\out\A1\B01\RP0\TMIV_A1_B01_RP0_tex_c00_2048x4352_yuv420p10le.yuv -b .\out\A1\B01\RP1\TMIV_A1_B01_RP1_tex_c00.bit -s 2048x4352 -q 29 -f 1 -fr 30
+.\out\install\cl-release\bin\vvencFFapp.exe -c .\config\ctc\miv_main_anchor\A_2_VVenC_encode_tex.cfg -i .\out\A1\A01\RP0\TMIV_A1_A01_RP0_tex_c00_4096x2176_yuv420p10le.yuv -b .\out\A1\A01\RP1\TMIV_A1_A01_RP1_tex_c00.bit -s 4096x2176 -q 29 -f 1 -fr 30
 ```
 ```
-.\out\install\cl-release\bin\vvencFFapp.exe -c .\config\ctc\miv_main_anchor\A_2_VVenC_encode_tex.cfg -i .\out\A1\B01\RP0\TMIV_A1_B01_RP0_tex_c01_2048x4352_yuv420p10le.yuv -b .\out\A1\B01\RP1\TMIV_A1_B01_RP1_tex_c01.bit -s 2048x4352 -q 29 -f 1 -fr 30
+.\out\install\cl-release\bin\vvencFFapp.exe -c .\config\ctc\miv_main_anchor\A_2_VVenC_encode_tex.cfg -i .\out\A1\A01\RP0\TMIV_A1_A01_RP0_tex_c01_4096x2176_yuv420p10le.yuv -b .\out\A1\A01\RP1\TMIV_A1_A01_RP1_tex_c01.bit -s 4096x2176 -q 29 -f 1 -fr 30
 ```
 ```
-.\out\install\cl-release\bin\vvencFFapp.exe -c .\config\ctc\miv_main_anchor\A_2_VVenC_encode_geo.cfg -i .\out\A1\B01\RP0\TMIV_A1_B01_RP0_geo_c00_1024x2176_yuv420p10le.yuv -b .\out\A1\B01\RP1\TMIV_A1_B01_RP1_geo_c00.bit -s 1024x2176 -q 9 -f 1 -fr 30
+.\out\install\cl-release\bin\vvencFFapp.exe -c .\config\ctc\miv_main_anchor\A_2_VVenC_encode_geo.cfg -i .\out\A1\A01\RP0\TMIV_A1_A01_RP0_geo_c00_2048x1088_yuv420p10le.yuv -b .\out\A1\A01\RP1\TMIV_A1_A01_RP1_geo_c00.bit -s 2048x1088 -q 9 -f 1 -fr 30
 ```
 ```
-.\out\install\cl-release\bin\vvencFFapp.exe -c .\config\ctc\miv_main_anchor\A_2_VVenC_encode_geo.cfg -i .\out\A1\B01\RP0\TMIV_A1_B01_RP0_geo_c01_1024x2176_yuv420p10le.yuv -b .\out\A1\B01\RP1\TMIV_A1_B01_RP1_geo_c01.bit -s 1024x2176 -q 9 -f 1 -fr 30
+.\out\install\cl-release\bin\vvencFFapp.exe -c .\config\ctc\miv_main_anchor\A_2_VVenC_encode_geo.cfg -i .\out\A1\A01\RP0\TMIV_A1_A01_RP0_geo_c01_2048x1088_yuv420p10le.yuv -b .\out\A1\A01\RP1\TMIV_A1_A01_RP1_geo_c01.bit -s 2048x1088 -q 9 -f 1 -fr 30
 ```
+### Notes
+
+- Subfolders R0 and R1 are user created.  
 
 ### Multiplexer Configuration
 ```
-.\out\install\cl-release\bin\TmivMultiplexer.exe -n 1 -s B01 -r RP1 -c .\config\ctc\miv_main_anchor\A_3_TMIV_mux.json -p configDirectory .\config -p inputDirectory .\out -p outputDirectory .\out
+.\out\install\cl-release\bin\TmivMultiplexer.exe -n 1 -s A01 -r RP1 -c .\config\ctc\miv_main_anchor\A_3_TMIV_mux.json -p configDirectory .\config -p inputDirectory .\out -p outputDirectory .\out
 ```
 ### TMIV decoding
 
 ```
-.\out\install\cl-release\bin\TmivDecoder.exe -n 1 -N 1 -s B01 -r RP1 -v v11 -c .\config\ctc\miv_main_anchor\A_4_TMIV_decode.json -p configDirectory .\config -p inputDirectory .\out -p outputDirectory .\out
+.\out\install\cl-release\bin\TmivDecoder.exe -n 1 -N 1 -s A01 -r RP1 -v v11 -c .\config\ctc\miv_main_anchor\A_4_TMIV_decode.json -p configDirectory .\config -p inputDirectory .\out -p outputDirectory .\out
 ```
