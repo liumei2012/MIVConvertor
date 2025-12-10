@@ -175,7 +175,7 @@ void print_manual(int nMode) {
         printf(YELLOW "argv:10 " RESET "Enable composition (0 or 1)\n");
         printf(YELLOW "argv:11 " RESET "Path for composited results \n");
 
-        printf(GREEN "Keys: " RESET "a, s, d, f → Control heterogeneous object\n");
+        printf(GREEN "Keys: " RESET "a, s, d, f, r, q, e → Control heterogeneous object\n");
         printf(GREEN "Keys: " RESET "u, v → Control camera\n");
         printf(GREEN "Keys: " RESET "c → Capture MIV content\n");
         printf(GREEN "Keys: " RESET "b → Toggle guide background\n");
