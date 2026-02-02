@@ -79,7 +79,7 @@ The software package includes the following key components:
 The datasets required by this software are based on the MIV standard and can be downloaded from:
 
 - Public MIV datasets: [MPEG Content Database](https://mpeg-miv.org/index.php/content-database-2/)  
-- Restricted datasets (e.g., *museum*, *loot*, *redandblack*, *longdress*): available with permission from the [MPEG Expert Group](https://mpegfs.int-evry.fr/)  
+- Restricted datasets (e.g., *museum*, *loot*, *redandblack*, *longdress*, *soldier*): available with permission from the [MPEG Expert Group](https://mpegfs.int-evry.fr/)  
 - 3D models (.obj) for heterogeneous objects: [Textured Mesh Repository](https://texturedmesh.isti.cnr.it/download)
 
 
@@ -101,15 +101,18 @@ After configuring the experimental files, run the program. The program operates 
 
 The A and D keys move the object along the x-axis. The W and S keys move it along the z-axis. The Q and E keys move it along the y-axis. The R key rotates the object around the y-axis.
 
-Once the object is positioned satisfactorily, it can be automatically captured by pressing the 'c' key. During automatic capture, the OpenGL window will automatically switch between cameras to record images of the object from multiple angles, collecting both texture and geometric information. Each automatic capture cycle corresponds to one frame, and the program will close automatically upon completion.
+After positioning the object, press the ‘c’ key to confirm. The file ModelPositionMatrix.txt is saved, and automatic capture begins. During automatic capture, the OpenGL window will automatically switch between cameras to record images of the object from multiple angles, collecting both texture and geometric information. Each automatic capture cycle corresponds to one frame, and the program will close automatically upon completion.
+
+Optionally, set the relighting flag to 1 to enable IBL, or to 0 to disable it.
 
 If the user wishes to composite the captured image with the original frame, the auto composition parameter can be set to 1 in the execution parameters. The composited MIV data will then be saved in the compositionResult folder.
 
+To generate multi-frame dynamic MIV images, the user can specify the index of the first frame of the model and the filename in the following format: soldier_fr%04d.obj. The system then recognizes the input as a multi-frame dynamic object. 
 
 ### MIV to Point cloud
 ![MIV to Point cloud](./ReadmeImage1.png)
 
-With the widespread use of point cloud data, this program also provides MIV transformation functionality for point cloud datasets. Setting the mode code to 1 in the parameters enables the program to read the original MIV data and perform point cloud reconstruction. Unlike mode code 0, this mode does not launch an OpenGL window for scene rendering or composition. Therefore, only the output path (the Output folder) needs to be specified in the parameters, and the composited results folder (CompositedResults folder) does not need to be defined.
+With the widespread use of point cloud data, this program also provides MIV conversion functionality for point cloud datasets. Setting the mode code to 1 enables the program to read the original MIV data and perform point cloud reconstruction. Unlike mode code 0, this mode does not launch an OpenGL window for scene rendering or composition. Therefore, only the output path (the Output folder) needs to be specified in the parameters, and the composited results path (the CompositedResults folder) does not need to be defined. To perform multi-frame dynamic point cloud conversion, the user simply enters the output frame number and sets the mode to 1.
 
 
 ## Example
@@ -117,12 +120,12 @@ The .bat files serve as example scripts for running the software, providing user
 
 ### Heterogeneous object to MIV example
 ```
-.\MIVConvertor.exe 0 ".\data\classroomvideo\\" ".\data\classroomvideo\ClassroomVideo.json" "_texture_4096x2048_yuv420p" "_depth_4096x2048_yuv420p" "_entity_4096x2048_yuv420p" "10le" "16le" ".\data\RWT121\CHASSEUR.obj" ".\Output\\" 0 ".\CompositedResults\\"
+.\MIVConvertor.exe 0 ".\data\chess\\" ".\data\chess\Chess.json" "_texture_2048x2048_yuv420p" "_depth_2048x2048_yuv420p" "_entity_2048x2048_yuv420p" "10le" "16le" ".\data\RWT121\CHASSEUR.obj" ".\Output\\" 1 ".\CompositedResults\\" data/chess/Chess.raw 0 1
 ```
 
 ### MIV to Point cloud example
 ```
-.\MIVConvertor.exe 1 ".\data\chess\\" ".\data\chess\Chess.json" "_texture_2048x2048_yuv420p" "_depth_2048x2048_yuv420p" "_entity_2048x2048_yuv420p" "10le" "16le" ".\Output\\"
+.\MIVConvertor.exe 1 ".\data\chess\\" ".\data\chess\Chess.json" "_texture_2048x2048_yuv420p" "_depth_2048x2048_yuv420p" "_entity_2048x2048_yuv420p" "10le" "16le" ".\Output\\" %%i
 ```
 
 ## Evaluation

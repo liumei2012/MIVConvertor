@@ -47,19 +47,19 @@ namespace gsn {
         std::string strPostfixTex,
         std::string strBitDepth, 
         int nNoofView, std::vector<unsigned char>& data, 
-        int nTexWidth, int nTexHeight, bool bPointCloudConversion);
+        int nTexWidth, int nTexHeight, bool bPointCloudConversion, uint32_t nFrameIndex);
 
     static void YUVToRGBTexFile(
         std::string strFile,
         std::vector<unsigned char>& data,
-        int nTexWidth, int nTexHeight, bool bPointCloudConversion);
+        int nTexWidth, int nTexHeight, bool bPointCloudConversion, uint32_t nFrameIndex);
 
     static void YUVToGeoTex(std::string strYUVPath, 
         std::string strPostfixTex, 
         std::string strBitDepth, 
         int nNoofView, 
         std::vector<unsigned short>& data, 
-        int nTexWidth, int nTexHeight);
+        int nTexWidth, int nTexHeight, uint32_t nFrameIndex);
 
   };
 

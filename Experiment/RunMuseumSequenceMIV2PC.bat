@@ -1,1 +1,0 @@
-.\MIVConvertor.exe 1 ".\data\Museum\\" ".\data\Museum\B.json" "_100_102_frames_texture_2048x2048_yuv420p" "_100_102_frames_depth_2048x2048_yuv420p" "_entity_2048x2048_yuv420p" "10le" "16le" ".\Output\\"

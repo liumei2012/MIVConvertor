@@ -53,7 +53,9 @@ namespace gsn {
       void Preinit();
     void initShader();
     void getBoundingBox(float fMax[3], float fMin[3], float fx, float fy, float fz);
-    void initMeshHetroObj(float fModelScale);
+    void initMeshHetroObj(float& fModelScale, uint32_t nFrameIndex);
+    void initMeshSigleHetroObj(float& fModelScale);
+
     void ComposeContents(std::string strYUVPath,
         std::string strYUVOutputPath,
         std::string strPostfixTex,
@@ -63,7 +65,7 @@ namespace gsn {
         std::string strBitDepthGeo,
         std::string strCompositionRetOutPath,
         /*int nNoofView, */
-        int nTexWidth, int nTexHeight, bool bEnableCompositionTool);
+        int nTexWidth, int nTexHeight, bool bEnableCompositionTool, uint32_t nFrameNum);
     //! resize event
     void resize(int w, int h);
     void printProgressBar(int progress, int total);
@@ -75,6 +77,10 @@ namespace gsn {
 
   public:
     float t;
+    uint32_t nFrameNum = 0;
+    uint32_t nFrameNumTotal = -1;
+    uint32_t nObjSequenceStart = -1;
+    
     int selectedOutput;
     int nCamIndex;
     int nMaxCamCount = 24;
@@ -112,9 +118,15 @@ namespace gsn {
     //float fObjScale = 0.0017;
     float fObjScale = 1.0;
 
+    Box MeshBox;
+
+    float fMeshMinBox[3];
+
     bool bAutoCapture = false;
+    bool bModelPostionFixed = false;
     bool bAutoComposition = false;
     bool bEnableEnvironmentRelighting = false;
+    bool bSingleFrameMode = false;
     std::string strCompositedRetOutPath;
     std::string strPointCloudOutPath;
     
@@ -148,6 +160,8 @@ namespace gsn {
     Mesh meshDummyImagePlane;
     //Mesh meshDummyImageOutputPlane;
     Mesh meshHetroObj;
+    Matrix meshTranformMat;
+
     Mesh meshSphere;
 
     ShaderSettings shaderSettingsBGImgProc;
@@ -159,6 +173,7 @@ namespace gsn {
 
    // bool loadHetro(std::vector<float>& verts, std::vector<float>& normals, std::vector<float>& texCoords, Mesh& mesh);
     void readSequence(vMeshParameters& params, Sequence& eVmeshSequence);
+    void readSingleFrame(vMeshParameters& params, Sequence& eVmeshSequence);
 
     std::vector<uint8_t> SceneTex[24];
     std::vector<unsigned short> SceneGeo[24];

@@ -6,7 +6,10 @@
 #include <fstream>
 #include <sstream>
 #include <ctype.h>
+
 #define _USE_MATH_DEFINES
+//#define PRINTCOMPLEXITY
+
 #include <math.h>
 
 #include "Renderer.h"
@@ -25,12 +28,12 @@
 
 using namespace std;
 using namespace gsn;
-#define MAXFRAME 1
 
-std::vector<float> Hetro_vertices[MAXFRAME];
-std::vector<float> Hetro_normals[MAXFRAME];
-std::vector<float> Hetro_texcoords[MAXFRAME];
-std::vector<unsigned int> Hetro_indexes[MAXFRAME];
+
+std::vector<float> Hetro_vertices;
+std::vector<float> Hetro_normals;
+std::vector<float> Hetro_texcoords;
+std::vector<unsigned int> Hetro_indexes;
 
 std::vector<Vertex> Tmpvertices;
 std::vector<unsigned int> Tmpindexes;
@@ -138,7 +141,8 @@ void initBufers_in()
 }
 
 
-void Renderer:: initMeshHetroObj(float fModelScale)
+
+void Renderer:: initMeshHetroObj(float &fModelScale, uint32_t nFrameIndex)
 {
     float fMaxOfBox[3] = { -999999999.9, -999999999.9, -999999999.9 };
     float fMinOfBox[3] = { 999999999.9,999999999.9,999999999.9 };
@@ -148,92 +152,182 @@ void Renderer:: initMeshHetroObj(float fModelScale)
 
     float fMaxValueAxis = -99999999.9;
 
-    for (int j = 0; j < MAXFRAME; j++) {
-        eVmeshSequence.setFrameIndex(j);
-        vMeshObj* pGeometry = (vMeshObj*)(eVmeshSequence.getObject().getGeometry());
-        Box b = pGeometry->m_Meshes[0].getBox();
-        // = eVmeshSequence.getObject().getBox();
-        //eVmeshSequence.getObject().scale(b1, 0.5);
-        Box b2 = eVmeshSequence.getBox();
-        float fModelScaleFactorRedandBlack = fModelScale;
-        pGeometry->m_Meshes[0].scale(b2.center(), fModelScaleFactorRedandBlack);
-        Vec3 vCenter = b2.center();
-        Tmpvertices = pGeometry->m_Meshes[0].getVertices();
-        Tmpindexes = pGeometry->m_Meshes[0].getIndices();
-        Tmptextures = pGeometry->m_Meshes[0].getTextures();
+    Box b2;
+    float fModelScaleFactorRedandBlack = 0.0;
+    eVmeshSequence.setFrameIndex(nFrameIndex);
+    vMeshObj* pGeometry = (vMeshObj*)(eVmeshSequence.getObject().getGeometry());
 
-        //Box b1 = pGeometry->m_Meshes[0].getBox();
+    Tmpvertices = pGeometry->m_Meshes[0].getVertices();
+    Tmpindexes = pGeometry->m_Meshes[0].getIndices();
+    Tmptextures = pGeometry->m_Meshes[0].getTextures();
 
-        Hetro_vertices[j].clear();
-        Hetro_normals[j].clear();
-        Hetro_texcoords[j].clear();
 
-        for (int i = 0; i < Tmpvertices.size(); i++)
+    Hetro_vertices.clear();
+    Hetro_normals.clear();
+    Hetro_texcoords.clear();
+
+    for (int i = 0; i < Tmpvertices.size(); i++)
+    {
+        getBoundingBox(fMaxOfBox, fMinOfBox, Tmpvertices[i].position_.x, Tmpvertices[i].position_.y, Tmpvertices[i].position_.z);
+    }
+
+    int nAxis = 0;
+    for (int k = 0; k < 3; k++)
+    {
+        if (fMaxValueAxis <= fViewBoxMax[k])
         {
-            getBoundingBox(fMaxOfBox, fMinOfBox, Tmpvertices[i].position_.x, Tmpvertices[i].position_.y, Tmpvertices[i].position_.z);
-        }
-
-        int nAxis = 0;
-        for (int k = 0; k < 3; k++)
-        {
-            if (fMaxValueAxis <= fViewBoxMax[k])
-            {
-                fMaxValueAxis = fViewBoxMax[k];
-                nAxis = k;
-            }
-        }
-        
-        fModelScale = fMaxValueAxis/fMaxOfBox[nAxis]  ;
-
-        Tmpvertices.clear();
-        Tmpindexes.clear();
-        Tmptextures.clear();
-
-        b2 = eVmeshSequence.getBox();
-        fModelScaleFactorRedandBlack = fModelScale;
-        pGeometry->m_Meshes[0].scale(b2.center(), fModelScaleFactorRedandBlack);
-        vCenter = b2.center();
-
-        Tmpvertices = pGeometry->m_Meshes[0].getVertices();
-        Tmpindexes = pGeometry->m_Meshes[0].getIndices();
-        Tmptextures = pGeometry->m_Meshes[0].getTextures();
-
-        fMaxOfBox[0] = -999999999.9;
-        fMaxOfBox[1] = -999999999.9;
-        fMaxOfBox[2] = -999999999.9;
-
-        fMinOfBox[0] = 999999999.9;
-        fMinOfBox[1] = 999999999.9;
-        fMinOfBox[2] = 999999999.9;
-
-        for (int i = 0; i < Tmpvertices.size(); i++)
-        {
-            getBoundingBox(fMaxOfBox, fMinOfBox, Tmpvertices[i].position_.x, Tmpvertices[i].position_.y, Tmpvertices[i].position_.z);
-        }
-
-        for (int i = 0; i < Tmpvertices.size(); i++)
-        {
-            Hetro_vertices[j].push_back(Tmpvertices[i].position_.x - fMinOfBox[0]);
-            Hetro_vertices[j].push_back(Tmpvertices[i].position_.y - fMinOfBox[1] /*+ fMinOfBoxMIV[1]*/);
-            Hetro_vertices[j].push_back(Tmpvertices[i].position_.z - fMinOfBox[2]);
-
-            Hetro_normals[j].push_back(Tmpvertices[i].normal_.x);
-            Hetro_normals[j].push_back(Tmpvertices[i].normal_.y);
-            Hetro_normals[j].push_back(Tmpvertices[i].normal_.z);
-
-            Hetro_texcoords[j].push_back(Tmpvertices[i].texCoords_.x);
-            Hetro_texcoords[j].push_back(1.0 - Tmpvertices[i].texCoords_.y);
-        }
-
-
-        for (int i = 0; i < Tmpindexes.size(); i++)
-        {
-            Hetro_indexes[j].push_back(Tmpindexes[i]);
+            fMaxValueAxis = fViewBoxMax[k];
+            nAxis = k;
         }
     }
+
+    if (fModelScale == 1.0f)
+    {
+        fModelScale = fMaxValueAxis * 2 / fMaxOfBox[nAxis];
+    }
+
+    Tmpvertices.clear();
+    Tmpindexes.clear();
+    Tmptextures.clear();
+
+    b2 = eVmeshSequence.getBox();
+   
+
+    pGeometry->m_Meshes[0].scale(b2.center(), fModelScale);
+
+    Tmpvertices = pGeometry->m_Meshes[0].getVertices();
+    Tmpindexes = pGeometry->m_Meshes[0].getIndices();
+    Tmptextures = pGeometry->m_Meshes[0].getTextures();
+
+
+
+    for (int i = 0; i < Tmpvertices.size(); i++)
+    {
+        Hetro_vertices.push_back(Tmpvertices[i].position_.x );
+        Hetro_vertices.push_back(Tmpvertices[i].position_.y );
+        Hetro_vertices.push_back(Tmpvertices[i].position_.z );
+
+        Hetro_normals.push_back(Tmpvertices[i].normal_.x);
+        Hetro_normals.push_back(Tmpvertices[i].normal_.y);
+        Hetro_normals.push_back(Tmpvertices[i].normal_.z);
+
+        Hetro_texcoords.push_back(Tmpvertices[i].texCoords_.x);
+        Hetro_texcoords.push_back(1.0 - Tmpvertices[i].texCoords_.y);
+    }
+
+
+    for (int i = 0; i < Tmpindexes.size(); i++)
+    {
+        Hetro_indexes.push_back(Tmpindexes[i]);
+    }
+
 }
 
+
+////////////////////
+
+void Renderer::initMeshSigleHetroObj(float& fModelScale)
+{
+    float fMaxOfBox[3] = { -999999999.9, -999999999.9, -999999999.9 };
+    float fMinOfBox[3] = { 999999999.9,999999999.9,999999999.9 };
+
+    float fViewBoxMin[3] = { -0.314663142, -0.830880880, -0.198152751 };
+    float fViewBoxMax[3] = { 0.314663142, 0.830880880, 0.198152751 };
+
+    float fMaxValueAxis = -99999999.9;
+
+    eVmeshSequence.setFrameIndex(0);
+    vMeshObj* pGeometry = (vMeshObj*)(eVmeshSequence.getObject().getGeometry());
+    //Box b = pGeometry->m_Meshes[0].getBox();
+    //Box b2 = eVmeshSequence.getBox();
+
+    Box b2;
+
+    Tmpvertices = pGeometry->m_Meshes[0].getVertices();
+    Tmpindexes = pGeometry->m_Meshes[0].getIndices();
+    Tmptextures = pGeometry->m_Meshes[0].getTextures();
+
+
+    Hetro_vertices.clear();
+    Hetro_normals.clear();
+    Hetro_texcoords.clear();
+
+    for (int i = 0; i < Tmpvertices.size(); i++)
+    {
+        getBoundingBox(fMaxOfBox, fMinOfBox, Tmpvertices[i].position_.x, Tmpvertices[i].position_.y, Tmpvertices[i].position_.z);
+    }
+
+    int nAxis = 0;
+    for (int k = 0; k < 3; k++)
+    {
+        if (fMaxValueAxis <= fViewBoxMax[k])
+        {
+            fMaxValueAxis = fViewBoxMax[k];
+            nAxis = k;
+        }
+    }
+
+    if (fModelScale == 1.0f)
+    {
+        fModelScale = fMaxValueAxis * 2 / fMaxOfBox[nAxis];
+    }
+
+    Tmpvertices.clear();
+    Tmpindexes.clear();
+    Tmptextures.clear();
+
+    b2 = eVmeshSequence.getBox();
+
+    pGeometry->m_Meshes[0].scale(b2.center(), fModelScale);
+
+    Tmpvertices = pGeometry->m_Meshes[0].getVertices();
+    Tmpindexes = pGeometry->m_Meshes[0].getIndices();
+    Tmptextures = pGeometry->m_Meshes[0].getTextures();
+
+
+    for (int i = 0; i < Tmpvertices.size(); i++)
+    {
+        Hetro_vertices.push_back(Tmpvertices[i].position_.x );
+        Hetro_vertices.push_back(Tmpvertices[i].position_.y );
+        Hetro_vertices.push_back(Tmpvertices[i].position_.z );
+
+        Hetro_normals.push_back(Tmpvertices[i].normal_.x);
+        Hetro_normals.push_back(Tmpvertices[i].normal_.y);
+        Hetro_normals.push_back(Tmpvertices[i].normal_.z);
+
+        Hetro_texcoords.push_back(Tmpvertices[i].texCoords_.x);
+        Hetro_texcoords.push_back(1.0 - Tmpvertices[i].texCoords_.y);
+    }
+
+
+    for (int i = 0; i < Tmpindexes.size(); i++)
+    {
+        Hetro_indexes.push_back(Tmpindexes[i]);
+    }
+
+}
+
+void Renderer::readSingleFrame(vMeshParameters& params, Sequence& eVmeshSequence) {
+
+    eVmeshSequence.readFile(params.getFile(), params.getFrameIndex(), params.getFrameNumber(), params.getBinFile());
+
+    if (params.getBoxSize() > 0) {
+        eVmeshSequence.setBoxSize((float)params.getBoxSize());
+    }
+    else {
+        eVmeshSequence.setBoxSize(eVmeshSequence.getBox().getMaxSize());
+    }
+
+    // Normalize objects position and size
+    eVmeshSequence.normalize(2, params.getCenter());
+}
+
+//////////////////
 void Renderer::readSequence(vMeshParameters& params, Sequence& eVmeshSequence) {
+    
+    //params.m_pFile = ".\\data\\redandblack\\redandblack_fr%04d.obj";
+    //params.m_nFrameNumber = 5;
+    //params.m_nFrameIndex = 1450;
 
     eVmeshSequence.readFile(params.getFile(), params.getFrameIndex(), params.getFrameNumber(), params.getBinFile());
    
@@ -271,9 +365,12 @@ void Renderer::ComposeContents(std::string strYUVPath,
     std::string strBitDepthGeo, 
     std::string strCompositionRetOutPath,
    /* int nNoofView,*/
-    int nTexWidth, int nTexHeight, bool bEnableCompositionTool)
+    int nTexWidth, int nTexHeight, bool bEnableCompositionTool, uint32_t nFrameNum)
 {
-
+#ifdef PRINTCOMPLEXITY
+    using Clock = std::chrono::steady_clock;
+    auto start = Clock::now();
+#endif
     if (!bEnableCompositionTool)
     {
         return;
@@ -366,27 +463,27 @@ void Renderer::ComposeContents(std::string strYUVPath,
         std::string strFilenameGeoSource = strYUVOutputPath + "v" + std::to_string(nCam) + strPostfixGeo + strBitDepthGeo + ".yuv";
         std::string strFilenameEntitySource = strYUVOutputPath + "v" + std::to_string(nCam) + strPostfixEntity + strBitDepthGeo + ".yuv";
 
-        int nFileSize = FileTools::ReadYUV(strFilenameTexSource, buffer, 0, nTexWidth, nTexHeight);
+        int nFileSize = FileTools::ReadYUV(strFilenameTexSource, buffer, nFrameNum, nTexWidth, nTexHeight);
         memcpy(&TempShortBufVec0[0], buffer, nFileSize);
         delete buffer;
         buffer = NULL;
 
-        nFileSize = FileTools::ReadYUV(strFilenameGeoSource, buffer, 0, nTexWidth, nTexHeight);
+        nFileSize = FileTools::ReadYUV(strFilenameGeoSource, buffer, nFrameNum, nTexWidth, nTexHeight);
         memcpy(&TempShortBufVec1[0], buffer, nFileSize);
         delete buffer;
         buffer = NULL;
 
-        nFileSize = FileTools::ReadYUV(strFilenameTexTarget, buffer, 0, nTexWidth, nTexHeight);
+        nFileSize = FileTools::ReadYUV(strFilenameTexTarget, buffer, nFrameNum, nTexWidth, nTexHeight);
         memcpy(&TempShortBufVec2[0], buffer, nFileSize);
         delete buffer;
         buffer = NULL;
 
-        nFileSize = FileTools::ReadYUV(strFilenameGeoTarget, buffer, 0, nTexWidth, nTexHeight);
+        nFileSize = FileTools::ReadYUV(strFilenameGeoTarget, buffer, nFrameNum, nTexWidth, nTexHeight);
         memcpy(&TempShortBufVec3[0], buffer, nFileSize);
         delete buffer;
         buffer = NULL;
 
-        nFileSize = FileTools::ReadYUV(strFilenameEntityTarget, buffer, 0, nTexWidth, nTexHeight);
+        nFileSize = FileTools::ReadYUV(strFilenameEntityTarget, buffer, nFrameNum, nTexWidth, nTexHeight);
         if (nFileSize > 0) {
             //memcpy(&TempShortBufVec3[0], buffer, nFileSize);
             bEntityActivation = true;
@@ -395,7 +492,7 @@ void Renderer::ComposeContents(std::string strYUVPath,
         }
 
 
-        nFileSize = FileTools::ReadYUV(strFilenameEntityTarget, buffer, 0, nTexWidth, nTexHeight);
+        nFileSize = FileTools::ReadYUV(strFilenameEntityTarget, buffer, nFrameNum, nTexWidth, nTexHeight);
         if (nFileSize > 0) {
             //memcpy(&TempShortBufVec3[0], buffer, nFileSize);
             bEntityActivation = true;
@@ -490,17 +587,22 @@ void Renderer::ComposeContents(std::string strYUVPath,
 
         // for texture
         fstream outfile;
-        outfile.open(strCompositionRetTexPath, ios::out | ios::binary);
+        outfile.open(strCompositionRetTexPath, std::ios::out | std::ios::binary | std::ios::app);
         int nSizeInByte = (nTexWidth * nTexHeight + nTexWidth * nTexHeight / 2) * 2;
         outfile.write((char*) & TempShortBufVec0[0], nSizeInByte);
         outfile.close();
 
         // for geometry
-        outfile.open(strCompositionRetGeoPath, ios::out | ios::binary);
+        outfile.open(strCompositionRetGeoPath, std::ios::out | std::ios::binary | std::ios::app);
         nSizeInByte = (nTexWidth * nTexHeight + nTexWidth * nTexHeight / 2) * 2;
         outfile.write((char*)&TempShortBufVec1[0], nSizeInByte);
         outfile.close();
     }
+#ifdef PRINTCOMPLEXITY
+    auto end = Clock::now();
+    std::chrono::duration<double, std::milli> elapsed = end - start;
+    std::cout << "\n [INFO] Writing Time (ms): " << elapsed.count() << " ms\n";
+#endif
 }
 
 void Renderer::getBoundingBox(float fMaxOfBox[3], float fMinOfBox[3], float fx, float fy, float fz)
@@ -606,14 +708,15 @@ void Renderer::Preinit()
     {
        /* if (bPointCloudConversion) {*/
             FileTools::YUVToGeoTex(strMIVSequencePath, strPostfixGeo, strGeoBitDepth, nView, SceneGeo[nView],
-                shaderNodeHetroObj.nHetroBGImageDimWidth, shaderNodeHetroObj.nHetroBGImageDimHeight);
+                shaderNodeHetroObj.nHetroBGImageDimWidth, shaderNodeHetroObj.nHetroBGImageDimHeight, nFrameNum);
        // }
         FileTools::YUVToRGBTex(strMIVSequencePath,
             strPostfixTex,
             strTexBitDepth,
             nView,
             SceneTex[nView],
-            shaderNodeHetroObj.nHetroBGImageDimWidth, shaderNodeHetroObj.nHetroBGImageDimHeight, bPointCloudConversion);
+            shaderNodeHetroObj.nHetroBGImageDimWidth, shaderNodeHetroObj.nHetroBGImageDimHeight, bPointCloudConversion, nFrameNum
+        );
 
     }
 
@@ -630,6 +733,10 @@ void Renderer::Preinit()
         pCamProp[i] = new CammeraProperty(ViewID[i], ViewRotID[i]);
     }
 
+#ifdef PRINTCOMPLEXITY
+    using Clock = std::chrono::steady_clock;
+    auto start = Clock::now();
+#endif
     //if (bPointCloudConversion) {
         struct PointCloudAttribute
         {
@@ -639,6 +746,7 @@ void Renderer::Preinit()
         };
 
         int nFactorResolution = 4;
+        pcc::PCCPointSet3 OutputPointCloudMerged;
 
         for (int c = 0; c <= nMaxCamCount; c++)
         {
@@ -688,6 +796,7 @@ void Renderer::Preinit()
             }
 
             pcc::PCCPointSet3 OutputPointCloud;
+
             if (bPointCloudConversion) {
                 
                 OutputPointCloud.resize(pointCloud.size());
@@ -702,10 +811,9 @@ void Renderer::Preinit()
                     OutputPointCloud.setColor(i, tempCol);
                 }
                
-                std::string strPointCLoudPath = strPointCloudOutPath + std::to_string(c) + ".ply";
-                pcc::ply::PropertyNameMap propNames;
-                propNames.position = { "x", "y", "z" };
-                pcc::ply::write(OutputPointCloud, propNames, 1.0, 0.0, strPointCLoudPath, 1);
+   
+                //pcc::ply::write(OutputPointCloud, propNames, 1.0, 0.0, strPointCLoudPath, 1);
+                OutputPointCloudMerged.append(OutputPointCloud);
             }
             pointCloud.clear();
             OutputPointCloud.clear();
@@ -713,7 +821,22 @@ void Renderer::Preinit()
             attrpointCloud.clear();
         }
      
-    //}
+    if (bPointCloudConversion) {
+        pcc::ply::PropertyNameMap propNames;
+        propNames.position = { "x", "y", "z" };
+
+        std::ostringstream oss;
+        oss << std::setw(4) << std::setfill('0') << nFrameNum;
+
+        std::string strPointCLoudPath = strPointCloudOutPath + oss.str() + ".ply";
+        pcc::ply::write(OutputPointCloudMerged, propNames, 1.0, 0.0, strPointCLoudPath, 1);
+    }
+
+#ifdef PRINTCOMPLEXITY
+    auto end = Clock::now();
+    std::chrono::duration<double, std::milli> elapsed = end - start;
+    std::cout << "\n [INFO] Writing Time (ms): " << elapsed.count() << " ms\n";
+#endif
 
     for (int i = 0; i <= nMaxCamCount; i++)
     {
@@ -728,183 +851,210 @@ void Renderer::Preinit()
 
 void Renderer::init()
 {
+    if (bSingleFrameMode)
+    {
+        params.m_pFile = strHeterObjPath;
+        params.m_nFrameNumber = 1;
+        params.m_nFrameIndex = 0;
+    }
+    else {
+        params.m_pFile = strHeterObjPath;
+        params.m_nFrameNumber = nFrameNumTotal;
+        params.m_nFrameIndex = nObjSequenceStart;
+    }
 
-  params.m_pFile = strHeterObjPath;
-  params.m_nFrameNumber = MAXFRAME;
-  params.m_nFrameIndex = 0;
+      //std::cout << "Read MIV sequence" << std::endl;
+      if (nProgMode == 0)
+      {
+          bPointCloudConversion = false;
+      }
+      else if (nProgMode == 1)
+      {
+          bPointCloudConversion = true;
+      }
 
-  //std::cout << "Read MIV sequence" << std::endl;
-  if (nProgMode == 0)
-  {
-      bPointCloudConversion = false;
-  }
-  else if (nProgMode == 1)
-  {
-      bPointCloudConversion = true;
-  }
+      std::cout << "[INFO] Texture loading..." << std::endl;
+      for (int nView = 0; nView <= nMaxCamCount; nView++)
+      {
+          //if (bPointCloudConversion) {
+          //    FileTools::YUVToGeoTex(strMIVSequencePath, strPostfixGeo, strGeoBitDepth, nView, SceneGeo[nView],
+          //        shaderNodeHetroObj.nHetroBGImageDimWidth, shaderNodeHetroObj.nHetroBGImageDimHeight);
+          //}
+          printProgressBar(nView, nMaxCamCount);
+          FileTools::YUVToRGBTex(strMIVSequencePath, 
+              strPostfixTex, 
+              strTexBitDepth, 
+              nView, 
+              SceneTex[nView], 
+              shaderNodeHetroObj.nHetroBGImageDimWidth, shaderNodeHetroObj.nHetroBGImageDimHeight, bPointCloudConversion, nFrameNum);
 
-  
-  for (int nView = 0; nView <= nMaxCamCount; nView++)
-  {
-      //if (bPointCloudConversion) {
-      //    FileTools::YUVToGeoTex(strMIVSequencePath, strPostfixGeo, strGeoBitDepth, nView, SceneGeo[nView],
-      //        shaderNodeHetroObj.nHetroBGImageDimWidth, shaderNodeHetroObj.nHetroBGImageDimHeight);
-      //}
-      FileTools::YUVToRGBTex(strMIVSequencePath, 
-          strPostfixTex, 
-          strTexBitDepth, 
-          nView, 
-          SceneTex[nView], 
-          shaderNodeHetroObj.nHetroBGImageDimWidth, shaderNodeHetroObj.nHetroBGImageDimHeight, bPointCloudConversion);
+      }
 
-  }
+      std::cout << std::endl;
+
+      std::cout << "[INFO] Calculating camera matrix..." << std::endl;
+      for (int i = 0; i <= nMaxCamCount; i++)
+      {
+          printProgressBar(i, nMaxCamCount);
+          ViewID[i][0] = cameras.at(i).position[0];
+          ViewID[i][1] = cameras.at(i).position[2];
+          ViewID[i][2] = cameras.at(i).position[1];
+
+          ViewRotID[i][0] = cameras.at(i).rotation[0];
+          ViewRotID[i][1] = cameras.at(i).rotation[1];
+          ViewRotID[i][2] = cameras.at(i).rotation[2];
+
+          pCamProp[i] = new CammeraProperty(ViewID[i], ViewRotID[i]);
+      }
+
+      std::cout << std::endl;
+      if (bSingleFrameMode)
+      {
+          readSingleFrame(params, eVmeshSequence);
+          initMeshSigleHetroObj(fObjScale);
+      }
+      else
+      {
+          readSequence(params, eVmeshSequence);
+          initMeshHetroObj(fObjScale, nFrameNum);
+      }
+
+      initBufers_in();
+      if (bSingleFrameMode)
+      {
+          eVmeshSequence.setFrameIndex(0);
+      }
+      else {
+
+          eVmeshSequence.setFrameIndex(nFrameNum);
+      }
+
+      vMeshObj* pGeometry = (vMeshObj*)(eVmeshSequence.getObject().getGeometry());
+
+      initShader();
+
+      LoadOBJ::loadHetro(Hetro_vertices, Hetro_normals, Hetro_texcoords, Hetro_indexes, meshHetroObj);
+      //LoadOBJ::loadHetro(vertex_in, normal_in, texcoords_in, indices_in, meshSphere);
+
+    #ifdef IMAGPROCESSINGTEST
+       //shaderNodeInputTex.TestImage = SceneTex[0];
+      //shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/parameters.csv"));
+      //shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/parameters_lod.csv"));
+      //shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/parameters_gray.csv"));
+      //shaderNodeRowAvg.setUniformsFromFile(FileTools::findFile("data/parameters_RowAvg.csv"));
+      //shaderNodeColAvg.setUniformsFromFile(FileTools::findFile("data/parameters_ColAvg.csv"));
+      //shaderNodePDFJoint.setUniformsFromFile(FileTools::findFile("data/parameters_PDFJoint.csv"));
+      //shaderNodePDFMarg.setUniformsFromFile(FileTools::findFile("data/parameters_PDFMarg.csv"));
+      //shaderNodePDFCond.setUniformsFromFile(FileTools::findFile("data/parameters_PDFCond.csv"));
+      //shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/parameters_CDFMarg.csv"));
+      //shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/parameters_CDFCond.csv"));
+      //shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/parameters_Env.csv"));
+      std::string strImageProcessingParaPath = strMIVSequencePath;
+      shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+      shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+      shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+      shaderNodeRowAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+      shaderNodeColAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+      shaderNodePDFJoint.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+      shaderNodePDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+      shaderNodePDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+      shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+      shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+      shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
+    #else
+      std::string strImageProcessingParaPath = strMIVSequencePath;
+
+      std::string strImageProcUniform = "Museum/B,Image,,,,\n\
+     Gray, Image,,,,\n\
+     RowAvg, Image,,,,\n\
+     ColAvg, Image,,,,\n\
+     PDFMarg, Image,,,,\n\
+     PDFJoint, Image,,,,\n\
+     PDFCon, Image,,,,\n\
+     CDFCon, Image,,,,\n\
+     CDFMarg, Image,,,,\n\
+     level, Float, 0,,,\n\
+     Background, Color, 0, 0, 0, 1\n\
+     width, Integer, 1024,,,\n\
+     height, Integer, 512,,,";
 
 
+      shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+      shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+      shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+      shaderNodeRowAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+      shaderNodeColAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+      shaderNodePDFJoint.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+      shaderNodePDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+      shaderNodePDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+      shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+      shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+      shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
+    #endif
 
-  for (int i = 0; i <= nMaxCamCount; i++)
-  {
-      ViewID[i][0] = cameras.at(i).position[0];
-      ViewID[i][1] = cameras.at(i).position[2];
-      ViewID[i][2] = cameras.at(i).position[1];
+    #ifdef IMAGPROCESSINGTEST
+      //shaderNodeHetroSphere.setUniformsFromFile(FileTools::findFile("data/parameters_hetro.csv"));
+      std::string fragSrc;
+      fragSrc += "#version 300 es\n";
+      fragSrc += "precision highp float;\n";
+      fragSrc += "out vec4 outColor;\n";
+      fragSrc += "in vec2 tc; // texture coordinate of the output image in range [0.0, 1.0]\n";
+      fragSrc += "\n";
+      fragSrc += "uniform sampler2D img; // mag_filter=\"LINEAR\" \n";
+      fragSrc += "uniform float aspectX;\n";
+      fragSrc += "uniform float aspectY;\n";
+      fragSrc += "\n";
+      fragSrc += "void main() {\n";
+      fragSrc += "  vec2 tcc = (vec2(aspectX, aspectY) * (tc - vec2(0.5))) + vec2(0.5);\n";
+      fragSrc += "  if(tcc.x >= 0.0 && tcc.x <= 1.0 && tcc.y >= 0.0 && tcc.y <= 1.0) {\n";
+      fragSrc += "    outColor = texture(img, tcc);\n";
+      //fragSrc += "    outColor = vec4(1.0, 0.0, 0.0, 1.0);\n";
+      fragSrc += "  } else {\n";
+      fragSrc += "    discard;\n";
+      fragSrc += "  }\n";
+      fragSrc += "}\n";
+      shaderNodeImageWindowPlane.setShaderSource("", fragSrc);
 
-      ViewRotID[i][0] = cameras.at(i).rotation[0];
-      ViewRotID[i][1] = cameras.at(i).rotation[1];
-      ViewRotID[i][2] = cameras.at(i).rotation[2];
+    #else
 
-      pCamProp[i] = new CammeraProperty(ViewID[i], ViewRotID[i]);
-  }
+      shaderNodeHetroObj.image_hetro_ = pGeometry->m_Meshes[0].getTextures()[0].data_.data();
+      shaderNodeHetroObj.nHetroImageDimWidth = pGeometry->m_Meshes[0].getTextures()[0].width_;
+      shaderNodeHetroObj.nHetroImageDimHeight = pGeometry->m_Meshes[0].getTextures()[0].height_;
 
-  readSequence(params, eVmeshSequence);
+      std::string strContents = "baseColorTexture,Image,,,,,,,,,,,,,,,,,,\n\
+     MyTex, Image,,,,,,,,,,,,,,,,,,\n\
+     envmapDiffuse, Image,,,,,,,,,,,,,,,,,,\n\
+     brdfIntegrationMap, Image,,,,,,,,,,,,,,,,,,\n\
+     envmapSpecularLevel0, Image,,,,,,,,,,,,,,,,,,\n\
+     envmapSpecularLevel1, Image,,,,,,,,,,,,,,,,,,\n\
+     envmapSpecularLevel2, Image,,,,,,,,,,,,,,,,,,\n\
+     envmapSpecularLevel3, Image,,,,,,,,,,,,,,,,,,\n\
+     envmapSpecularLevel4, Image,,,,,,,,,,,,,,,,,,\n\
+     envmapSpecularLevel5, Image,,,,,,,,,,,,,,,,,,\n\
+     MIVBackgroundGuide, Image,,,,,,,,,,,,,,,,,,\n\
+     NodeClassName, Text, ShaderPluginNode,,,,,,,,,,,,,,,,,\n\
+     NodeName, Text, Shader,,,,,,,,,,,,,,,,,\n\
+     Background, Color, 0, 0, 0, 1,,,,,,,,,,,,,,\n\
+     IsDepth, Boolean, FALSE,,,,,,,,,,,,,,,,,\n\
+     IsBackGroundGuide, Boolean, FALSE,,,,,,,,,,,,,,,,,\n\
+     Wireframe, Boolean, FALSE,,,,,,,,,,,,,,,,,\n\
+     mipLevelCount, Integer, 0,,,,,,,,,,,,,,,,,\n\
+     metallic, Float, 0,,,,,,,,,,,,,,,,,\n\
+     reflectance, Float, 0,,,,,,,,,,,,,,,,,\n\
+     irradiPerp, Float, 10,,,,,,,,,,,,,,,,,\n\
+     ProjTransformBackground, Matrix, 4, 4, 1, 0, 0, 0, 0.00E+00, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1\n\
+     meshTransformBackground, Matrix, 4, 4, 1, 0, 0, 0, 0.00E+00, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1\n\
+     meshTransform, Matrix, 4, 4, 1, 0, 0, 0, 0.00E+00, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1\n\
+     uView, Matrix, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0";
 
-  initMeshHetroObj(fObjScale);
-  initBufers_in();
+      shaderNodeHetroObj.setUniformsFromFile(FileTools::findFile("data/parameters_hetro.csv"), "");
+      shaderNodeHetroObj.setUniformsFromSeq("baseColorTexture");
+      shaderNodeHetroObj.setUniformsFromMIVTex();
 
-  eVmeshSequence.setFrameIndex(0);
-  vMeshObj* pGeometry = (vMeshObj*)(eVmeshSequence.getObject().getGeometry());
+      shaderNodeHetroObj.setUniformMatrix("meshTransform", meshTranformMat);
+    #endif
 
-  initShader();
-
-  LoadOBJ::loadHetro(Hetro_vertices[0], Hetro_normals[0], Hetro_texcoords[0], Hetro_indexes[0], meshHetroObj);
-  //LoadOBJ::loadHetro(vertex_in, normal_in, texcoords_in, indices_in, meshSphere);
-
-#ifdef IMAGPROCESSINGTEST
-   //shaderNodeInputTex.TestImage = SceneTex[0];
-  //shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/parameters.csv"));
-  //shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/parameters_lod.csv"));
-  //shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/parameters_gray.csv"));
-  //shaderNodeRowAvg.setUniformsFromFile(FileTools::findFile("data/parameters_RowAvg.csv"));
-  //shaderNodeColAvg.setUniformsFromFile(FileTools::findFile("data/parameters_ColAvg.csv"));
-  //shaderNodePDFJoint.setUniformsFromFile(FileTools::findFile("data/parameters_PDFJoint.csv"));
-  //shaderNodePDFMarg.setUniformsFromFile(FileTools::findFile("data/parameters_PDFMarg.csv"));
-  //shaderNodePDFCond.setUniformsFromFile(FileTools::findFile("data/parameters_PDFCond.csv"));
-  //shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/parameters_CDFMarg.csv"));
-  //shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/parameters_CDFCond.csv"));
-  //shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/parameters_Env.csv"));
-  std::string strImageProcessingParaPath = strMIVSequencePath;
-  shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodeRowAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodeColAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodePDFJoint.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodePDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodePDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-  shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"));
-#else
-  std::string strImageProcessingParaPath = strMIVSequencePath;
-
-  std::string strImageProcUniform = "Museum/B,Image,,,,\n\
- Gray, Image,,,,\n\
- RowAvg, Image,,,,\n\
- ColAvg, Image,,,,\n\
- PDFMarg, Image,,,,\n\
- PDFJoint, Image,,,,\n\
- PDFCon, Image,,,,\n\
- CDFCon, Image,,,,\n\
- CDFMarg, Image,,,,\n\
- level, Float, 0,,,\n\
- Background, Color, 0, 0, 0, 1\n\
- width, Integer, 1024,,,\n\
- height, Integer, 512,,,";
-
-
-  shaderNodeInputTex.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
-  shaderNodeInputTexMipmap.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
-  shaderNodeGray.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
-  shaderNodeRowAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
-  shaderNodeColAvg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
-  shaderNodePDFJoint.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
-  shaderNodePDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
-  shaderNodePDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
-  shaderNodeCDFMarg.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
-  shaderNodeCDFCond.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
-  shaderNodeEnv.setUniformsFromFile(FileTools::findFile("data/ImageProcessingUniform.csv"), strEnvironmentmapFile);
-#endif
-
-#ifdef IMAGPROCESSINGTEST
-  //shaderNodeHetroSphere.setUniformsFromFile(FileTools::findFile("data/parameters_hetro.csv"));
-  std::string fragSrc;
-  fragSrc += "#version 300 es\n";
-  fragSrc += "precision highp float;\n";
-  fragSrc += "out vec4 outColor;\n";
-  fragSrc += "in vec2 tc; // texture coordinate of the output image in range [0.0, 1.0]\n";
-  fragSrc += "\n";
-  fragSrc += "uniform sampler2D img; // mag_filter=\"LINEAR\" \n";
-  fragSrc += "uniform float aspectX;\n";
-  fragSrc += "uniform float aspectY;\n";
-  fragSrc += "\n";
-  fragSrc += "void main() {\n";
-  fragSrc += "  vec2 tcc = (vec2(aspectX, aspectY) * (tc - vec2(0.5))) + vec2(0.5);\n";
-  fragSrc += "  if(tcc.x >= 0.0 && tcc.x <= 1.0 && tcc.y >= 0.0 && tcc.y <= 1.0) {\n";
-  fragSrc += "    outColor = texture(img, tcc);\n";
-  //fragSrc += "    outColor = vec4(1.0, 0.0, 0.0, 1.0);\n";
-  fragSrc += "  } else {\n";
-  fragSrc += "    discard;\n";
-  fragSrc += "  }\n";
-  fragSrc += "}\n";
-  shaderNodeImageWindowPlane.setShaderSource("", fragSrc);
-
-#else
-
-  shaderNodeHetroObj.image_hetro_ = pGeometry->m_Meshes[0].getTextures()[0].data_.data();
-  shaderNodeHetroObj.nHetroImageDimWidth = pGeometry->m_Meshes[0].getTextures()[0].width_;
-  shaderNodeHetroObj.nHetroImageDimHeight = pGeometry->m_Meshes[0].getTextures()[0].height_;
-
-  std::string strContents = "baseColorTexture,Image,,,,,,,,,,,,,,,,,,\n\
- MyTex, Image,,,,,,,,,,,,,,,,,,\n\
- envmapDiffuse, Image,,,,,,,,,,,,,,,,,,\n\
- brdfIntegrationMap, Image,,,,,,,,,,,,,,,,,,\n\
- envmapSpecularLevel0, Image,,,,,,,,,,,,,,,,,,\n\
- envmapSpecularLevel1, Image,,,,,,,,,,,,,,,,,,\n\
- envmapSpecularLevel2, Image,,,,,,,,,,,,,,,,,,\n\
- envmapSpecularLevel3, Image,,,,,,,,,,,,,,,,,,\n\
- envmapSpecularLevel4, Image,,,,,,,,,,,,,,,,,,\n\
- envmapSpecularLevel5, Image,,,,,,,,,,,,,,,,,,\n\
- MIVBackgroundGuide, Image,,,,,,,,,,,,,,,,,,\n\
- NodeClassName, Text, ShaderPluginNode,,,,,,,,,,,,,,,,,\n\
- NodeName, Text, Shader,,,,,,,,,,,,,,,,,\n\
- Background, Color, 0, 0, 0, 1,,,,,,,,,,,,,,\n\
- IsDepth, Boolean, FALSE,,,,,,,,,,,,,,,,,\n\
- IsBackGroundGuide, Boolean, FALSE,,,,,,,,,,,,,,,,,\n\
- Wireframe, Boolean, FALSE,,,,,,,,,,,,,,,,,\n\
- mipLevelCount, Integer, 0,,,,,,,,,,,,,,,,,\n\
- metallic, Float, 0,,,,,,,,,,,,,,,,,\n\
- reflectance, Float, 0,,,,,,,,,,,,,,,,,\n\
- irradiPerp, Float, 10,,,,,,,,,,,,,,,,,\n\
- ProjTransformBackground, Matrix, 4, 4, 1, 0, 0, 0, 0.00E+00, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1\n\
- meshTransformBackground, Matrix, 4, 4, 1, 0, 0, 0, 0.00E+00, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1\n\
- meshTransform, Matrix, 4, 4, 1, 0, 0, 0, 0.00E+00, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1\n\
- uView, Matrix, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0";
-
-  shaderNodeHetroObj.setUniformsFromFile(FileTools::findFile("data/parameters_hetro.csv"), "");
-  shaderNodeHetroObj.setUniformsFromSeq("baseColorTexture");
-  shaderNodeHetroObj.setUniformsFromMIVTex();
-  
-#endif
-
-  meshDummyImagePlane.createQuad();
+      meshDummyImagePlane.createQuad();
   
 }
 
@@ -971,6 +1121,11 @@ void Renderer::ImageProcessingInBg() {
 }
 void Renderer::display() {
 
+#ifdef PRINTCOMPLEXITY
+    using Clock = std::chrono::steady_clock;
+    auto start = Clock::now();
+#endif
+
   ImageProcessingInBg();
 #ifdef IMAGPROCESSINGTEST
   // compute aspect ratio for shaderNodeImageWindowPlane
@@ -1025,7 +1180,34 @@ void Renderer::display() {
   strTexOutputFile = "v" + std::to_string(nCamIndex) + strPostfixTex + strTexBitDepth + ".yuv";
   strEntityOutputFile = "v" + std::to_string(nCamIndex) + strPostfixEntity + ".yuv";
   
-  if (bAutoCapture) {
+  if (bModelPostionFixed && !bAutoCapture) {
+      Matrix meshTranformMat = shaderNodeHetroObj.uniforms.at("meshTransform").matVal;
+
+      std::ofstream outFile("ModelPositionMatrix.txt", std::ios::out | std::ios::trunc);
+      if (!outFile.is_open())
+      {
+          std::cerr << "[ERROR] Failed to save the model state. \n";
+          exit(0);
+      }
+
+      for (int i = 0; i < 16 ; i++)
+      {
+          outFile << std::fixed << std::setprecision(7)
+              << meshTranformMat.e[i] << " ";
+      }
+      outFile << fObjScale << std::endl;
+      //outFile << MeshBox.min()[0] << " " << MeshBox.min()[1] << " " << MeshBox.min()[2] << " ";
+      //outFile << MeshBox.max()[0] << " " << MeshBox.max()[1] << " " << MeshBox.max()[2] << " ";
+      //outFile << fMeshMinBox[0] << " " << fMeshMinBox[1] << " " << fMeshMinBox[2] << std::endl;
+      
+      std::cout << "[INFO] Successfully saved model state." << std::endl;
+      outFile << std::endl;
+      outFile.close();
+      exit(0);
+  }
+
+
+  if (bAutoCapture ) {
       shaderNodeHetroObj.bCaptureing = true;
   }
 
@@ -1039,7 +1221,13 @@ void Renderer::display() {
       mPlaneMeshTransform, 
       mPlaneProjTransform, windowWidth, windowHeight, false, strGeoOutputFile, strTexOutputFile, strEntityOutputFile);
 
-  if (bAutoCapture) {
+#ifdef PRINTCOMPLEXITY
+  auto end = Clock::now();
+  std::chrono::duration<double, std::milli> elapsed = end - start;
+  std::cout << "\n [INFO] Rendering Time (ms): " << elapsed.count() << " ms\n";
+#endif
+
+  if (bAutoCapture ) {
 
       nCamIndex++;
       if (nCamIndex == nMaxCamCount + 1 && !shaderNodeHetroObj.bIsDepth)
@@ -1061,7 +1249,7 @@ void Renderer::display() {
 
           if (nProgMode == 0) {
               
-              ComposeContents(strMIVSequencePath, strOutputPath, strPostfixTex, strPostfixGeo, strPostfixEntity, strTexBitDepth, strGeoBitDepth, strCompositedRetOutPath, nWidth, nHeight, bAutoComposition);
+              ComposeContents(strMIVSequencePath, strOutputPath, strPostfixTex, strPostfixGeo, strPostfixEntity, strTexBitDepth, strGeoBitDepth, strCompositedRetOutPath, nWidth, nHeight, bAutoComposition, nFrameNum);
 
               for (int i = 0; i <= nMaxCamCount; i++)
               {

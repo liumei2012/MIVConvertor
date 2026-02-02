@@ -227,7 +227,7 @@ int FileTools::ReadYUV(std::string pStrFile, char*& buffer, int nFilePosition, i
     }
     else
     {
-        //std::cout << "Fail to read YUV source" << std::endl;
+        //std::cout << "[ERROR] Fail to read YUV source " << pStrFile << std::endl;
     }
 
     return length;
@@ -238,13 +238,13 @@ void FileTools::YUVToGeoTex(std::string strYUVPath,
     std::string strBitDepth, 
     int nNoofView, 
     std::vector<unsigned short>& data, 
-    int nTexWidth, int nTexHeight)
+    int nTexWidth, int nTexHeight, uint32_t nFrameIndex)
 {
     char* buffer = NULL;
     unsigned short* pShortBuf = NULL;
 
     std::string strFilename = strYUVPath + "v" + std::to_string(nNoofView) + strPostfixTex + strBitDepth + ".yuv";
-    int nFileSize = ReadYUV(strFilename, buffer, 0, nTexWidth, nTexHeight);
+    int nFileSize = ReadYUV(strFilename, buffer, nFrameIndex, nTexWidth, nTexHeight);
 
     pShortBuf = (unsigned short*)buffer;
     data.resize(nTexWidth * nTexHeight);
@@ -287,7 +287,7 @@ void FileTools::TextureUpDown(unsigned short* pShortBuf, std::vector<unsigned sh
 void FileTools::YUVToRGBTexFile(
     std::string strFile,
     std::vector<unsigned char>& data,
-    int nTexWidth, int nTexHeight, bool bPointCloudConversion)
+    int nTexWidth, int nTexHeight, bool bPointCloudConversion, uint32_t nFrameIndex)
 {
     const int nWidth = nTexWidth;
     const int nHeight = nTexHeight;
@@ -308,7 +308,7 @@ void FileTools::YUVToRGBTexFile(
     data.resize(nWidth * nHeight * 3);
 
 
-    int nFileSize = ReadYUV(strFile, buffer, 0, nWidth, nHeight);
+    int nFileSize = ReadYUV(strFile, buffer, nFrameIndex, nWidth, nHeight);
     memcpy(&TempShortBufVec[0], buffer, nFileSize);
 
 
@@ -406,9 +406,9 @@ void FileTools::YUVToRGBTex(std::string strYUVPath,
     std::string strBitDepth, 
     int nNoofView, 
     std::vector<unsigned char>& data, 
-    int nTexWidth, int nTexHeight, bool bPointCloudConversion)
+    int nTexWidth, int nTexHeight, bool bPointCloudConversion, uint32_t nFrameIndex)
 {
     std::string strFilename = strYUVPath + "v" + std::to_string(nNoofView) + strPostfixTex + strBitDepth + ".yuv";
     
-    YUVToRGBTexFile(strFilename, data,nTexWidth, nTexHeight, bPointCloudConversion);
+    YUVToRGBTexFile(strFilename, data,nTexWidth, nTexHeight, bPointCloudConversion, nFrameIndex);
 }

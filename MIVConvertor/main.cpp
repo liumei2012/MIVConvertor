@@ -2,6 +2,7 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h> // we use glut here as window manager
 #define _USE_MATH_DEFINES
+#define PRINTCOMPLEXITY
 #include <math.h>
 
 #include <iostream>
@@ -22,10 +23,29 @@ static Renderer* renderer;
 static float fangleY = 0.0;
 static void glutDisplay()
 {
+
     renderer->display();
+
     glutSwapBuffers();
     glutReportErrors();
 }
+
+
+static void PrintProgressBar(size_t current, size_t total, size_t barWidth = 40)
+{
+    if (total == 0) return;
+
+    double ratio = static_cast<double>(current) / static_cast<double>(total);
+    size_t filled = static_cast<size_t>(ratio * barWidth);
+
+    std::cout << "\r[";
+    for (size_t i = 0; i < barWidth; ++i)
+        std::cout << (i < filled ? '=' : '-');
+    std::cout << "] " << static_cast<int>(ratio * 100.0) << "% "
+
+        << std::flush;
+}
+
 
 static void glutKeyboard(unsigned char key, int x, int y)
 {
@@ -66,8 +86,8 @@ static void glutKeyboard(unsigned char key, int x, int y)
     }
     if (key == 'l')
     {
-        renderer->bEnableEnvironmentRelighting = !renderer->bEnableEnvironmentRelighting;
-        std::cout << "[INFO] event=glutKeyboard key= 'l' action=pressed " << std::endl;
+        //renderer->bEnableEnvironmentRelighting = !renderer->bEnableEnvironmentRelighting;
+        //std::cout << "[INFO] event=glutKeyboard key= 'l' action=pressed " << std::endl;
     }
 
     if (key == 'u')
@@ -101,7 +121,7 @@ static void glutKeyboard(unsigned char key, int x, int y)
     {
         //renderer->shaderNodeHetroObj.bCaptureing = true;
         renderer->nCamIndex = 0;
-        renderer->bAutoCapture = true;
+        renderer->bModelPostionFixed = true;
         std::cout << "[INFO] event=glutKeyboard key= 'c' action=pressed " << std::endl;
     }
 
@@ -225,8 +245,9 @@ void CheckDirectory(std::string path)
 
 void JsonParser(std::string jsonfile, std::vector<Camera>& cameras)
 {
+    std::cout << "[INFO] JSON parsing..." << std::endl;
     std::ifstream ifs(jsonfile.data());
-    if (!ifs) { std::cerr << "Can not open json.\n"; exit(0) ; }
+    if (!ifs) { std::cerr << "[ERROR] Can not open json.\n"; exit(0) ; }
 
     json root;
     try { ifs >> root; }
@@ -236,11 +257,15 @@ void JsonParser(std::string jsonfile, std::vector<Camera>& cameras)
 
     int nCamCount = 0;
     bool bIntrestCam = false;
+
+    const auto& cams = root.at("cameras");
+    const size_t total = cams.size();
+
     //
     if (root.contains("cameras") && root["cameras"].is_array()) {
         for (const auto& c : root["cameras"])
         {
-
+            
             std::string name = c.at("Name").get<std::string>();
 
             std::array<double, 3> position = c.at("Position").get<std::array<double, 3>>();
@@ -276,10 +301,67 @@ void JsonParser(std::string jsonfile, std::vector<Camera>& cameras)
 
                 bIntrestCam = true;
                 nCamCount++;
+                PrintProgressBar(nCamCount, total-1);
             }
         }
     }
+    std::cout << std::endl;
 }
+
+bool IsModelPositionMatrixFileExists(Matrix& meshTranformMat, float& fModelScale)
+{
+    
+    std::ifstream inFile("ModelPositionMatrix.txt");
+    if (!inFile.is_open())
+    {
+        std::cerr << "[ERROR] Failed to open ModelPositionMatrix.txt\n";
+        return false;
+    }
+
+    for (int i = 0; i < 16; i++)
+    {
+        if (!(inFile >> meshTranformMat.e[i]))
+        {
+            std::cerr << "[ERROR] Failed to read matrix value at index " << i << "\n";
+            return false;
+        }
+    }
+    
+    if (!(inFile >> fModelScale))
+    {
+        std::cerr << "[ERROR] Failed to read scale value "  << "\n";
+        return false;
+    }
+
+    //for (int i = 0; i < 3; i++)
+    //{
+    //    if (!(inFile >> refRenderer->MeshBox.min()[i]))
+    //    {
+    //        std::cerr << "[ERROR] Failed to read box value " << "\n";
+    //    }
+    //}
+
+    //for (int i = 0; i < 3; i++)
+    //{
+    //    if (!(inFile >> refRenderer->MeshBox.max()[i]))
+    //    {
+    //        std::cerr << "[ERROR] Failed to read box value " << "\n";
+    //    }
+    //}
+
+    //for (int i = 0; i < 3; i++)
+    //{
+    //    if (!(inFile >> refRenderer->fMeshMinBox[i]))
+    //    {
+    //        std::cerr << "[ERROR] Failed to read box value " << "\n";
+    //    }
+    //}
+
+
+    return true;
+}
+
+
 
 int main(int argc, char** argv)
 {
@@ -303,7 +385,13 @@ int main(int argc, char** argv)
     std::string strHeterObjOutPath;
     std::string strPointCloudOutPath;
     std::string strEnvironmentMap;
+    
+    int32_t nFrameNum = 0;
+    int32_t nFrameNumTotal = -1;
+    int32_t nObjSequenceStart = -1;
 
+    bool bAutoCaptureing = false;
+    bool bRelighting = false;
     std::string strFieldOfView0;
     std::string strFieldOfView1;
     std::string strNearPlane;
@@ -327,6 +415,23 @@ int main(int argc, char** argv)
     CheckDirectory("CompositedResults");
 
     renderer = new Renderer;
+
+    Matrix meshTranformMat;
+    float fModelScaleTemp = 1.0;
+
+
+
+
+    renderer->bModelPostionFixed = IsModelPositionMatrixFileExists(meshTranformMat, fModelScaleTemp);
+
+    if (!renderer->bModelPostionFixed)
+    {
+        meshTranformMat.setIdentity();
+        std::cout << "[INFO] Model position is undefined." << std::endl;
+    }
+
+    renderer->meshTranformMat = meshTranformMat;
+
     print_manual(atoi(strMode.data()));
     std::string strCommnd = strSW + " " 
         + strMode 
@@ -346,13 +451,40 @@ int main(int argc, char** argv)
         + strBitGeoDepth
         ;
 
-    if (argc == 10)
+    if (argc == 11)
     {
         strPointCloudOutPath = argv[9]; 
-        strCommnd = strCommnd + " " + strPointCloudOutPath;
+        nFrameNum = atoi(argv[10]);
+        //bAutoCaptureing = !!atoi(argv[11]);
+        strCommnd = strCommnd + " " + strPointCloudOutPath + " " + std::to_string(nFrameNum);
     }
 
-    if (argc == 14)
+    if (argc == 16)
+    {
+        strHeterObjPath = argv[9];
+        strHeterObjOutPath = argv[10];
+
+        bAutoComposition = !!atoi(argv[11]);
+        strCompositedRetOutPath = argv[12];
+        strEnvironmentMap = argv[13];
+        nFrameNum = atoi(argv[14]);
+        //nFrameNumTotal = atoi(argv[15]);
+        //nObjSequenceStart = atoi(argv[16]);
+        bRelighting = !!atoi(argv[15]);
+
+
+        strCommnd = strCommnd + " " + strHeterObjPath + " "
+            + strHeterObjOutPath
+            //+ " " + std::to_string(bAutoCapture) 
+            + " " + std::to_string(bAutoComposition)
+            + " " + strCompositedRetOutPath
+            + " " + strEnvironmentMap + " " + std::to_string(nFrameNum)
+            + " " + std::to_string(nFrameNumTotal)
+            + " " + std::to_string(nObjSequenceStart)
+            + " " + std::to_string(bRelighting);
+    }
+
+    if (argc == 18)
     {
         strHeterObjPath = argv[9];
         strHeterObjOutPath = argv[10];
@@ -360,20 +492,36 @@ int main(int argc, char** argv)
         bAutoComposition = !!atoi(argv[11]);
         strCompositedRetOutPath = argv[12];
         strEnvironmentMap = argv[13];
+        nFrameNum = atoi(argv[14]);
+        nFrameNumTotal = atoi(argv[15]);
+        nObjSequenceStart = atoi(argv[16]);
+        bRelighting = !!atoi(argv[17]);
 
         strCommnd = strCommnd + " " + strHeterObjPath + " " 
             + strHeterObjOutPath 
             //+ " " + std::to_string(bAutoCapture) 
             + " " + std::to_string(bAutoComposition)
             + " " + strCompositedRetOutPath
-            + " " + strEnvironmentMap; 
+            + " " + strEnvironmentMap + " " + std::to_string(nFrameNum) 
+            + " " + std::to_string(nFrameNumTotal) 
+            + " " + std::to_string(nObjSequenceStart) 
+            + " " + std::to_string(bRelighting);
     }
 
     std::cout << strCommnd << std::endl;
 
-    getchar();
+#ifdef PRINTCOMPLEXITY
+    using Clock = std::chrono::steady_clock;
+    auto start = Clock::now();
+#endif 
+
+
 
     JsonParser(strMIVSequenceJsonPath.data(), renderer->cameras);
+
+    bAutoCaptureing = renderer->bModelPostionFixed;
+    renderer->bAutoCapture = bAutoCaptureing;
+    renderer->fObjScale = fModelScaleTemp;
 
     renderer->strMIVSequencePath = strMIVSequencePath;
     renderer->nProgMode = atoi(strMode.data());
@@ -391,7 +539,7 @@ int main(int argc, char** argv)
     renderer->shaderNodeHetroObj.nHetroBGImageDimHeight = renderer->cameras.at(0).resolution[1];
 
     renderer->shaderNodeHetroObj.strHetroObjOutputPath = strHeterObjOutPath;
-    renderer->bAutoCapture = false;
+    
 
     int nHorDegree = -renderer->cameras.at(0).HorRange[0] + renderer->cameras.at(0).HorRange[1];
     double dRadianHor = (nHorDegree == 360) ? 3.14159 : 1.5708;
@@ -412,7 +560,22 @@ int main(int argc, char** argv)
     renderer->strPointCloudOutPath = strPointCloudOutPath;
     renderer->strEnvironmentmapFile = strEnvironmentMap;
 
+    renderer->nFrameNum = nFrameNum;
+    renderer->nFrameNumTotal = nFrameNumTotal;
+    renderer->nObjSequenceStart = nObjSequenceStart;
+    
+    renderer->bEnableEnvironmentRelighting = bRelighting;
+    renderer->bSingleFrameMode = (nObjSequenceStart < 0) && (nFrameNumTotal < 0);
+
+
+
     renderer->Preinit();
+
+#ifdef PRINTCOMPLEXITY
+    auto end = Clock::now();
+    std::chrono::duration<double, std::milli> elapsed = end - start;
+    std::cout << "\n [INFO] Loading Time (ms): " << elapsed.count() << " ms\n";
+#endif
 
     if (renderer->nProgMode == 1)
     {       
@@ -435,7 +598,6 @@ int main(int argc, char** argv)
     if (GLEW_OK != err) {
         fprintf(stderr, "Glew error: %s\n", glewGetErrorString(err));
     }
-
 
     glutDisplayFunc(glutDisplay);
     glutReshapeFunc(glutResize);
