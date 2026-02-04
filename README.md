@@ -95,8 +95,6 @@ Preprocessed environment light images are stored in the `dataset` folder, sharin
 
 After configuring the experimental files, run the program. The program operates in two modes. When the mode code is set to zero, a simple OpenGL rendering window is launched, displaying the MIV image rendered by the current camera along with the heterogeneous object. The program provides basic keyboard controls that allow the user to move the heterogeneous  object within the MIV space. 
 
-![Heterogeneous object to MIV viewer](./ReadmeImage2.png)
-
 The A and D keys move the object along the x-axis. The W and S keys move it along the z-axis. The Q and E keys move it along the y-axis. The R key rotates the object around the y-axis.
 
 After positioning the object, press the ‘c’ key to confirm. The file ModelPositionMatrix.txt is saved, and automatic capture begins. During automatic capture, the OpenGL window will automatically switch between cameras to record images of the object from multiple angles, collecting both texture and geometric information. Each automatic capture cycle corresponds to one frame, and the program will close automatically upon completion.
