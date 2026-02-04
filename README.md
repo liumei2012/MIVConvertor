@@ -64,8 +64,8 @@ The locations of the .dll files required for OpenGL installation are shown in th
 # Building the Project
 After opening the configured `.sln` file in Visual Studio, build the project to generate the executable file.
 
-[![Demo Video](https://img.youtube.com/vi/u0Lf1jqKYCo/0.jpg)](https://youtu.be/u0Lf1jqKYCo)
 
+[![Demo Video](https://img.youtube.com/vi/4my6dvgFCkg/0.jpg)](https://youtu.be/4my6dvgFCkg)
 # Project Structure
 The software package includes the following key components:
 - **MIVconverter** – Source code for the main application  
@@ -113,11 +113,12 @@ To generate multi-frame dynamic MIV images, the user can specify the index of th
 
 With the widespread use of point cloud data, this program also provides MIV conversion functionality for point cloud datasets. Setting the mode code to 1 enables the program to read the original MIV data and perform point cloud reconstruction. Unlike mode code 0, this mode does not launch an OpenGL window for scene rendering or composition. Therefore, only the output path (the Output folder) needs to be specified in the parameters, and the composited results path (the CompositedResults folder) does not need to be defined. To perform multi-frame dynamic point cloud conversion, the user simply enters the output frame number and sets the mode to 1.
 
+[![Demo Video](https://img.youtube.com/vi/u0Lf1jqKYCo/0.jpg)](https://youtu.be/u0Lf1jqKYCo)
 
 ## Example
 The .bat files serve as example scripts for running the software, providing users with pre-configured program parameters. Users can easily run the program’s default functions by simply double-clicking the executable .bat file in the local folder.
 
-[![Demo Video](https://img.youtube.com/vi/4my6dvgFCkg/0.jpg)](https://youtu.be/4my6dvgFCkg)
+
 
 ### Heterogeneous object to MIV example
 ```
