@@ -54,10 +54,6 @@ The locations of the .dll files required for OpenGL installation are shown in th
 
 **C:\Windows\System32**
 
-**.\Experiment\**
-
-![Expfolder path1](./ExperimentFolder.png)
-
 
 ---
 
@@ -72,6 +68,9 @@ The software package includes the following key components:
 - **experiment** – Experimental scripts and utilities for testing and evaluation  
 - **data** – Contains the datasets required by the software, including original MIV image frames such as chess, classroomvideo, and museum. In addition to the data, the folder also includes the GLSL global parameter files imageProcessingUniform.csv and parameters_hetro.csv, as well as brdfIntegrationMap.pfm, for environment-light image processing and object environment-light interaction. 
 
+**.\Experiment\**
+
+![Expfolder path1](./ExperimentFolder.png)
 
 ## Dataset and 3D Model Resources
 
@@ -108,6 +107,8 @@ If the user wishes to composite the captured image with the original frame, the 
 
 To generate multi-frame dynamic MIV images, the user can specify the index of the first frame of the model and the filename in the following format: soldier_fr%04d.obj. The system then recognizes the input as a multi-frame dynamic object. 
 
+[![Demo Video](https://img.youtube.com/vi/u0Lf1jqKYCo/0.jpg)](https://youtu.be/u0Lf1jqKYCo)
+
 ### MIV to Point cloud
 ![MIV to Point cloud](./ReadmeImage1.png)
 
@@ -119,15 +120,35 @@ With the widespread use of point cloud data, this program also provides MIV conv
 The .bat files serve as example scripts for running the software, providing users with pre-configured program parameters. Users can easily run the program’s default functions by simply double-clicking the executable .bat file in the local folder.
 
 
-
 ### Heterogeneous object to MIV example
 ```
 .\MIVConvertor.exe 0 ".\data\chess\\" ".\data\chess\Chess.json" "_texture_2048x2048_yuv420p" "_depth_2048x2048_yuv420p" "_entity_2048x2048_yuv420p" "10le" "16le" ".\data\RWT121\CHASSEUR.obj" ".\Output\\" 1 ".\CompositedResults\\" data/chess/Chess.raw 0 1
 ```
 
-### MIV to Point cloud example
+### Heterogeneous object to MIV sequence example
 ```
-.\MIVConvertor.exe 1 ".\data\chess\\" ".\data\chess\Chess.json" "_texture_2048x2048_yuv420p" "_depth_2048x2048_yuv420p" "_entity_2048x2048_yuv420p" "10le" "16le" ".\Output\\" %%i
+.\MIVConvertor.exe 0 ".\data\chess\\" ".\data\chess\Chess.json" "_texture_2048x2048_yuv420p" "_depth_2048x2048_yuv420p" "_entity_2048x2048_yuv420p" "10le" "16le" ".\data\redandblack\redandblack_fr1450.obj" ".\Output\\" 1 ".\CompositedResults\\" data/chess/Chess.raw 0 10 1450 1 
+
+@echo off
+setlocal EnableDelayedExpansion
+
+FOR /L %%i IN (0,1,8) DO (
+    rem set /A frame=1450+%%i
+
+    .\MIVConvertor.exe 0 ".\data\chess\\" ".\data\chess\Chess.json" ^
+    "_texture_2048x2048_yuv420p" "_depth_2048x2048_yuv420p" "_entity_2048x2048_yuv420p" ^
+    "10le" "16le" ".\data\redandblack\redandblack_fr%%04d.obj" ^
+    ".\Output\\" 1 ".\CompositedResults\\" data/chess/Chess.raw %%i 10 1450 1 
+)
+
+endlocal
+```
+
+### MIV to Point cloud sequence example
+```
+FOR /L %%i IN (0,1,3) DO (
+.\MIVConvertor.exe 1 ".\data\chess\\" ".\data\chess\Chess.json" "_texture_2048x2048_yuv420p" "_depth_2048x2048_yuv420p" "_entity_2048x2048_yuv420p" "10le" "16le" ".\Output\\" %%i >> log.txt
+)
 ```
 
 ## Evaluation

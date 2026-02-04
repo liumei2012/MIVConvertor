@@ -2,7 +2,7 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h> // we use glut here as window manager
 #define _USE_MATH_DEFINES
-#define PRINTCOMPLEXITY
+//#define PRINTCOMPLEXITY
 #include <math.h>
 
 #include <iostream>
@@ -182,42 +182,53 @@ static void timer(int v)
 
 void print_manual(int nMode) {
     if (nMode == 0) {
-        printf(CYAN BOLD "###################### Software Manual ########################\n" RESET);
-        printf(YELLOW "argv:1 " RESET "Program Mode (0: Heterogeneous Object → MIV [OpenGL Viewer], 1: MIV → Point Cloud Conversion)\n");
-        printf(YELLOW "argv:2 " RESET "Path to the MIV sequence data(.yuv)\n");
-        printf(YELLOW "argv:3 " RESET "Path to the MIV sequence description file (.json)\n");
-        printf(YELLOW "argv:4 " RESET "Prefix string for texture files(.yuv)\n");
-        printf(YELLOW "argv:5 " RESET "Prefix string for depth files(.yuv)\n");
-        printf(YELLOW "argv:6 " RESET "Texture bit-depth format (e.g., 10-bit → 10le)\n");
-        printf(YELLOW "argv:7 " RESET "Depth bit-depth format (e.g., 16-bit → 16le)\n");
-        printf(YELLOW "argv:8 " RESET "Path to heterogeneous object (.obj)\n");
-        printf(YELLOW "argv:9 " RESET "Output folder \n");
-        printf(YELLOW "argv:10 " RESET "Enable composition (0 or 1)\n");
-        printf(YELLOW "argv:11 " RESET "Path for composited results \n");
+        printf(CYAN BOLD "###################### Software Manual ######################\n" RESET);
+
+        printf(YELLOW "argv[1]: " RESET "Program mode (0: Heterogeneous Object → MIV [OpenGL Viewer], 1: MIV → Point Cloud Conversion)\n");
+        printf(YELLOW "argv[2]: " RESET "Path to MIV sequence data (.yuv)\n");
+        printf(YELLOW "argv[3]: " RESET "Path to MIV sequence description file (.json)\n");
+        printf(YELLOW "argv[4]: " RESET "Prefix for texture files (.yuv)\n");
+        printf(YELLOW "argv[5]: " RESET "Prefix for depth files (.yuv)\n");
+        printf(YELLOW "argv[6]: " RESET "Texture bit-depth format (e.g., 10-bit → 10le)\n");
+        printf(YELLOW "argv[7]: " RESET "Depth bit-depth format (e.g., 16-bit → 16le)\n");
+        printf(YELLOW "argv[8]: " RESET "Path to heterogeneous object file (.obj)\n");
+        printf(YELLOW "argv[9]: " RESET "Output directory\n");
+        printf(YELLOW "argv[10]: " RESET "Enable composition (0: disable, 1: enable)\n");
+        printf(YELLOW "argv[11]: " RESET "Directory for composited results\n");
+        printf(YELLOW "argv[12]: " RESET "Path to environment map\n");
+        printf(YELLOW "argv[13]: " RESET "Frame index of the MIV video\n");
+        printf(YELLOW "argv[14]: " RESET "Number of frames for the dynamic mesh\n");
+        printf(YELLOW "argv[15]: " RESET "Start frame index of the dynamic mesh\n");
+        printf(YELLOW "argv[16]: " RESET "Relighting flag (0: disable, 1: enable)\n");
 
         printf(GREEN "Keys: " RESET "a, s, d, f, r, q, e → Control heterogeneous object\n");
         printf(GREEN "Keys: " RESET "u, v → Control camera\n");
-        printf(GREEN "Keys: " RESET "c → Capture MIV content\n");
+        printf(GREEN "Keys: " RESET "c → Save model motion information\n");
         printf(GREEN "Keys: " RESET "b → Toggle guide background\n");
         printf(GREEN "Keys: " RESET "v → Toggle depth mode\n");
-        printf(GREEN "Keys: " RESET "l → Toggle re-lighting mode\n");
-        printf(RED   BOLD "########################## End ###############################\n" RESET);
-        printf(RED   BOLD "Press any key to start. \n" RESET);
+
+        printf(RED BOLD "########################### End ##############################\n" RESET);
+        printf(RED BOLD "Press any key to start.\n" RESET);
+
 
     }
     else if (nMode == 1)
     {
-        printf(CYAN BOLD "###################### Software Manual ########################\n" RESET);
-        printf(YELLOW "argv:1 " RESET "Program Mode (0: Heterogeneous Object → MIV [OpenGL Viewer], 1: MIV → Point Cloud)\n");
-        printf(YELLOW "argv:2 " RESET "Path to the MIV sequence data(.yuv)\n");
-        printf(YELLOW "argv:3 " RESET "Path to the MIV sequence description file (.json) (.json)\n");
-        printf(YELLOW "argv:4 " RESET "Prefix string for texture files\n");
-        printf(YELLOW "argv:5 " RESET "Prefix string for depth files\n");
-        printf(YELLOW "argv:6 " RESET "Texture bit-depth format (e.g., 10-bit → 10le)\n");
-        printf(YELLOW "argv:7 " RESET "Depth bit-depth format (e.g., 16-bit → 16le)\n");
-        printf(YELLOW "argv:8 " RESET "Output folder path\n");
-        printf(RED   BOLD "########################## End ###############################\n" RESET);
-        printf(RED   BOLD "Press any key to start. \n" RESET);
+        printf(CYAN BOLD "###################### Software Manual ######################\n" RESET);
+
+        printf(YELLOW "argv[1]: " RESET "Program mode (0: Heterogeneous Object → MIV [OpenGL Viewer], 1: MIV → Point Cloud)\n");
+        printf(YELLOW "argv[2]: " RESET "Path to MIV sequence data (.yuv)\n");
+        printf(YELLOW "argv[3]: " RESET "Path to MIV sequence description file (.json)\n");
+        printf(YELLOW "argv[4]: " RESET "Prefix for texture files\n");
+        printf(YELLOW "argv[5]: " RESET "Prefix for depth files\n");
+        printf(YELLOW "argv[6]: " RESET "Texture bit-depth format (e.g., 10-bit → 10le)\n");
+        printf(YELLOW "argv[7]: " RESET "Depth bit-depth format (e.g., 16-bit → 16le)\n");
+        printf(YELLOW "argv[8]: " RESET "Output directory\n");
+        printf(YELLOW "argv[9]: " RESET "Frame index of the MIV sequence\n");
+
+        printf(RED BOLD "########################### End ##############################\n" RESET);
+        printf(RED BOLD "Press any key to start.\n" RESET);
+
 
     }
 }
@@ -332,31 +343,6 @@ bool IsModelPositionMatrixFileExists(Matrix& meshTranformMat, float& fModelScale
         std::cerr << "[ERROR] Failed to read scale value "  << "\n";
         return false;
     }
-
-    //for (int i = 0; i < 3; i++)
-    //{
-    //    if (!(inFile >> refRenderer->MeshBox.min()[i]))
-    //    {
-    //        std::cerr << "[ERROR] Failed to read box value " << "\n";
-    //    }
-    //}
-
-    //for (int i = 0; i < 3; i++)
-    //{
-    //    if (!(inFile >> refRenderer->MeshBox.max()[i]))
-    //    {
-    //        std::cerr << "[ERROR] Failed to read box value " << "\n";
-    //    }
-    //}
-
-    //for (int i = 0; i < 3; i++)
-    //{
-    //    if (!(inFile >> refRenderer->fMeshMinBox[i]))
-    //    {
-    //        std::cerr << "[ERROR] Failed to read box value " << "\n";
-    //    }
-    //}
-
 
     return true;
 }
