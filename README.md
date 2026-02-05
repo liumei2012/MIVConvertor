@@ -19,6 +19,8 @@ To build and run this software, make sure the following tools and libraries are 
 - **[GLEW](http://glew.sourceforge.net/)**
 - **[FreeGLUT](http://freeglut.sourceforge.net/)**
 - **[GLM](https://github.com/g-truc/glm)**
+- **[mpeg-pcc-renderer](https://github.com/MPEGGroup/mpeg-3dg-renderer)**
+- **[PYUV player](http://dsplab.diei.unipg.it/software/pyuv_raw_video_sequence_player)**
 ---
 
 ### Notes
