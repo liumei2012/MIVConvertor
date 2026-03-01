@@ -1,0 +1,36 @@
+#version 300 es
+precision highp float;
+precision highp int;
+out vec4 outColor; // name of the output variable
+
+in vec2 interpolatedTexCoord;
+
+uniform sampler2D Gray;
+uniform sampler2D ColAvg; // min_filter="NEAREST" mag_filter="NEAREST"
+
+uniform int width;
+uniform int height;
+uniform int samples; // description="Number of samples" defaultval="256"
+uniform bool debug; // description="Enable debugging of sampling locations" defaultval="false"
+
+uniform int inputImageWidth;
+uniform int inputImageHeight;
+
+
+#define PI 3.1415926535897932384626433832795
+
+
+void main() {
+  
+  // division
+
+  float a = texture(Gray, interpolatedTexCoord).r;
+  float b = texture(ColAvg, interpolatedTexCoord).r;
+  float c = 0.0;
+  if(abs(b) > 1e-8) { // prevent division by zero
+    c = a / b;
+  }
+  outColor = vec4(c, c, c, 1.0);
+  outColor = vec4(c, c, c, 1.0);
+  
+}
