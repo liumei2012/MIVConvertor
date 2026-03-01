@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
-#include "Mesh.h"
-#include "ShaderNode.h"
+#include "third-party-library/gsn/Mesh.h"
+#include "third-party-library/gsn/ShaderNode.h"
 #include "ReaderObjectMesh.h"
 #include "ReaderSequenceParameters.h"
 #include "vMeshReadSequence.h"

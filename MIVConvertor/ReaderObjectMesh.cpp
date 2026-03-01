@@ -1,13 +1,13 @@
 
 
 #include "ReaderObjectMesh.h"
-#include "tinyply.h"
+#include "third-party-library/tinyply/tinyply.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "third-party-library/stdimage/stb_image.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
-#include "tiny_obj_loader.h"
+#include "third-party-library/tinyobj/tiny_obj_loader.h"
 
 
 Mesh::Mesh() : m_bLoad( false ), m_bUseColorPerVertex( true ) {}

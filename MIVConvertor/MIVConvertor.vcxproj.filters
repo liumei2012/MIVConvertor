@@ -13,92 +13,83 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="소스 파일\third-party-library">
+      <UniqueIdentifier>{df29f6e1-f1dd-4933-ab1b-7707ebfa2d2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\third-party-library\gsn">
+      <UniqueIdentifier>{697c244a-6929-4881-b8b0-2934f39104f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\third-party-library\ISOIEC">
+      <UniqueIdentifier>{4d02b6fc-b84f-4068-be86-698064b6b806}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\third-party-library\tinyply">
+      <UniqueIdentifier>{b83d5786-f1d7-46c7-92cc-809cc76a8896}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\third-party-library">
+      <UniqueIdentifier>{66ef480f-0b44-4aa7-ada2-3c5fcc825e18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\third-party-library\gsn">
+      <UniqueIdentifier>{a234cc8f-441b-445d-91f2-4dc87a951596}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\third-party-library\ISOIEC">
+      <UniqueIdentifier>{7e9df925-20ed-45cc-8059-59f569ce753d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\third-party-library\tinyply">
+      <UniqueIdentifier>{d89ea22e-c2dd-4d9f-8f1b-c9e061a45655}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\third-party-library\json">
+      <UniqueIdentifier>{8d9a2ac9-3256-44e7-9661-98f84ae4d1bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\third-party-library\stdimage">
+      <UniqueIdentifier>{9d671c23-c6f8-422f-a883-a6c8b86ece77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\third-party-library\tinyobj">
+      <UniqueIdentifier>{b275c7b5-acf5-4147-88d3-eb5102ea97da}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="FileTools.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderNode.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Matrix.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="third-party-library\gsn\FileTools.cpp">
+      <Filter>소스 파일\third-party-library\gsn</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="third-party-library\gsn\LoadOBJ.cpp">
+      <Filter>소스 파일\third-party-library\gsn</Filter>
     </ClCompile>
-    <ClCompile Include="StringTools.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="third-party-library\gsn\Matrix.cpp">
+      <Filter>소스 파일\third-party-library\gsn</Filter>
     </ClCompile>
-    <ClCompile Include="LoadOBJ.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="third-party-library\gsn\Mesh.cpp">
+      <Filter>소스 파일\third-party-library\gsn</Filter>
+    </ClCompile>
+    <ClCompile Include="third-party-library\gsn\ShaderNode.cpp">
+      <Filter>소스 파일\third-party-library\gsn</Filter>
+    </ClCompile>
+    <ClCompile Include="third-party-library\gsn\StringTools.cpp">
+      <Filter>소스 파일\third-party-library\gsn</Filter>
+    </ClCompile>
+    <ClCompile Include="third-party-library\ISOIEC\ply.cpp">
+      <Filter>소스 파일\third-party-library\ISOIEC</Filter>
+    </ClCompile>
+    <ClCompile Include="third-party-library\tinyply\tinyply.cpp">
+      <Filter>소스 파일\third-party-library\tinyply</Filter>
     </ClCompile>
     <ClCompile Include="ReaderObjectMesh.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ReaderSequenceParameters.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\third-party-library\ISOIEC</Filter>
     </ClCompile>
     <ClCompile Include="ReaderSequence.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\third-party-library\ISOIEC</Filter>
     </ClCompile>
-    <ClCompile Include="tinyply.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ply.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="ReaderSequenceParameters.cpp">
+      <Filter>소스 파일\third-party-library\ISOIEC</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FileTools.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderNode.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="StringTools.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="LoadOBJ.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="vMeshReaderDef.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="ReaderObject.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="ReaderObjectMesh.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="ReaderSequenceParameters.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="vMeshReadSequence.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="stb_image.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="tiny_obj_loader.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="tinyply.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Util.h">
@@ -110,20 +101,62 @@
     <ClInclude Include="MIVCamInfo.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ply.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="third-party-library\gsn\FileTools.h">
+      <Filter>헤더 파일\third-party-library\gsn</Filter>
     </ClInclude>
-    <ClInclude Include="PCCMath.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="third-party-library\gsn\LoadOBJ.h">
+      <Filter>헤더 파일\third-party-library\gsn</Filter>
     </ClInclude>
-    <ClInclude Include="PCCMisc.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="third-party-library\gsn\Matrix.h">
+      <Filter>헤더 파일\third-party-library\gsn</Filter>
     </ClInclude>
-    <ClInclude Include="PCCPointSet.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="third-party-library\gsn\ShaderNode.h">
+      <Filter>헤더 파일\third-party-library\gsn</Filter>
     </ClInclude>
-    <ClInclude Include="json.hpp">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="third-party-library\gsn\StringTools.h">
+      <Filter>헤더 파일\third-party-library\gsn</Filter>
+    </ClInclude>
+    <ClInclude Include="third-party-library\gsn\Mesh.h">
+      <Filter>헤더 파일\third-party-library\gsn</Filter>
+    </ClInclude>
+    <ClInclude Include="third-party-library\ISOIEC\PCCMath.h">
+      <Filter>헤더 파일\third-party-library\ISOIEC</Filter>
+    </ClInclude>
+    <ClInclude Include="third-party-library\ISOIEC\PCCMisc.h">
+      <Filter>헤더 파일\third-party-library\ISOIEC</Filter>
+    </ClInclude>
+    <ClInclude Include="third-party-library\ISOIEC\PCCPointSet.h">
+      <Filter>헤더 파일\third-party-library\ISOIEC</Filter>
+    </ClInclude>
+    <ClInclude Include="third-party-library\ISOIEC\ply.h">
+      <Filter>헤더 파일\third-party-library\ISOIEC</Filter>
+    </ClInclude>
+    <ClInclude Include="third-party-library\json\json.hpp">
+      <Filter>헤더 파일\third-party-library\json</Filter>
+    </ClInclude>
+    <ClInclude Include="third-party-library\tinyply\tinyply.h">
+      <Filter>헤더 파일\third-party-library\tinyply</Filter>
+    </ClInclude>
+    <ClInclude Include="third-party-library\stdimage\stb_image.h">
+      <Filter>헤더 파일\third-party-library\stdimage</Filter>
+    </ClInclude>
+    <ClInclude Include="third-party-library\tinyobj\tiny_obj_loader.h">
+      <Filter>헤더 파일\third-party-library\tinyobj</Filter>
+    </ClInclude>
+    <ClInclude Include="ReaderObject.h">
+      <Filter>헤더 파일\third-party-library\ISOIEC</Filter>
+    </ClInclude>
+    <ClInclude Include="ReaderObjectMesh.h">
+      <Filter>헤더 파일\third-party-library\ISOIEC</Filter>
+    </ClInclude>
+    <ClInclude Include="ReaderSequenceParameters.h">
+      <Filter>헤더 파일\third-party-library\ISOIEC</Filter>
+    </ClInclude>
+    <ClInclude Include="vMeshReaderDef.h">
+      <Filter>헤더 파일\third-party-library\ISOIEC</Filter>
+    </ClInclude>
+    <ClInclude Include="vMeshReadSequence.h">
+      <Filter>헤더 파일\third-party-library\ISOIEC</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -17,7 +17,6 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -53,27 +52,24 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Label="Shared" >
+  <ImportGroup Label="Shared">
   </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -138,42 +134,42 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="FileTools.cpp" />
-    <ClCompile Include="LoadOBJ.cpp" />
-    <ClCompile Include="Matrix.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="ply.cpp" />
     <ClCompile Include="ReaderObjectMesh.cpp" />
     <ClCompile Include="ReaderSequenceParameters.cpp" />
     <ClCompile Include="ReaderSequence.cpp" />
     <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="ShaderNode.cpp" />
-    <ClCompile Include="StringTools.cpp" />
-    <ClCompile Include="tinyply.cpp" />
+    <ClCompile Include="third-party-library\gsn\FileTools.cpp" />
+    <ClCompile Include="third-party-library\gsn\LoadOBJ.cpp" />
+    <ClCompile Include="third-party-library\gsn\Matrix.cpp" />
+    <ClCompile Include="third-party-library\gsn\Mesh.cpp" />
+    <ClCompile Include="third-party-library\gsn\ShaderNode.cpp" />
+    <ClCompile Include="third-party-library\gsn\StringTools.cpp" />
+    <ClCompile Include="third-party-library\ISOIEC\ply.cpp" />
+    <ClCompile Include="third-party-library\tinyply\tinyply.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="FileTools.h" />
-    <ClInclude Include="json.hpp" />
-    <ClInclude Include="LoadOBJ.h" />
-    <ClInclude Include="Matrix.h" />
-    <ClInclude Include="Mesh.h" />
     <ClInclude Include="MIVCamInfo.h" />
-    <ClInclude Include="PCCMath.h" />
-    <ClInclude Include="PCCMisc.h" />
-    <ClInclude Include="PCCPointSet.h" />
-    <ClInclude Include="ply.h" />
+    <ClInclude Include="third-party-library\gsn\FileTools.h" />
+    <ClInclude Include="third-party-library\gsn\LoadOBJ.h" />
+    <ClInclude Include="third-party-library\gsn\Matrix.h" />
+    <ClInclude Include="third-party-library\gsn\Mesh.h" />
+    <ClInclude Include="third-party-library\gsn\ShaderNode.h" />
+    <ClInclude Include="third-party-library\gsn\StringTools.h" />
+    <ClInclude Include="third-party-library\ISOIEC\PCCMath.h" />
+    <ClInclude Include="third-party-library\ISOIEC\PCCMisc.h" />
+    <ClInclude Include="third-party-library\ISOIEC\PCCPointSet.h" />
+    <ClInclude Include="third-party-library\ISOIEC\ply.h" />
+    <ClInclude Include="third-party-library\json\json.hpp" />
+    <ClInclude Include="third-party-library\stdimage\stb_image.h" />
+    <ClInclude Include="third-party-library\tinyobj\tiny_obj_loader.h" />
+    <ClInclude Include="third-party-library\tinyply\tinyply.h" />
     <ClInclude Include="vMeshReaderDef.h" />
     <ClInclude Include="ReaderObject.h" />
     <ClInclude Include="ReaderObjectMesh.h" />
     <ClInclude Include="ReaderSequenceParameters.h" />
     <ClInclude Include="vMeshReadSequence.h" />
     <ClInclude Include="Renderer.h" />
-    <ClInclude Include="ShaderNode.h" />
-    <ClInclude Include="stb_image.h" />
-    <ClInclude Include="StringTools.h" />
-    <ClInclude Include="tinyply.h" />
-    <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

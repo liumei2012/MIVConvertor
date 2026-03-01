@@ -13,16 +13,16 @@
 #include <math.h>
 
 #include "Renderer.h"
-#include "Mesh.h"
-#include "ShaderNode.h"
-#include "LoadOBJ.h"
-#include "Matrix.h"
-#include "FileTools.h"
-#include "StringTools.h"
+#include "third-party-library/gsn/Mesh.h"
+#include "third-party-library/gsn/ShaderNode.h"
+#include "third-party-library/gsn/LoadOBJ.h"
+#include "third-party-library/gsn/Matrix.h"
+#include "third-party-library/gsn/FileTools.h"
+#include "third-party-library/gsn/StringTools.h"
 #include "Util.h"
 #include "Camera.h"
 #include "MIVCamInfo.h"
-#include "ply.h"
+#include "third-party-library/ISOIEC/ply.h"
 
 //#define IMAGPROCESSINGTEST 
 

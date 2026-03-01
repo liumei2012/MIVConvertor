@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "Renderer.h"
-#include "json.hpp"
+#include "third-party-library/json/json.hpp"
 
 using json = nlohmann::json;
 

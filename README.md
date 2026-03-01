@@ -25,14 +25,14 @@ To build and run this software, make sure the following tools and libraries are 
 
 ### Notes
 
-- Ensure that the **OpenGL**, **GLEW**, **GLM** and **FreeGLUT** libraries are correctly linked in your Visual Studio project.  
+- Ensure that the **OpenGL**, **GLEW**, **GLM** and **FreeGLUT** libraries are correctly linked in your Visual Studio project. **mpeg-pcc-renderer** is utilized for rendering the generated point cloud sequence, while **PYUV Player** is used for rendering the generated MIV sequence.
 
 
 # OpenGL Installation 
 
 This guide explains how to install **OpenGL** along with the **FreeGLUT** and **GLEW** libraries required for the project.
 
-We have included the OpenGL library we are using in glinstall folder.  
+We have included the OpenGL library we are using in third-party-library folder.  
 Alternatively, you can install OpenGL manually.
 
 
@@ -87,7 +87,7 @@ The datasets required by this software are based on the MIV standard and can be 
 
 To enable environment light rendering, the software includes two .csv files in the data folder that define GLSL uniform parameters, and it implements a set of GLSL shaders based on https://www.gsn-lib.org/, which are available in the shader folder. These parameters and shader programs support GLSL image processing techniques such as importance sampling and the interaction between environment map and heterogeneous objects.
 As part of the MIV standard, the software uses the renderer included in the MIV reference implementation to generate environment maps.  
-Preprocessed environment light images are stored in the `dataset` folder, sharing filenames with the corresponding `.json` files but using the `.yuv` extension.
+Preprocessed environment light images are stored in the `dataset` folder, sharing filenames with the corresponding `.json` files but using the `.raw` extension.
 
 
 ## Software manual
@@ -97,7 +97,7 @@ Preprocessed environment light images are stored in the `dataset` folder, sharin
 
 After configuring the experimental files, run the program. The program operates in two modes. When the mode code is set to zero, a simple OpenGL rendering window is launched, displaying the MIV image rendered by the current camera along with the heterogeneous object. The program provides basic keyboard controls that allow the user to move the heterogeneous  object within the MIV space. 
 
-The A and D keys move the object along the x-axis. The W and S keys move it along the z-axis. The Q and E keys move it along the y-axis. The R key rotates the object around the y-axis.
+The A and D keys move the object along the x-axis. The W and S keys move it along the z-axis. The Q and E keys move it along the y-axis. 
 
 After positioning the object, press the ‘c’ key to confirm. The file ModelPositionMatrix.txt is saved, and automatic capture begins. During automatic capture, the OpenGL window will automatically switch between cameras to record images of the object from multiple angles, collecting both texture and geometric information. Each automatic capture cycle corresponds to one frame, and the program will close automatically upon completion.
 
