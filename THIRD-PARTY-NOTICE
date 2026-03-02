@@ -1,0 +1,64 @@
+THIRD-PARTY SOFTWARE NOTICE
+
+This project uses the following third-party libraries and software components.
+Each component is used in accordance with its respective license terms.
+
+1. OpenGL
+   - License: OpenGL Specification (Khronos Group)
+   - Redistribution: Not redistributed in this repository.
+   - Website: https://www.khronos.org/opengl/
+
+2. FreeGLUT
+   - License: MIT License
+   - Redistribution: Header files and precompiled binaries only.
+   - License text included in: third-party-library/freeglut/LICENSE
+
+3. GLEW (OpenGL Extension Wrangler Library)
+   - License: BSD 3-Clause License
+   - Redistribution: Header files and precompiled binaries only.
+   - License text included in: third-party-library/glew/LICENSE
+
+4. GLM (OpenGL Mathematics)
+   - License: MIT License
+   - Redistribution: Header files only.
+   - License text included in: glm/copying
+
+5. GSN Library
+   - License: MIT License
+   - Redistribution: Source code included.
+   - License text included in: third-party-library/gsn/LICENSE
+
+6. ISO/IEC reference code
+   - License: BSD 3-Clause License
+   - Redistribution: Source code included.
+   - License text included in: third-party-library/ISOIEC/LICENSE
+
+7. tinyply
+   - License: Public Domain
+   - Redistribution: Source code included.
+
+8. nlohmann/json
+   - License: MIT License
+   - Redistribution: Header-only library.
+   - Website: https://github.com/nlohmann/json
+
+9. stdimage
+   - License: MIT License
+   - Redistribution: Header-only library.
+
+---------------------------------------------------------------------
+
+DATASET NOTICE
+
+The original test sequences and 3D models are not redistributed with this repository.
+
+Users must obtain these datasets directly from the respective copyright holders
+and comply with their licensing terms.
+
+This repository provides only preprocessing scripts and configuration files
+to generate intermediate data after dataset acquisition.
+
+---------------------------------------------------------------------
+
+All license texts for redistributed components are provided in the
+"third-party-library" directory of this repository.

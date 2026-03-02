@@ -67,11 +67,21 @@ After opening the configured `.sln` file in Visual Studio, build the project to 
 The software package includes the following key components:
 - **MIVconverter** – Source code for the main application  
 - **experiment** – Experimental scripts and utilities for testing and evaluation  
-- **data** – Contains the datasets required by the software, including original MIV image frames such as chess, classroomvideo, and museum. In addition to the data, the folder also includes the GLSL global parameter files imageProcessingUniform.csv and parameters_hetro.csv, as well as brdfIntegrationMap.pfm, for environment-light image processing and object environment-light interaction. 
+- **data** – Contains the datasets required by the software, including original MIV video frames such as chess, classroomvideo, and museum. In addition to the data, the folder also includes the GLSL global parameter files imageProcessingUniform.csv and parameters_hetro.csv, as well as brdfIntegrationMap.pfm, for environment-light image processing and object environment-light interaction. 
 
 **.\Experiment\**
 
 ![Expfolder path1](./ExperimentFolder.png)
+
+**.\data\**
+
+![Datfolder path1](./DataFolder.png)
+
+
+**.\data\chess**
+
+![Chessfolder path1](./ChessFolder.png)
+
 
 ## Dataset and 3D Model Resources
 
