@@ -180,7 +180,7 @@ Ensure the following prerequisites are installed:
 - Python 3.10 or newer
 
 In Visual Studio, clone the repository:
-https://gitlab.com/mpeg-i-visual/tmiv.git
+git clone -b v23.0 --single-branch https://gitlab.com/mpeg-i-visual/tmiv.git
 
 Open the x64 Native Tools Command Prompt.
 
@@ -271,6 +271,8 @@ for /L %%i in (0,1,9) do (
 )
 ```
 
+
+
 Output Files
 
 The following decoded files at RP2 will be generated:
@@ -317,7 +319,7 @@ After renaming, place the files in the renderer input directory.
     -f 0 ^
     -r R0 ^
     -v center ^
-    -c config\ctc\best_reference\R_1_TMIV_render_making_sm.json ^
+    -c config\ctc\best_reference\R_1_TMIV_render.json ^
     -p configDirectory config ^
     -p inputDirectory in ^
     -p outputDirectory out
@@ -329,6 +331,17 @@ The following center-view rendered file will be generated:
 
 ```
 R2_B02_R0_center_tex_4096x2048_yuv420p10le.yuv
+```
+---
+
+### Notes
+
+To disable the inpainter, edit the "R_1_TMIV_render.json" file as shown below.
+
+```
+    "Inpainter": {},
+    "NoInpainter": {},
+    "InpainterMethod": "NoInpainter",
 ```
 
 ### YUV to RGB Conversion
@@ -344,27 +357,9 @@ Use the rendered YUV file as the first parameter:
 YUV2RGB.exe R2_B02_R0_center_tex_4096x2048_yuv420p10le.yuv Chess.raw
 ```
 
-### parameters_hetro.csv Configuration
-
-Make sure the first row, first column of parameters_hetro.csv matches the output raw file name.
-
-Example:
-
-If the output file is:
+Then copy the generated file to the data/chess/ directory (e.g., data/chess/Chess.raw) and set the software parameters as follows:
 
 ```
-Chess.raw
-```
+data/chess/Chess.raw
 
-Then the first cell should be:
-
-
-```
-Chess.raw
-```
-
-If the file is located inside a folder (e.g., Chess/Chess.raw), then set:
-
-```
-Chess/Chess.raw
 ```
