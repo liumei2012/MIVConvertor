@@ -82,12 +82,18 @@ The software package includes the following key components:
 
 ![Chessfolder path1](./ChessFolder.png)
 
+---
+
+### Notes
+
+To ensure proper operation of this software, users must strictly follow the required folder structure, particularly regarding the placement of the data and JSON data description files.
+If the relighting function is used, the .raw files must also be placed in the specified directory.
 
 ## Dataset and 3D Model Resources
 
-The datasets required by this software are based on the MIV standard and can be downloaded from:
+The datasets required by this software can be downloaded from:
 
-- Public MIV datasets: [MPEG Content Database](https://mpeg-miv.org/index.php/content-database-2/)  
+- Public datasets: [MPEG Content Database](https://mpeg-miv.org/index.php/content-database-2/)  
 - Restricted datasets (e.g., *museum*, *loot*, *redandblack*, *longdress*, *soldier*): available with permission from the [MPEG Expert Group](https://mpegfs.int-evry.fr/)  
 - 3D models (.obj) for heterogeneous objects: [Textured Mesh Repository](https://texturedmesh.isti.cnr.it/download)
 
@@ -95,7 +101,7 @@ The datasets required by this software are based on the MIV standard and can be 
 ## Environment Light Rendering Support (Optional)
 
 To enable environment light rendering, the software includes two .csv files in the data folder that define GLSL uniform parameters, and it implements a set of GLSL shaders based on https://www.gsn-lib.org/, which are available in the shader folder. These parameters and shader programs support GLSL image processing techniques such as importance sampling and the interaction between environment map and heterogeneous objects.
-As part of the MIV standard, the software uses the renderer included in the MIV reference implementation to generate environment maps.  
+The software uses the renderer included in the MIV reference implementation to generate environment maps.  
 Preprocessed environment light images are stored in the `dataset` folder, sharing filenames with the corresponding `.json` files but using the `.raw` extension.
 
 
